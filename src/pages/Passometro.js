@@ -160,7 +160,8 @@ function Passometro() {
         setpacientes(response.data.rows);
         setarraypacientes(response.data.rows);
         setTimeout(() => {
-          document.getElementById("detalhes: " + id).className = 'expand';
+          // document.getElementById("detalhes: " + id).className = 'expand';
+          expand(item);
         }, 1000);
       });
     });
