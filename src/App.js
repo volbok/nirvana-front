@@ -6,6 +6,7 @@ import Context from './pages/Context';
 // páginas.
 import Login from './pages/Login';
 import Pacientes from './pages/Pacientes';
+import Passometro from './pages/Passometro';
 import TransporteSanitario from './pages/TransporteSanitario';
 import Motorista from './pages/Motorista';
 import Indicadores from './pages/Indicadores';
@@ -21,6 +22,7 @@ function App() {
   const [pagina, setpagina] = useState(0);
   const [pacientes, setpacientes] = useState([]);
   const [transportes, settransportes] = useState([]);
+  const html = 'https://nirvana-api.up.railway.app/';
 
   return (
     <Context.Provider
@@ -31,11 +33,13 @@ function App() {
         pagina, setpagina,
         pacientes, setpacientes,
         transportes, settransportes,
+        html,
       }}
     >
       <div>
         <Login></Login>
         <Pacientes></Pacientes>
+        <Passometro></Passometro>
         <TransporteSanitario></TransporteSanitario>
         <Motorista></Motorista>
         <Toast></Toast>

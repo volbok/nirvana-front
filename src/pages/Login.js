@@ -10,6 +10,7 @@ function Login() {
 
   // context.
   const {
+    html,
     pagina, setpagina,
     settoast,
     setusuario,
@@ -23,7 +24,6 @@ function Login() {
 
   // checando se o usuário inserido está registrado no sistema.
   var timeout = null;
-  var html = 'https://api-nirvana-b3ffaf6a02bf.herokuapp.com/';
   const checkLogin = () => {
     clearTimeout(timeout);
     timeout = setTimeout(() => {
@@ -42,17 +42,21 @@ function Login() {
           setusuario(
             {
               id: objeto.id,
-              usuario: objeto.usuario,
               nome: objeto.nome,
+              contato: objeto.contato,
+              tipo: objeto.tipo,
+              usuario: objeto.usuario,
               unidade: objeto.unidade,
             }
           );
-          if (objeto.unidade == 'GESTOR-TS') {
+          if (objeto.tipo == 'GESTOR-TS') {
             setpagina(2);
-          } else if (objeto.unidade == 'MOTORISTA-TS') {
+          } else if (objeto.tipo == 'MOTORISTA-TS') {
             setpagina(3);
-          } else if (objeto.unidade == 'GERENTE') {
+          } else if (objeto.tipo == 'GERENTE') {
             setpagina(4);
+          } else if (objeto.tipo == 'ASSISTENCIAL') {
+            setpagina('PASSOMETRO');
           } else {
             setpagina(1);
           }

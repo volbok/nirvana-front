@@ -1,13 +1,13 @@
 :root {
-  --cor1: rgb(97, 99, 110, 0.7);
+  --cor1: rgb(97, 99, 110, 1);
   --cor1hover: rgb(97, 99, 110, 1);
   --cor2: #f2f2f2;
   --cor3: #d7dbdd;
-  --cor4: rgb(229, 126, 52, 0.7);
+  --cor4: rgb(229, 126, 52, 1);
   --cor4hover: rgb(229, 126, 52, 1);
-  --cor5: rgb(82, 190, 128, 0.7);
+  --cor5: rgb(82, 190, 128, 1);
   --cor5hover: rgb(82, 190, 128, 1);
-  --cor6: rgb(231, 76, 60, 0.7);
+  --cor6: rgb(231, 76, 60, 1);
   --cor6hover: rgb(231, 76, 60, 1);
   --texto1: #000000;
   --texto2: #ffffff;
@@ -17,6 +17,7 @@
 
 /* OCULTANDO CABEÇALHO E RODAPÉ PARA IMPRESSÃO */
 @media print {
+
   #Header,
   #Footer {
     display: none !important;
@@ -38,6 +39,7 @@
   0% {
     opacity: 0;
   }
+
   10% {
     opacity: 1;
   }
@@ -133,9 +135,11 @@ body {
   0% {
     background-color: var(--cor1);
   }
+
   50% {
     background-color: var(--cor4);
   }
+
   100% {
     background-color: var(--cor1);
   }
@@ -153,14 +157,17 @@ body {
     opacity: 0;
     transform: rotate(0deg);
   }
+
   10% {
     opacity: 1;
     transform: rotate(5deg);
   }
+
   90% {
     opacity: 1;
     transform: rotate(5deg);
   }
+
   100% {
     opacity: 0;
     transform: rotate(0deg);
@@ -371,7 +378,6 @@ body {
   height: 50px;
   min-height: 50px;
   cursor: default;
-  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.1);
 }
 
 input::-webkit-outer-spin-button,
@@ -379,6 +385,7 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+
 input[type="date"]::-webkit-calendar-picker-indicator {
   display: none;
 }
@@ -404,7 +411,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   height: 100px;
   min-height: 100px;
   cursor: default;
-  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.1);
 }
 
 .textarea::-webkit-scrollbar {
@@ -456,7 +462,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   box-shadow: none;
   margin: 5px;
   cursor: default;
-  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.1);
 }
 
 .button {
@@ -476,7 +481,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin: 5px;
   padding: 5px;
   cursor: default;
-  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.3);
   transition: 200ms ease-in-out;
 }
 
@@ -502,7 +506,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin: 5px;
   padding: 5px;
   cursor: default;
-  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.3);
   transition: 200ms ease-in-out;
 }
 
@@ -528,7 +531,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin: 5px;
   padding: 5px;
   cursor: default;
-  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.3);
   transition: 200ms ease-in-out;
 }
 
@@ -554,7 +556,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   margin: 5px;
   padding: 5px;
   cursor: default;
-  box-shadow: 0px 1px 5px 1px rgba(0, 0, 0, 0.3);
   transition: 200ms ease-in-out;
 }
 
@@ -586,25 +587,26 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 /* COMPONENTE EXPANSÍVEL */
 .retract {
   display: none;
+  flex-direction: row;
+  justify-content: space-evenly;
   opacity: 0;
-  height: 0px;
   margin: 0px;
   padding: 0px;
   border-radius: 5px;
   transition: 100ms, 300ms ease-in-out;
+  visibility: hidden;
 }
 
 .expand {
   display: flex;
   flex-direction: row;
-  justify-content: space-evenly;
   opacity: 1;
-  height: 50vh;
   margin: 5px;
   padding: 10px;
   border-radius: 5px;
   background-color: #ffffff;
   transition: 100ms, 300ms ease-in-out;
+  visibility: visible;
 }
 
 .hide {
@@ -638,30 +640,39 @@ ESTILOS VARIÁVEIS CONFORME A RESPONSIVIDADE.
   .text3 {
     font-size: 14px;
   }
+
   .textarea {
     font-size: 12px;
   }
+
   .input {
     font-size: 12px;
   }
+
   .text1 {
     font-size: 12px;
   }
+
   .text2 {
     font-size: 12px;
   }
+
   .button {
     font-size: 12px;
   }
+
   .button-green {
     font-size: 12px;
   }
+
   .button-red {
     font-size: 12px;
   }
+
   .button-yellow {
     font-size: 12px;
   }
+
   .button-transparent {
     font-size: 12px;
   }
@@ -672,30 +683,39 @@ ESTILOS VARIÁVEIS CONFORME A RESPONSIVIDADE.
   .text3 {
     font-size: 14px;
   }
+
   .textarea {
     font-size: 12px;
   }
+
   .input {
     font-size: 12px;
   }
+
   .text1 {
     font-size: 12px;
   }
+
   .text2 {
     font-size: 12px;
   }
+
   .button {
     font-size: 12px;
   }
+
   .button-green {
     font-size: 12px;
   }
+
   .button-red {
     font-size: 12px;
   }
+
   .button-yellow {
     font-size: 12px;
   }
+
   .button-transparent {
     font-size: 12px;
   }
@@ -706,30 +726,39 @@ ESTILOS VARIÁVEIS CONFORME A RESPONSIVIDADE.
   .text3 {
     font-size: 14px;
   }
+
   .textarea {
     font-size: 12px;
   }
+
   .input {
     font-size: 12px;
   }
+
   .text1 {
     font-size: 12px;
   }
+
   .text2 {
     font-size: 12px;
   }
+
   .button {
     font-size: 12px;
   }
+
   .button-green {
     font-size: 12px;
   }
+
   .button-red {
     font-size: 12px;
   }
+
   .button-yellow {
     font-size: 12px;
   }
+
   .button-transparent {
     font-size: 12px;
   }
@@ -740,30 +769,39 @@ ESTILOS VARIÁVEIS CONFORME A RESPONSIVIDADE.
   .text3 {
     font-size: 14px;
   }
+
   .textarea {
     font-size: 12px;
   }
+
   .input {
     font-size: 12px;
   }
+
   .text1 {
     font-size: 12px;
   }
+
   .text2 {
     font-size: 12px;
   }
+
   .button {
     font-size: 12px;
   }
+
   .button-green {
     font-size: 12px;
   }
+
   .button-red {
     font-size: 12px;
   }
+
   .button-yellow {
     font-size: 12px;
   }
+
   .button-transparent {
     font-size: 12px;
   }
@@ -774,30 +812,39 @@ ESTILOS VARIÁVEIS CONFORME A RESPONSIVIDADE.
   .text3 {
     font-size: 16px;
   }
+
   .textarea {
     font-size: 14px;
   }
+
   .input {
     font-size: 14px;
   }
+
   .text1 {
     font-size: 14px;
   }
+
   .text2 {
     font-size: 14px;
   }
+
   .button {
     font-size: 14px;
   }
+
   .button-green {
     font-size: 14px;
   }
+
   .button-red {
     font-size: 14px;
   }
+
   .button-yellow {
     font-size: 14px;
   }
+
   .button-transparent {
     font-size: 14px;
   }
