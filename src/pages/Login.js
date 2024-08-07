@@ -21,8 +21,17 @@ function Login() {
   let user = null;
   let password = null;
   useEffect(() => {
-    // eslint-disable-next-line
+    listUsuarios();
   }, [pagina])
+
+  // lista de usuários.
+  const [usuarios, setusuarios] = useState([]);
+  const listUsuarios = () => {
+    axios.get(html + 'list_usuarios/').then((response) => {
+      setusuarios(response.data.rows);
+    });
+  }
+
 
   // checando se o usuário inserido está registrado no sistema.
   var timeout = null;
@@ -39,6 +48,8 @@ function Login() {
         var x = [0, 1];
         x = response.data;
         if (x.rows.length == 1) {
+          document.getElementById("inputs_login_senha").style.display = 'none';
+          document.getElementById("inputs_login_senha").style.visibility = 'hidden';
           var objeto = x.rows.pop();
           setusuario(
             {
@@ -113,7 +124,7 @@ function Login() {
   const registrarSenha = () => {
     let novasenha = document.getElementById("inputNovaSenha");
     let repetirsenha = document.getElementById("inputRepetirSenha");
-    if (novasenha.value == repetirsenha.value) {
+    if (novasenha.value == repetirsenha.value && novasenha.value != '') {
       let obj = {
         nome: usuario.nome,
         contato: usuario.contato,
@@ -126,13 +137,16 @@ function Login() {
         upa_nordeste: usuario.upa_nordeste,
         upa_barreiro: usuario.upa_barreiro,
       }
+      console.log(obj);
       axios.post(html + 'update_usuario/' + usuario.id, obj).then(() => {
         console.log('SENHA REGISTRADA COM SUCESSO.');
         setcadastrasenha(0);
+        document.getElementById("inputs_login_senha").style.visibility = 'visible';
+        document.getElementById("inputs_login_senha").style.display = 'flex';
         setpagina(0);
       });
     } else {
-      toast(settoast, 'SENHA REPETIDA NÃO CONFERE', 'rgb(231, 76, 60, 1)', 3000);
+      toast(settoast, 'SENHA EM BRANCO OU NÃO CONFERE.', 'rgb(231, 76, 60, 1)', 3000);
       novasenha.value = '';
       repetirsenha.value = '';
       novasenha.focus();
@@ -225,6 +239,34 @@ function Login() {
           onFocus={(e) => (e.target.placeholder = '')}
           onBlur={(e) => (e.target.placeholder = 'USUÁRIO')}
           onChange={(e) => (user = e.target.value)}
+          onKeyUp={(e) => {
+            clearTimeout(timeout);
+            timeout = setTimeout(() => {
+              let checkusuario = usuarios.filter(valor => valor.usuario == document.getElementById('inputUsuario').value);
+              if (checkusuario.length == 1 && checkusuario.map(valor => valor.senha).pop() == '') {
+                document.getElementById("inputs_login_senha").style.visibility = 'hidden';
+                document.getElementById("inputs_login_senha").style.display = 'none';
+                // setcatchusuario(checkusuario.map(valor => valor.nome).pop());
+
+                setusuario(
+                  {
+                    id: checkusuario.map(valor => valor.id).pop(),
+                    nome: checkusuario.map(valor => valor.nome).pop(),
+                    contato: checkusuario.map(valor => valor.contato).pop(),
+                    tipo: checkusuario.map(valor => valor.tipo).pop(),
+                    usuario: checkusuario.map(valor => valor.usuario).pop(),
+                    upa_vn: checkusuario.map(valor => valor.upa_vn).pop(),
+                    upa_pampulha: checkusuario.map(valor => valor.upa_pampulha).pop(),
+                    upa_norte: checkusuario.map(valor => valor.upa_norte).pop(),
+                    upa_nordeste: checkusuario.map(valor => valor.upa_nordeste).pop(),
+                    upa_barreiro: checkusuario.map(valor => valor.upa_barreiro).pop(),
+                  }
+                );
+
+                setcadastrasenha(1);
+              }
+            }, 1000);
+          }}
           style={{
             marginTop: 10,
             marginBottom: 10,
