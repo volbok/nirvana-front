@@ -18,7 +18,9 @@ function Pacientes() {
 
   // context.
   const {
+    html,
     usuario,
+    unidade,
     pagina, setpagina,
     pacientes, setpacientes,
     settoast,
@@ -26,7 +28,6 @@ function Pacientes() {
     transportes, settransportes
   } = useContext(Context);
 
-  var html = 'https://api-nirvana-b3ffaf6a02bf.herokuapp.com/';
   // carregar lista de pacientes internados.
   const [arraypacientes, setarraypacientes] = useState(pacientes);
   const loadPacientes = () => {
@@ -177,7 +178,7 @@ function Pacientes() {
   var timeout = null;
   useEffect(() => {
     if (pagina == 1) {
-      loadTransportes();
+      // loadTransportes();
       loadPacientes();
       loadObj(paciente);
       window.onmousemove = function () {
@@ -260,7 +261,7 @@ function Pacientes() {
         }, 100);
       } else {
         setfilterpaciente(document.getElementById("inputPaciente").value.toUpperCase());
-        setarraypacientes(pacientes.filter(item => item.nome_paciente.toUpperCase().includes(searchpaciente) == true));
+        setarraypacientes(pacientes.filter(item => item.nome_paciente != null && item.nome_paciente.includes(searchpaciente) == true));
         document.getElementById("inputPaciente").value = searchpaciente;
         setTimeout(() => {
           document.getElementById("inputPaciente").focus();
@@ -371,7 +372,7 @@ function Pacientes() {
         </div>
 
         <div className="scroll" style={{ width: 'calc(100vw - 40px)', maxWidth: 'calc(100vw - 40px)', height: '73vh', display: arraypacientes.length > 0 ? 'flex' : 'none' }}>
-          {arraypacientes.filter(item => item.unidade_origem == usuario.unidade).sort((a, b) => moment(a.indicador_data_cadastro) < moment(b.indicador_data_cadastro) ? 1 : -1).map(item => (
+          {arraypacientes.filter(item => item.unidade_origem == unidade).sort((a, b) => moment(a.indicador_data_cadastro) < moment(b.indicador_data_cadastro) ? 1 : -1).map(item => (
             <div key={'pacientes' + item.id}>
               <div
                 className="row"

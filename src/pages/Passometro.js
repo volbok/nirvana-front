@@ -11,6 +11,7 @@ import power from '../images/power.svg';
 import deletar from '../images/deletar.svg';
 import editar from '../images/editar.svg';
 import novo from '../images/novo.svg';
+import people from '../images/people.svg';
 
 function Passometro() {
 
@@ -22,6 +23,7 @@ function Passometro() {
     pacientes, setpacientes,
     settoast,
     setdialogo,
+    unidade,
   } = useContext(Context);
 
   // carregar lista de pacientes internados.
@@ -39,7 +41,7 @@ function Passometro() {
     obj = {
       aih: null,
       procedimento: null,
-      unidade_origem: usuario.unidade,
+      unidade_origem: unidade,
       setor_origem: null,
       nome_paciente: null,
       nome_mae: null,
@@ -155,21 +157,13 @@ function Passometro() {
     console.log(obj);
     axios.post(html + 'update_paciente/' + id, obj).then(() => {
       console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
-      // atualização da lista de pacientes após a atualização do registro.
-      axios.get(html + 'list_pacientes').then((response) => {
-        setpacientes(response.data.rows);
-        setarraypacientes(response.data.rows);
-        setTimeout(() => {
-          // document.getElementById("detalhes: " + id).className = 'expand';
-          expand(item);
-        }, 1000);
-      });
     });
   }
 
   var timeout = null;
   useEffect(() => {
     if (pagina == 'PASSOMETRO') {
+      loadSetores();
       loadPacientes();
     }
 
@@ -186,6 +180,17 @@ function Passometro() {
           <img
             alt=""
             src={power}
+            style={{
+              margin: 10,
+              height: 30,
+              width: 30,
+            }}
+          ></img>
+        </div>
+        <div className='button' onClick={() => setpagina('USUARIOS')} title="CADASTRO DE USUÁRIOS">
+          <img
+            alt=""
+            src={people}
             style={{
               margin: 10,
               height: 30,
@@ -213,8 +218,8 @@ function Passometro() {
           document.getElementById("searchPaciente").focus();
         }, 100);
       } else {
-        setfilterpaciente(document.getElementById("searchPaciente").value.toUpperCase());
-        setarraypacientes(pacientes.filter(item => item.nome_paciente.toUpperCase().includes(searchpaciente) == true));
+        setfilterpaciente(searchpaciente);
+        setarraypacientes(pacientes.filter(item => item.nome_paciente != null && item.nome_paciente.includes(searchpaciente) == true));
         document.getElementById("searchPaciente").value = searchpaciente;
         setTimeout(() => {
           document.getElementById("searchPaciente").focus();
@@ -262,7 +267,7 @@ function Passometro() {
           <FilterPaciente></FilterPaciente>
         </div>
         <div style={{ marginTop: 100 }}>
-          <div className="text3">{'PASSÔMETRO - ' + usuario.unidade}</div>
+          <div className="text3">{'PASSÔMETRO - ' + unidade}</div>
           <PassometroAmarela></PassometroAmarela>
           <div className="text3" style={{ height: '70vh', display: arraypacientes.length > 0 ? 'none' : 'flex', color: 'rgb(82, 190, 128, 1)' }}>SEM PACIENTES INTERNADOS NA UNIDADE</div>
         </div>
@@ -289,13 +294,20 @@ function Passometro() {
   ]
   */
 
-  const arraypassometrosetor = [
-    "VER",
-    "UDC",
-    "OBS1",
-    "OBS2",
-    "OBS3",
-  ]
+  const [arraypassometrosetor, setarraypassometrosetor] = useState([]);
+  const loadSetores = () => {
+    if (unidade == 'UPA-VN') {
+      setarraypassometrosetor([
+        "SE",
+        "SE PED",
+        "UDC",
+        "OBS 1",
+        "OBS 2",
+        "OBS 3",
+        "OBS PED"
+      ]);
+    }
+  }
 
   function Seletor(obj, array, variavel) {
     let x = [];
@@ -309,8 +321,6 @@ function Passometro() {
               id={"opcao - " + item}
               style={{ width: 200 }}
               onClick={() => {
-                console.log(obj.id);
-                localStorage.setItem(variavel, item);
                 document.getElementById("camposelecao - " + variavel + " - " + obj.id).innerHTML = item;
                 var botoes = document.getElementById("lista - " + variavel + " - " + obj.id).getElementsByClassName("button-red");
                 for (var i = 0; i < botoes.length; i++) {
@@ -318,7 +328,14 @@ function Passometro() {
                 }
                 document.getElementById("opcao - " + item).className = "button-red";
                 document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none';
-                console.log('CAMPO SELEÇÃO:' + localStorage.getItem(variavel));
+                // alterando a cor do botão conforme o setor definido.
+                if (item == 'SE' || item == 'SE PED') {
+                  document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = '#ec7063';
+                } else if (item == 'UDC') {
+                  document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = '#f7dc6f';
+                } else {
+                  document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = '';
+                }
                 updatePaciente(obj, obj.id);
               }}
             >
@@ -338,7 +355,7 @@ function Passometro() {
           id={"camposelecao - " + variavel + " - " + obj.id}
           className='button'
           style={{
-            backgroundColor: item == 'VER' ? '#ec7063 ' : item == 'UDC' ? '#f7dc6f' : item == 'FAST' ? '#82e0aa' : '',
+            backgroundColor: (item == 'SE' || item == 'SE PED') ? '#ec7063' : item == 'UDC' ? '#f7dc6f' : '',
             minWidth: largura, width: largura, maxWidth: largura,
             height: 50, minHeight: 0, maxHeight: 50, margin: 2.5
           }}
@@ -377,8 +394,6 @@ function Passometro() {
           onKeyUp={() => {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
-              localStorage.setItem(variavel, document.getElementById("campotexto - " + variavel + " - " + obj.id).value);
-              console.log('CAMPO TEXTO:' + localStorage.getItem(variavel));
               updatePaciente(obj, obj.id);
             }, 1000);
           }}
@@ -406,8 +421,6 @@ function Passometro() {
           onKeyUp={() => {
             clearTimeout(timeout);
             timeout = setTimeout(() => {
-              localStorage.setItem(variavel, document.getElementById("campotexto - " + variavel + " - " + obj.id).value);
-              console.log('CAMPO TEXTO:' + localStorage.getItem(variavel));
               updatePaciente(obj, obj.id);
             }, 1000);
           }}
@@ -510,9 +523,9 @@ function Passometro() {
           {Header('LEITO', 80, 80, 0)}
           {Header('STATUS', 200, 200, 0)}
           {Header('NOME', 200, '100%', 1)}
-          {Header('SITUAÇÃO', 200, 400, 1)}
+          {Header('SITUAÇÃO', 200, '100%', 1)}
         </div>
-        {arraypacientes.sort((a, b) => moment(a.passometro_data, 'DD/MM/YYYY - HH:mm') < moment(b.passometro_data, 'DD/MM/YYYY - HH:mm') ? 1 : -1).filter(item => item.unidade_origem == usuario.unidade).sort((a, b) => moment(a.passometro_data) < moment(b.passometro_data) ? 1 : -1).map(item => (
+        {arraypacientes.sort((a, b) => moment(a.passometro_data, 'DD/MM/YYYY - HH:mm') < moment(b.passometro_data, 'DD/MM/YYYY - HH:mm') ? 1 : -1).filter(item => item.unidade_origem == unidade).sort((a, b) => moment(a.passometro_data) < moment(b.passometro_data) ? 1 : -1).map(item => (
           <div key={'pacientes' + item.id} style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center' }}>
             <div
               className="row"
@@ -538,7 +551,7 @@ function Passometro() {
               {CampoTexto(item, item.passometro_leito, 'LEITO', "passometro_leito", 80, 80, 0)}
               {CampoSelecao(item, item.status, arraystatus, "status", 200)}
               {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", 200, '100%', 1)}
-              {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", 200, 400, 1)}
+              {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", 200, '100%', 1)}
               <div style={{ position: 'absolute', bottom: -15, right: -5, display: 'flex', flexDirection: 'row' }}>
                 <div id={"toggle_details " + item.id}
                   className='button-green'
@@ -600,6 +613,7 @@ function Passometro() {
                 backgroundColor: '#d7dbdd',
                 marginTop: -5,
                 alignSelf: 'center',
+                width: 'calc(100vw - 60px)',
               }}
             >
               {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", 300, 'calc(100% - 20px)', 1)}
@@ -609,7 +623,6 @@ function Passometro() {
                 display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
                 justifyContent: 'flex-start',
                 alignContent: 'flex-start',
-                marginTop: 20,
               }}>
                 {CampoChecklist('NOTIFICAÇÃO SRAG', item, item.passometro_notificacao_srag, "passometro_notificacao_srag")}
                 {CampoChecklist('NOTIFICAÇÃO DENGUE', item, item.passometro_notificacao_dengue, "passometro_notificacao_dengue")}
