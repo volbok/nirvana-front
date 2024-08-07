@@ -71,7 +71,7 @@ function Usuarios() {
       contato: document.getElementById("campotexto - contato - " + id).value.toUpperCase(),
       tipo: document.getElementById("camposelecao - tipo - " + id).innerHTML,
       usuario: document.getElementById("campotexto - usuario - " + id).value.toUpperCase(),
-      senha: '',
+      senha: usuario.senha,
       upa_vn: document.getElementById("check - upa_vn - " + id).innerHTML,
       upa_pampulha: document.getElementById("check - upa_pampulha - " + id).innerHTML,
       upa_norte: document.getElementById("check - upa_norte - " + id).innerHTML,
