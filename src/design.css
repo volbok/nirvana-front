@@ -484,6 +484,14 @@ input[type="date"]::-webkit-calendar-picker-indicator {
   transition: 200ms ease-in-out;
 }
 
+.strong {
+  opacity: 1;
+}
+
+.weak {
+  opacity: 0.3;
+}
+
 .button:hover {
   background-color: var(--cor1hover);
   transition: 200ms ease-in-out;

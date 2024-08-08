@@ -5,6 +5,7 @@ import Context from './Context';
 import toast from '../functions/toast';
 // imagens.
 import pbh from '../images/pbh.svg';
+import refresh from '../images/refresh.svg';
 
 function Login() {
 
@@ -58,6 +59,7 @@ function Login() {
               contato: objeto.contato,
               tipo: objeto.tipo,
               usuario: objeto.usuario,
+              senha: objeto.senha,
               upa_vn: objeto.upa_vn,
               upa_pampulha: objeto.upa_pampulha,
               upa_norte: objeto.upa_norte,
@@ -171,7 +173,7 @@ function Login() {
         <div className='text2'>{'BEM-VINDO(A), ' + usuario.nome + '. POR FAVOR, CADASTRE SUA SENHA.'}</div>
         <input
           autoComplete="off"
-          placeholder="SENHA"
+          placeholder="NOVA SENHA"
           className="input"
           type="password"
           id="inputNovaSenha"
@@ -186,12 +188,12 @@ function Login() {
         ></input>
         <input
           autoComplete="off"
-          placeholder="SENHA"
+          placeholder="REPETIR SENHA"
           className="input"
           type="password"
           id="inputRepetirSenha"
           onFocus={(e) => (e.target.placeholder = '')}
-          onBlur={(e) => (e.target.placeholder = 'SENHA')}
+          onBlur={(e) => (e.target.placeholder = 'REPETIR SENHA')}
           style={{
             marginTop: 10,
             marginBottom: 10,
@@ -201,6 +203,7 @@ function Login() {
         ></input>
         <div className='button'
           onClick={() => registrarSenha()}
+          style={{ width: 100 }}
         >
           OK
         </div>
@@ -229,7 +232,7 @@ function Login() {
         ></img>
       </div>
       <div className="text3" style={{ margin: 20, fontSize: 20 }}>NIRVANA</div>
-      <div id="inputs_login_senha">
+      <div id="inputs_login_senha" style={{ display: 'flex', flexDirection: 'column' }}>
         <input
           autoComplete="off"
           placeholder="USUÁRIO"
@@ -293,6 +296,22 @@ function Login() {
       </div>
       <SeletorUnidade></SeletorUnidade>
       <CadastroDeSenha></CadastroDeSenha>
+      <div
+        style={{ marginTop: 10 }}
+        className='button-red'
+        onClick={() => {
+          window.location.reload();
+        }} title="ATUALIZAR">
+        <img
+          alt=""
+          src={refresh}
+          style={{
+            margin: 10,
+            height: 30,
+            width: 30,
+          }}
+        ></img>
+      </div>
     </div>
   );
 }

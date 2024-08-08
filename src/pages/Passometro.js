@@ -227,7 +227,6 @@ function Passometro() {
       }
     }, 1000);
   }
-
   // filtro de paciente por nome.
   function FilterPaciente() {
     return (
@@ -258,7 +257,6 @@ function Passometro() {
         style={{ position: 'relative', flexDirection: 'column', justifyContent: 'flex-start', width: '100%' }}
       >
         <div
-          // className='cor1'
           style={{
             display: 'flex', flexDirection: 'row', justifyContent: 'space-between',
             position: 'absolute', top: 0, right: 0, left: 0,
@@ -268,6 +266,7 @@ function Passometro() {
         </div>
         <div style={{ marginTop: 100 }}>
           <div className="text3">{'PASSÔMETRO - ' + unidade}</div>
+          <FilterSetores></FilterSetores>
           <PassometroAmarela></PassometroAmarela>
           <div className="text3" style={{ height: '70vh', display: arraypacientes.length > 0 ? 'none' : 'flex', color: 'rgb(82, 190, 128, 1)' }}>SEM PACIENTES INTERNADOS NA UNIDADE</div>
         </div>
@@ -285,28 +284,71 @@ function Passometro() {
     "ÓBITO",
   ]
 
-  /*
-  const arraytipoleito = [
-    "CTI",
-    "CTI - ISOLADO",
-    "ENFERMARIA",
-    "ENF - ISOLADO"
-  ]
-  */
-
   const [arraypassometrosetor, setarraypassometrosetor] = useState([]);
   const loadSetores = () => {
     if (unidade == 'UPA-VN') {
-      setarraypassometrosetor([
-        "SE",
-        "SE PED",
-        "UDC",
-        "OBS 1",
-        "OBS 2",
-        "OBS 3",
-        "OBS PED"
-      ]);
+      setarraypassometrosetor(
+        [
+          "SE",
+          "UDC",
+          "OBS 1",
+          "OBS 2",
+          "OBS 3",
+          "SE PED",
+          "OBS PED"
+        ]
+      );
     }
+  }
+  function FilterSetores() {
+    return (
+      <div id="lista de botões para filtro de unidades"
+        style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+        <div
+          id="botao todos os setores"
+          className='button weak'
+          style={{
+            width: 150,
+            height: 30, minHeight: 30, maxHeight: 30,
+          }}
+          onClick={() => {
+            setarraypacientes(pacientes);
+            setTimeout(() => {
+              var botoes = document.getElementById("lista de botões para filtro de unidades").getElementsByClassName("button strong");
+              for (var i = 0; i < botoes.length; i++) {
+                botoes.item(i).className = 'button weak';
+              }
+              document.getElementById("botao todos os setores").className = "button strong";
+            }, 100);
+          }}
+        >
+          {'TODOS'}
+        </div>
+        {arraypassometrosetor.map(item => (
+          <div className='button weak'
+            id={"botao de unidade " + item}
+            style={{
+              backgroundColor: (item == 'SE' || item == 'SE PED') ? '#ec7063' : item == 'UDC' ? '#f7dc6f' : '#85c1e9',
+              width: 150,
+              height: 30, minHeight: 30, maxHeight: 30,
+            }}
+            onClick={() => {
+              setarraypacientes(pacientes.filter(valor => valor.setor_origem == item));
+              setTimeout(() => {
+                var botoes = document.getElementById("lista de botões para filtro de unidades").getElementsByClassName("button strong");
+                for (var i = 0; i < botoes.length; i++) {
+                  botoes.item(i).className = 'button weak';
+                }
+                document.getElementById("botao de unidade " + item).className = "button strong";
+              }, 100);
+            }}
+          >
+            {item}
+          </div>
+        ))
+        }
+      </div >
+    )
   }
 
   function Seletor(obj, array, variavel) {
@@ -334,7 +376,7 @@ function Passometro() {
                 } else if (item == 'UDC') {
                   document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = '#f7dc6f';
                 } else {
-                  document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = '';
+                  document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = '#85c1e9';
                 }
                 updatePaciente(obj, obj.id);
               }}
@@ -355,7 +397,7 @@ function Passometro() {
           id={"camposelecao - " + variavel + " - " + obj.id}
           className='button'
           style={{
-            backgroundColor: (item == 'SE' || item == 'SE PED') ? '#ec7063' : item == 'UDC' ? '#f7dc6f' : '',
+            backgroundColor: (item == 'SE' || item == 'SE PED') ? '#ec7063' : item == 'UDC' ? '#f7dc6f' : '#85c1e9',
             minWidth: largura, width: largura, maxWidth: largura,
             height: 50, minHeight: 0, maxHeight: 50, margin: 2.5
           }}
