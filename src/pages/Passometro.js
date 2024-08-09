@@ -34,7 +34,7 @@ function Passometro() {
       setpacientes(response.data.rows);
       setarraypacientes(response.data.rows);
       console.log('## INFO ## \nLISTA DE PACIENTES INTERNADOS CARREGADA.\nTOTAL DE PACIENTES INTERNADOS: ' + response.data.rows.length);
-      if (valor != null){
+      if (valor != null) {
         setarraypacientes(valor);
       }
     })
@@ -313,7 +313,7 @@ function Passometro() {
   }
   function FilterSetores() {
     return (
-      <div id="lista de botões para filtro de unidades"
+      <div id="lista de botões para filtro de setores"
         style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
         <div
           id="botao todos os setores"
@@ -323,14 +323,19 @@ function Passometro() {
             height: 30, minHeight: 30, maxHeight: 30,
           }}
           onClick={() => {
-            loadPacientes(pacientes);
-            setTimeout(() => {
-              var botoes = document.getElementById("lista de botões para filtro de unidades").getElementsByClassName("button strong");
-              for (var i = 0; i < botoes.length; i++) {
-                botoes.item(i).className = 'button weak';
-              }
-              document.getElementById("botao todos os setores").className = "button strong";
-            }, 300);
+            axios.get(html + 'list_pacientes').then((response) => {
+              var x = [];
+              x = response.data.rows;
+              setpacientes(response.data.rows);
+              setarraypacientes(x.filter(item => item.status == 'AIH' || item.status == 'REAVALIAÇÃO'));
+              setTimeout(() => {
+                var botoes = document.getElementById("lista de botões para filtro de setores").getElementsByClassName("button strong");
+                for (var i = 0; i < botoes.length; i++) {
+                  botoes.item(i).className = 'button weak';
+                }
+                document.getElementById("botao todos os setores").className = "button strong";
+              }, 1000);
+            })
           }}
         >
           {'TODOS'}
@@ -345,20 +350,24 @@ function Passometro() {
               height: 30, minHeight: 30, maxHeight: 30,
             }}
             onClick={() => {
-              loadPacientes(pacientes.filter(valor => valor.setor_origem == item));
-              setTimeout(() => {
-                var botoes = document.getElementById("lista de botões para filtro de unidades").getElementsByClassName("button strong");
-                for (var i = 0; i < botoes.length; i++) {
-                  botoes.item(i).className = 'button weak';
-                }
-                document.getElementById("botao de unidade " + item).className = "button strong";
-              }, 300);
+              axios.get(html + 'list_pacientes').then((response) => {
+                var x = [];
+                x = response.data.rows;
+                setpacientes(response.data.rows);
+                setarraypacientes(x.filter(valor => valor.setor_origem == item && (valor.status == 'AIH' || valor.status == 'REAVALIAÇÃO')));
+                setTimeout(() => {
+                  var botoes = document.getElementById("lista de botões para filtro de setores").getElementsByClassName("button strong");
+                  for (var i = 0; i < botoes.length; i++) {
+                    botoes.item(i).className = 'button weak';
+                  }
+                  document.getElementById("botao todos os setores").className = "button strong";
+                }, 1000);
+              })
             }}
           >
             {item}
           </div>
-        ))
-        }
+        ))}
       </div >
     )
   }
@@ -382,10 +391,6 @@ function Passometro() {
                 }
                 document.getElementById("opcao - " + item).className = "button-red";
                 document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none';
-                // alterando a cor do botão conforme o setor definido.
-
-                // item == 'SE' || item == 'SE PED') ? '#ec7063' : (item == 'UDC' || item == 'REAVALIAÇÃO') ? '#f7dc6f' : item == 'AIH' ? '#85c1e9' : ''
-
                 if (item == 'SE' || item == 'SE PED') {
                   document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = '#ec7063';
                 } else if (item == 'UDC' || item == 'REAVALIAÇÃO') {
@@ -397,7 +402,7 @@ function Passometro() {
                 } else {
                   document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = '';
                 }
-                updatePaciente(obj, obj.id);
+                updatePaciente(obj, obj.id,);
               }}
             >
               {item}
@@ -557,7 +562,6 @@ function Passometro() {
                 style={{
                   display: 'flex',
                   justifyContent: 'center', flexWrap: 'nowrap',
-                  position: 'relative',
                 }}
               >
                 <div className="button" style={{
@@ -565,6 +569,7 @@ function Passometro() {
                   height: 50, minHeight: 50, maxHeight: 50,
                   margin: 2.5,
                   display: 'flex', flexDirection: 'column',
+                  position: 'relative',
                 }}>
                   <div>
                     {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('DD/MM/YYYY')}
@@ -572,13 +577,6 @@ function Passometro() {
                   <div>
                     {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('HH:mm')}
                   </div>
-                </div>
-                {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
-                {CampoTexto(item, item.passometro_leito, 'LEITO', "passometro_leito", '8vw', '8vw', '8vw', 40)}
-                {CampoSelecao(item, item.status, arraystatus, "status", '10vw')}
-                {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '25vw', '25vw', '25vw', 40)}
-                {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '15vw', '15vw', '15vw', 40)}
-                <div style={{ display: 'flex', flexDirection: 'row', width: 95 }}>
                   <img
                     id={'logo alerta ' + item.id}
                     className='show'
@@ -587,13 +585,20 @@ function Passometro() {
                     style={{
                       display: alertalaboratorio == true || alertarx == true || alertaaih == true ? 'flex' : 'none',
                       position: 'absolute',
-                      left: 5, bottom: -10,
+                      left: -10, bottom: -20,
                       margin: 0, marginTop: 5,
                       height: 50,
                       width: 50,
                     }}
                   >
                   </img>
+                </div>
+                {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
+                {CampoTexto(item, item.passometro_leito, 'LEITO', "passometro_leito", '8vw', '8vw', '8vw', 40)}
+                {CampoSelecao(item, item.status, arraystatus, "status", '10vw')}
+                {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '25vw', '25vw', '25vw', 40)}
+                {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '15vw', '15vw', '15vw', 40)}
+                <div style={{ display: 'flex', flexDirection: 'row', width: 95 }}>
                   <div id={"toggle_details " + item.id}
                     className='button-green'
                     title={'EXIBIR/OCULTAR DETALHES'}
@@ -781,7 +786,7 @@ function Passometro() {
             onClick={() => {
               if (valor != 'ENCERRADOS') {
                 loadPacientes(pacientes.filter(item => item.status == valor));
-                
+
               } else {
                 loadPacientes(pacientes.filter(item => item.status == 'ALTA' || item.status.includes('TRANSFERÊNCIA') || item.status == 'EVASÃO' || item.status == 'ÓBITO'));
               }
