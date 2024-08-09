@@ -421,7 +421,7 @@ function Passometro() {
           id={"camposelecao - " + variavel + " - " + obj.id}
           className='button'
           style={{
-            backgroundColor: (item == 'SE' || item == 'SE PED') ? '#ec7063' : (item == 'UDC' || item == 'REAVALIAÇÃO') ? '#f7dc6f' : item == 'AIH' ? '#85c1e9' : (item == 'ALTA' || item.includes('TRANSFERÊNCIA')) ? '#52be80' : '',
+            backgroundColor: (item == 'SE' || item == 'SE PED') ? '#ec7063' : (item == 'UDC' || item == 'REAVALIAÇÃO') ? '#f7dc6f' : (item == 'AIH') ? '#85c1e9' : (item == 'ALTA' || item.includes('TRANSFERÊNCIA')) ? '#52be80' : '',
             minWidth: largura, width: largura, maxWidth: largura,
             minHeight: 40, height: 40, maxHeight: 40,
             padding: 5, margin: 2.5,
@@ -797,7 +797,7 @@ function Passometro() {
               valor != 'ENCERRADOS' ?
                 pacientes.filter(item => item.status == valor).length
                 :
-                pacientes.filter(item => item.status != 'AIH' || item.status != 'REAVALIAÇÃO').length
+                pacientes.filter(item => item.status != 'AIH' && item.status != 'REAVALIAÇÃO').length
             }</div>
           </div>
         ))}
