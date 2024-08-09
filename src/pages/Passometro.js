@@ -334,7 +334,7 @@ function Passometro() {
                   botoes.item(i).className = 'button weak';
                 }
                 document.getElementById("botao todos os setores").className = "button strong";
-              }, 1000);
+              }, 100);
             })
           }}
         >
@@ -360,8 +360,8 @@ function Passometro() {
                   for (var i = 0; i < botoes.length; i++) {
                     botoes.item(i).className = 'button weak';
                   }
-                  document.getElementById("botao todos os setores").className = "button strong";
-                }, 1000);
+                  document.getElementById("botao de unidade " + item).className = "button strong";
+                }, 100);
               })
             }}
           >
