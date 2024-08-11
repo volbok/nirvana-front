@@ -14,7 +14,7 @@ import novo from '../images/novo.svg';
 import people from '../images/people.svg';
 import imprimir from '../images/imprimir.svg';
 import alerta from '../images/alerta.svg';
-import pbh from '../images/pbh.svg';
+import pbh from '../images/logo_pbh.png';
 
 function Passometro() {
 
@@ -900,8 +900,10 @@ function Passometro() {
     a.document.write('<html>');
     a.document.write(printdocument);
     a.document.write('</html>');
-    a.print();
-    a.close();
+    setTimeout(() => {
+      a.print();
+      a.close();
+    }, 300);
   }
   function PrintDocumento() {
     return (
@@ -918,17 +920,16 @@ function Passometro() {
             <tr style={{ width: '100%' }}>
               <td style={{ width: '100%' }}>
                 <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignSelf: 'center' }}>
-                  <div>
-                    <img
-                      alt=""
-                      src={pbh}
-                      style={{
-                        margin: 10,
-                        height: 50,
-                      }}
-                    >
-                    </img>
-                  </div>
+                  <img
+                    alt=""
+                    src={pbh}
+                    style={{
+                      margin: 10,
+                      height: 50,
+                      marginRight: 50
+                    }}
+                  >
+                  </img>
                   <div
                     style={{
                       fontFamily: 'Helvetica',
@@ -937,7 +938,6 @@ function Passometro() {
                       alignSelf: 'center',
                       fontWeight: 'bolder',
                       textDecoration: 'underline',
-                      marginLeft: 50,
                     }}>
                     {'PASSÔMETRO: ' + unidade + ' - ' + setor}
                   </div>
