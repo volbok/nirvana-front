@@ -5,7 +5,7 @@
   --cor3: #d7dbdd;
   --cor4: rgb(229, 126, 52, 1);
   --cor4hover: rgb(229, 126, 52, 1);
-  --cor5: rgb(82, 190, 128, 1);
+  --cor5: #52be80;
   --cor5hover: rgb(82, 190, 128, 1);
   --cor6: rgb(231, 76, 60, 1);
   --cor6hover: rgb(231, 76, 60, 1);
@@ -15,8 +15,16 @@
   --placeholder: rgb(97, 99, 110, 0.6);
 }
 
+.print {
+  display: none !important
+}
+
 /* OCULTANDO CABEÇALHO E RODAPÉ PARA IMPRESSÃO */
 @media print {
+
+  .print {
+    display: flex !important
+  }
 
   #Header,
   #Footer {

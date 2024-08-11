@@ -12,7 +12,9 @@ import deletar from '../images/deletar.svg';
 import editar from '../images/editar.svg';
 import novo from '../images/novo.svg';
 import people from '../images/people.svg';
+import imprimir from '../images/imprimir.svg';
 import alerta from '../images/alerta.svg';
+import pbh from '../images/pbh.svg';
 
 function Passometro() {
 
@@ -46,7 +48,7 @@ function Passometro() {
       aih: null,
       procedimento: null,
       unidade_origem: unidade,
-      setor_origem: null,
+      setor_origem: setor,
       nome_paciente: null,
       nome_mae: null,
       dn_paciente: null,
@@ -87,13 +89,16 @@ function Passometro() {
       passometro_checklist_prescricao: 0,
       passometro_checklist_laboratorio: 0,
       passometro_checklist_rx: 0,
-      passometro_setor: 'UDC',
+      passometro_setor: setor,
       passometro_data: moment().format('DD/MM/YYYY - HH:mm')
     }
+    console.log(obj);
     axios.post(html + 'insert_paciente/', obj).then(() => {
       axios.get(html + 'list_pacientes').then((response) => {
-        setpacientes(response.data.rows);
-        setarraypacientes(response.data.rows);
+        var x = [];
+        x = response.data.rows;
+        setpacientes(x);
+        setarraypacientes(x.filter(valor => valor.setor_origem == setor));
         toast(settoast, 'REGISTRO INSERIDO COM SUCESSO', 'rgb(82, 190, 128, 1)', 3000);
       });
     });
@@ -202,6 +207,17 @@ function Passometro() {
             }}
           ></img>
         </div>
+        <div className='button' onClick={() => printDiv()} title="IMPRIMIR PASSÔMETRO">
+          <img
+            alt=""
+            src={imprimir}
+            style={{
+              margin: 10,
+              height: 30,
+              width: 30,
+            }}
+          ></img>
+        </div>
         <div className='text1'>{usuario.nome}</div>
       </div>
     )
@@ -283,7 +299,7 @@ function Passometro() {
       </div>
     )
     // eslint-disable-next-line
-  }, [arraypacientes]);
+  }, [arraypacientes, setor]);
 
   const arraystatus = [
     "REAVALIAÇÃO",
@@ -311,6 +327,8 @@ function Passometro() {
       );
     }
   }
+
+  const [setor, setsetor] = useState('UDC');
   function FilterSetores() {
     return (
       <div id="lista de botões para filtro de setores"
@@ -328,6 +346,7 @@ function Passometro() {
               x = response.data.rows;
               setpacientes(response.data.rows);
               setarraypacientes(x.filter(item => item.status == 'AIH' || item.status == 'REAVALIAÇÃO'));
+              setsetor('UDC');
               setTimeout(() => {
                 var botoes = document.getElementById("lista de botões para filtro de setores").getElementsByClassName("button strong");
                 for (var i = 0; i < botoes.length; i++) {
@@ -355,6 +374,8 @@ function Passometro() {
                 x = response.data.rows;
                 setpacientes(response.data.rows);
                 setarraypacientes(x.filter(valor => valor.setor_origem == item && (valor.status == 'AIH' || valor.status == 'REAVALIAÇÃO')));
+                setsetor(item);
+                console.log('SETOR: ' + item);
                 setTimeout(() => {
                   var botoes = document.getElementById("lista de botões para filtro de setores").getElementsByClassName("button strong");
                   for (var i = 0; i < botoes.length; i++) {
@@ -540,10 +561,10 @@ function Passometro() {
         >
           <div style={{ width: 100 }}></div>
           {Header('SETOR', '10vw', '10vw', '10vw')}
-          {Header('LEITO', '8vw', '8vw', '8vw')}
+          {Header('LEITO', 75, 75, 75)}
           {Header('STATUS', '10vw', '10vw', '10vw')}
           {Header('NOME', '25vw', '25vw', '25vw')}
-          {Header('SITUAÇÃO', '15vw', '15vw', '15vw')}
+          {Header('SITUAÇÃO', '20vw', '20vw', '20vw')}
           <div style={{ width: 80 }}></div>
         </div>
         {arraypacientes.sort((a, b) => moment(a.passometro_data, 'DD/MM/YYYY - HH:mm') < moment(b.passometro_data, 'DD/MM/YYYY - HH:mm') ? 1 : -1).filter(item => item.unidade_origem == unidade).sort((a, b) => moment(a.passometro_data) < moment(b.passometro_data) ? 1 : -1).map(item => {
@@ -594,10 +615,10 @@ function Passometro() {
                   </img>
                 </div>
                 {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
-                {CampoTexto(item, item.passometro_leito, 'LEITO', "passometro_leito", '8vw', '8vw', '8vw', 40)}
+                {CampoTexto(item, item.passometro_leito, 'LEITO', "passometro_leito", 75, 75, 75, 40)}
                 {CampoSelecao(item, item.status, arraystatus, "status", '10vw')}
                 {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '25vw', '25vw', '25vw', 40)}
-                {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '15vw', '15vw', '15vw', 40)}
+                {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '20vw', '20vw', '20vw', 40)}
                 <div style={{ display: 'flex', flexDirection: 'row', width: 95 }}>
                   <div id={"toggle_details " + item.id}
                     className='button-green'
@@ -777,7 +798,9 @@ function Passometro() {
     return (
       <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
         {arrayresumo.map(valor => (
-          <div className='button'
+          <div
+            className='button'
+            key={'resumo ' + valor}
             style={{
               width: 100, height: 100,
               display: 'flex', flexDirection: 'column', justifyContent: 'center',
@@ -805,6 +828,155 @@ function Passometro() {
     )
   }
 
+  const pdfHeaders = (item, largura) => {
+    return (
+      <div
+        style={{
+          padding: 5,
+          borderColor: 'black', borderWidth: 2.5, borderStyle: 'solid',
+          width: largura,
+          margin: 2.5,
+        }}>
+        {item}
+      </div>
+    )
+  }
+  const pdfItens = (item, largura) => {
+    return (
+      <div
+        style={{
+          padding: 5,
+          borderColor: 'transparent', borderWidth: 2.5, borderStyle: 'solid',
+          width: largura,
+          margin: 2.5,
+        }}>
+        {item}
+      </div>
+    )
+  }
+  function Conteudo() {
+    let array = [];
+    pacientes.filter(item => item.passometro_setor == setor).map(item => array.push(item));
+    return (
+      <div id="PDF passometro"
+        style={{
+          display: 'flex',
+          flexDirection: 'column',
+          justifyContent: 'center',
+          alignSelf: 'center',
+          width: 'calc(100vw - 20px)',
+          fontFamily: 'Helvetica',
+          breakInside: 'auto',
+          whiteSpace: 'pre-wrap',
+        }}>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          {pdfHeaders('SETOR', 75)}
+          {pdfHeaders('LEITO', 50)}
+          {pdfHeaders('NOME', 400)}
+          {pdfHeaders('SITUAÇÃO', 400)}
+          {pdfHeaders('STATUS', 200)}
+        </div>
+        {array.filter(item => item.passometro_setor == setor).map(item => (
+          <div key={'pacientes_pdf ' + item.id}
+            style={{
+              display: 'flex', flexDirection: 'row', justifyContent: 'center',
+              backgroundColor: array.indexOf(item) % 2 == 0 ? '#f0f3f4' : ''
+            }}>
+            {pdfItens(item.passometro_setor, 75)}
+            {pdfItens(item.passometro_leito, 50)}
+            {pdfItens(item.nome_paciente, 400)}
+            {pdfItens(item.passometro_situacao, 400)}
+            {pdfItens(item.status, 200)}
+          </div>
+        ))}
+      </div>
+    )
+  }
+
+  function printDiv() {
+    console.log('PREPARANDO DOCUMENTO PARA IMPRESSÃO');
+    let printdocument = document.getElementById("IMPRESSÃO - DOCUMENTO").innerHTML;
+    var a = window.open();
+    a.document.write('<html>');
+    a.document.write(printdocument);
+    a.document.write('</html>');
+    a.print();
+    a.close();
+  }
+  function PrintDocumento() {
+    return (
+      <div id="IMPRESSÃO - DOCUMENTO"
+        className="print"
+        style={{
+          fontFamily: 'Helvetica',
+          breakInside: 'auto',
+          whiteSpace: 'pre-wrap',
+        }}
+      >
+        <table style={{ width: '100%' }}>
+          <thead style={{ width: '100%' }}>
+            <tr style={{ width: '100%' }}>
+              <td style={{ width: '100%' }}>
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignSelf: 'center' }}>
+                  <div>
+                    <img
+                      alt=""
+                      src={pbh}
+                      style={{
+                        margin: 10,
+                        height: 50,
+                      }}
+                    >
+                    </img>
+                  </div>
+                  <div
+                    style={{
+                      fontFamily: 'Helvetica',
+                      breakInside: 'auto',
+                      whiteSpace: 'pre-wrap',
+                      alignSelf: 'center',
+                      fontWeight: 'bolder',
+                      textDecoration: 'underline',
+                      marginLeft: 50,
+                    }}>
+                    {'PASSÔMETRO: ' + unidade + ' - ' + setor}
+                  </div>
+                </div>
+              </td>
+            </tr>
+          </thead>
+          <tbody style={{ width: '100%' }}>
+            <tr style={{ width: '100%' }}>
+              <td style={{ width: '100%' }}>
+                <div id="campos"
+                  style={{
+                    display: 'flex', flexDirection: 'column',
+                    breakInside: 'auto', alignSelf: 'center', width: '100%'
+                  }}>
+                  <Conteudo></Conteudo>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          <tfoot style={{ width: '100%' }}>
+            <tr style={{ width: '100%' }}>
+              <td style={{ width: '100%' }}>
+                <div
+                  style={{
+                    fontFamily: 'Helvetica',
+                    breakInside: 'auto',
+                    whiteSpace: 'pre-wrap',
+                  }}>
+                  {moment().format('DD/MM/YYYY')}
+                </div>
+              </td>
+            </tr>
+          </tfoot>
+        </table>
+      </div >
+    )
+  };
+
   return (
     <div
       className='scroll'
@@ -818,8 +990,9 @@ function Passometro() {
         borderRadius: 0,
       }}>
       <ListaDePacientes></ListaDePacientes>
+      <PrintDocumento></PrintDocumento>
     </div>
   );
 }
 
-export default Passometro;
+export default Passometro
