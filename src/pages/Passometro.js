@@ -14,7 +14,9 @@ import novo from '../images/novo.svg';
 import people from '../images/people.svg';
 import imprimir from '../images/imprimir.svg';
 import alerta from '../images/alerta.svg';
-import pbh from '../images/logo_pbh.png';
+import pbh from '../images/pbh.svg';
+import modo_edicao from '../images/passometro_edicao.svg';
+import modo_visualizacao from '../images/passometro_visualizacao.svg';
 
 function Passometro() {
 
@@ -170,10 +172,13 @@ function Passometro() {
   }
 
   var timeout = null;
+  var interval = null;
   useEffect(() => {
     if (pagina == 'PASSOMETRO') {
+      clearInterval(interval);
       loadSetores();
       loadPacientes(null);
+      changePages(6, 5000);
     }
 
     // eslint-disable-next-line
@@ -219,6 +224,38 @@ function Passometro() {
           ></img>
         </div>
         <div className='text1'>{usuario.nome}</div>
+      </div>
+    )
+  }
+
+  function ModoButton() {
+    return (
+      <div
+        className='button'
+        onClick={() => {
+          if (modo == 1) {
+            setmodo(0);
+          } else {
+            setmodo(1);
+          }
+        }}
+        style={{
+          display: 'flex',
+          width: 50, maxWidth: 50,
+          height: 50, maxHeight: 50,
+          alignSelf: 'flex-end',
+          backgroundColor: 'white',
+        }}
+      >
+        <img
+          alt=""
+          src={modo == 0 ? modo_edicao : modo_visualizacao}
+          style={{
+            margin: 10,
+            height: 60,
+            width: 60,
+          }}
+        ></img>
       </div>
     )
   }
@@ -977,6 +1014,119 @@ function Passometro() {
     )
   };
 
+  // modo de exibição (passômetro x tela de exibição)
+  const [modo, setmodo] = useState(0);
+
+
+  // alternar páginas.
+  const [indexpacientes, setindexpacientes] = useState([]);
+
+  let localpage = 1;
+  const changePages = (quantidade, intervalo) => {
+    axios.get(html + 'list_pacientes').then((response) => {
+      var x = response.data.rows;
+      setpacientes(x);
+      // let totalpacientes = x.filter(item => item.setor_origem == 'UDC').length;
+      let totalpacientes = x.length;
+      console.log('TOTAL DE PACIENTES: ' + totalpacientes);
+      let totalpaginas = Math.ceil(totalpacientes / quantidade);
+      console.log('TOTAL DE PÁGINAS: ' + totalpaginas);
+      let inicio = 0;
+      let final = 0;
+      clearInterval(interval);
+      interval = setInterval(() => {
+        if (localpage == 1) {
+          inicio = 0;
+          final = quantidade;
+          console.log('INICIO: ' + inicio);
+          console.log('FINAL: ' + final);
+          setindexpacientes(x.slice(inicio, final));
+          console.log(x.slice(inicio, final).length);
+          localpage = localpage + 1;
+        } else if (localpage > 1 && localpage <= totalpaginas) {
+          inicio = inicio + quantidade;
+          final = inicio + quantidade;
+          console.log('INICIO: ' + inicio);
+          console.log('FINAL: ' + final);
+          setindexpacientes(x.slice(inicio, final));
+          console.log(x.slice(inicio, final).length);
+          localpage = localpage + 1;
+        } else if (localpage > totalpaginas) {
+          localpage = 1;
+        }
+      }, intervalo);
+    })
+  }
+
+  function Tela() {
+    return (
+      <div
+        style={{
+          display: 'flex',
+          flexDirection: 'column', justifyContent: 'center',
+          alignSelf: 'center', alignContent: 'center',
+          width: '100%',
+        }}>
+        <div
+          id="header - passômetro"
+          className="row"
+          style={{
+            display: 'flex',
+            justifyContent: 'center', flexWrap: 'nowrap',
+            marginBottom: 0, paddingBottom: 0,
+          }}
+        >
+          <div style={{ width: 100 }}></div>
+          {Header('SETOR', '10vw', '10vw', '10vw')}
+          {Header('LEITO', 75, 75, 75)}
+          {Header('NOME', '30vw', '30vw', '30vw')}
+          {Header('STATUS', '30vw', '30vw', '30vw')}
+          <div style={{ width: 80 }}></div>
+        </div>
+        {indexpacientes
+          .map(item => {
+            return (
+              <div key={'pacientes' + item.id}
+                style={{
+                  display: 'flex',
+                  flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
+                }} >
+                <div
+                  className="row"
+                  style={{
+                    display: 'flex',
+                    justifyContent: 'center', flexWrap: 'nowrap',
+                  }}
+                >
+                  <div
+                    className="button"
+                    style={{
+                      minWidth: 100, width: 100, maxWidth: 100,
+                      height: 50, minHeight: 50, maxHeight: 50,
+                      margin: 2.5,
+                      display: 'flex', flexDirection: 'column',
+                      position: 'relative',
+                    }}>
+                    <div>
+                      {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('DD/MM/YYYY')}
+                    </div>
+                    <div>
+                      {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('HH:mm')}
+                    </div>
+                  </div>
+                  {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
+                  {CampoTexto(item, item.passometro_leito, 'LEITO', "passometro_leito", 75, 75, 75, 40)}
+                  {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '30vw', '30vw', '30vw', 40)}
+                  {CampoSelecao(item, item.status, arraystatus, "status", '30vw')}
+                </div>
+              </div>
+            )
+          })
+        }
+      </div >
+    )
+  }
+
   return (
     <div
       className='scroll'
@@ -988,9 +1138,26 @@ function Passometro() {
         borderStyle: 'solid', borderColor: '#f2f2f2',
         borderWidth: 5,
         borderRadius: 0,
+        position: 'relative',
       }}>
-      <ListaDePacientes></ListaDePacientes>
-      <PrintDocumento></PrintDocumento>
+      <ModoButton></ModoButton>
+      <div id="passômetro"
+        style={{
+          display: modo == 0 ? 'flex' : 'none',
+          visibility: modo == 0 ? 'visible' : 'hidden',
+          flexDirection: 'column', justifyContent: 'center',
+        }}>
+        <ListaDePacientes></ListaDePacientes>
+        <PrintDocumento></PrintDocumento>
+      </div>
+      <div id="telas de exibição"
+        style={{
+          display: modo == 1 ? 'flex' : 'none',
+          visibility: modo == 1 ? 'visible' : 'hidden',
+          flexDirection: 'column', justifyContent: 'center',
+        }}>
+        <Tela></Tela>
+      </div>
     </div>
   );
 }
