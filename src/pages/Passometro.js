@@ -92,7 +92,9 @@ function Passometro() {
       passometro_checklist_laboratorio: 0,
       passometro_checklist_rx: 0,
       passometro_setor: setor,
-      passometro_data: moment().format('DD/MM/YYYY - HH:mm')
+      passometro_data: moment().format('DD/MM/YYYY - HH:mm'),
+      passometro_vulnerabilidade: 0,
+      passometro_cersam: 0,
     }
     console.log(obj);
     axios.post(html + 'insert_paciente/', obj).then(() => {
@@ -163,7 +165,9 @@ function Passometro() {
       passometro_checklist_laboratorio: document.getElementById("check - passometro_checklist_laboratorio - " + id).innerHTML,
       passometro_checklist_rx: document.getElementById("check - passometro_checklist_rx - " + id).innerHTML,
       passometro_setor: document.getElementById("camposelecao - passometro_setor - " + id).innerHTML,
-      passometro_data: item.passometro_data
+      passometro_data: item.passometro_data,
+      passometro_vulnerabilidade: document.getElementById("check - passometro_vulnerabilidade - " + id).innerHTML,
+      passometro_cersam: document.getElementById("check - passometro_cersam - " + id).innerHTML,
     }
     console.log(obj);
     axios.post(html + 'update_paciente/' + id, obj).then(() => {
@@ -342,8 +346,11 @@ function Passometro() {
     "REAVALIAÇÃO",
     "AIH",
     "ALTA",
-    "TRANSFERÊNCIA AIH",
-    "TRANSFERÊNCIA CONTATO DIRETO",
+    "TRANSFERÊNCIA - AIH",
+    "TRANSFERÊNCIA - CONTATO DIRETO",
+    "TRANSFERÊNCIA - CERSAM",
+    "TRANSFERÊNCIA - CONVÊNIOS",
+    "EMAD",
     "EVASÃO",
     "ÓBITO",
   ]
@@ -725,19 +732,46 @@ function Passometro() {
                 {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", 300, 'calc(100% - 20px)', 'calc(100% - 20px)', 100)}
                 {CampoTexto(item, item.passometro_recomendacao, "RECOMENDAÇÃO", "passometro_recomendacao", 300, 'calc(100% - 20px)', 'calc(100% - 20px)', 100)}
                 <div style={{
-                  display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                  display: 'flex', flexDirection: 'column',
                   justifyContent: 'flex-start',
                   alignContent: 'flex-start',
                   marginTop: 10,
                 }}>
-                  {CampoChecklist('NOTIFICAÇÃO SRAG', item, item.passometro_notificacao_srag, "passometro_notificacao_srag")}
-                  {CampoChecklist('NOTIFICAÇÃO DENGUE', item, item.passometro_notificacao_dengue, "passometro_notificacao_dengue")}
-                  {CampoChecklist('TESTE COVID', item, item.passometro_checklist_teste_covid, "passometro_checklist_teste_covid")}
-                  {CampoChecklist('TESTE DENGUE', item, item.passometro_checklist_teste_dengue, "passometro_checklist_teste_dengue")}
-                  {CampoChecklist('LABORATÓRIO', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio")}
-                  {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx")}
-                  {CampoChecklist('EVOLUÇÃO', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao")}
-                  {CampoChecklist('PRESCRIÇÃO', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao")}
+                  <div
+                    style={{
+                      display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                      justifyContent: 'flex-start',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {CampoChecklist('NOTIFICAÇÃO SRAG', item, item.passometro_notificacao_srag, "passometro_notificacao_srag")}
+                    {CampoChecklist('NOTIFICAÇÃO DENGUE', item, item.passometro_notificacao_dengue, "passometro_notificacao_dengue")}
+                    {CampoChecklist('TESTE COVID', item, item.passometro_checklist_teste_covid, "passometro_checklist_teste_covid")}
+                    {CampoChecklist('TESTE DENGUE', item, item.passometro_checklist_teste_dengue, "passometro_checklist_teste_dengue")}
+                  </div>
+                  <div
+                    style={{
+                      display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                      justifyContent: 'flex-start',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {CampoChecklist('LABORATÓRIO', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio")}
+                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx")}
+                    {CampoChecklist('EVOLUÇÃO', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao")}
+                    {CampoChecklist('PRESCRIÇÃO', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao")}
+                  </div>
+                  <div className='text1' style={{ marginTop: 10, marginLeft: 0, alignSelf: 'flex-start' }}>SOCIAL:</div>
+                  <div
+                    style={{
+                      display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                      justifyContent: 'flex-start',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {CampoChecklist('VULNERABILIDADE SOCIAL', item, item.passometro_vulnerabilidade, "passometro_vulnerabilidade")}
+                    {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam")}
+                  </div>
                 </div>
               </div>
             </div>
