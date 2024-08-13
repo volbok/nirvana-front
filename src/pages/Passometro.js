@@ -442,7 +442,7 @@ function Passometro() {
     x = array;
     return (
       <div className='fundo' id={"lista - " + variavel + " - " + obj.id} style={{ display: 'none', zIndex: 5 }}>
-        <div className='janela'>
+        <div className='janela scroll' style={{ height: '80vh' }}>
           {x.map(item => (
             <div className="button"
               key={'seletor ' + item}
