@@ -669,7 +669,7 @@ function Passometro() {
           {Header('SITUAÇÃO', '20vw', '20vw', '20vw')}
           <div style={{ width: 80 }}></div>
         </div>
-        {arraypacientes.filter(item => item.unidade_origem == unidade).sort((a, b) => parseInt(a.leito) < parseInt(b.leito) ? 1 : -1).map(item => {
+        {arraypacientes.filter(item => item.unidade_origem == unidade).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => {
           let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
           let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
           let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
