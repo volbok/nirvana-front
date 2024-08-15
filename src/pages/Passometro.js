@@ -77,7 +77,7 @@ function Passometro() {
       contato_nome: null,
       contato_telefone: null,
       leito_destino: null,
-      passometro_leito: '',
+      passometro_leito: null,
       passometro_situacao: '',
       passometro_breve_historico: '',
       passometro_avaliacao: '',
@@ -95,14 +95,14 @@ function Passometro() {
       passometro_data: moment().format('DD/MM/YYYY - HH:mm'),
       passometro_vulnerabilidade: 0,
       passometro_cersam: 0,
+      tag: 'TAG',
     }
-    console.log(obj);
     axios.post(html + 'insert_paciente/', obj).then(() => {
       axios.get(html + 'list_pacientes').then((response) => {
         var x = [];
         x = response.data.rows;
         setpacientes(x);
-        setarraypacientes(x.filter(valor => valor.setor_origem == setor && (valor.status == status)));
+        setarraypacientes(x.filter(valor => valor.setor_origem == setor && valor.status == status));
         toast(settoast, 'REGISTRO INSERIDO COM SUCESSO', 'rgb(82, 190, 128, 1)', 3000);
       });
     });
@@ -173,6 +173,7 @@ function Passometro() {
       passometro_data: item.passometro_data,
       passometro_vulnerabilidade: document.getElementById("check - passometro_vulnerabilidade - " + id).innerHTML,
       passometro_cersam: document.getElementById("check - passometro_cersam - " + id).innerHTML,
+      tag: document.getElementById("camposelecao - tag - " + id).innerHTML,
     }
     axios.post(html + 'update_paciente/' + id, obj).then(() => {
       console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
@@ -185,8 +186,8 @@ function Passometro() {
     if (pagina == 'PASSOMETRO') {
       clearInterval(interval);
       loadSetores();
-      loadPacientes(pacientes.filter(item => item.status == status && item.setor_origem == setor));
-      changePages(6, 5000);
+      loadPacientes();
+      changePages(10, 5000, 'UDC');
     }
 
     // eslint-disable-next-line
@@ -209,7 +210,9 @@ function Passometro() {
             }}
           ></img>
         </div>
-        <div className='button' onClick={() => setpagina('USUARIOS')} title="CADASTRO DE USUÁRIOS">
+        <div className='button' onClick={() => setpagina('USUARIOS')} title="CADASTRO DE USUÁRIOS"
+          style={{ position: 'relative' }}
+        >
           <img
             alt=""
             src={people}
@@ -219,6 +222,24 @@ function Passometro() {
               width: 30,
             }}
           ></img>
+          <div
+            className='button-green'
+            onClick={(e) => {
+              if (horizontal == 0) {
+                sethorizontal(1);
+              } else {
+                sethorizontal(0);
+              }
+              e.stopPropagation();
+            }}
+            style={{
+              position: 'absolute',
+              right: -10, bottom: -10,
+              borderRadius: 50,
+              width: 10, minWidth: 10, maxWidth: 10,
+              height: 10, minHeight: 10, maxHeight: 10,
+            }}>
+          </div>
         </div>
         <div className='button' onClick={() => printDiv()} title="IMPRIMIR PASSÔMETRO">
           <img
@@ -316,6 +337,7 @@ function Passometro() {
   }
 
   // lista de pacientes internados.
+  const [horizontal, sethorizontal] = useState(0);
   const ListaDePacientes = useCallback(() => {
     return (
       <div
@@ -351,7 +373,7 @@ function Passometro() {
       </div>
     )
     // eslint-disable-next-line
-  }, [arraypacientes, setor, status]);
+  }, [arraypacientes, setor, status, horizontal]);
 
   const arraystatus = [
     {
@@ -400,6 +422,28 @@ function Passometro() {
     },
   ]
 
+  const arraytag = [
+    {
+      valor: 'ALTA',
+      cor: '#a9dfbf',
+    },
+    {
+      valor: 'EMAD',
+      cor: '#a9dfbf',
+    },
+    {
+      valor: 'CERSAM',
+      cor: '#a9dfbf',
+    },
+    {
+      valor: 'JUDICIAL',
+      cor: '#f9e79f',
+    },
+    {
+      valor: 'GRAVE',
+      cor: '#ec7063',
+    }
+  ]
   const [arraypassometrosetor, setarraypassometrosetor] = useState([]);
   const loadSetores = () => {
     if (unidade == 'UPA-VN') {
@@ -508,7 +552,6 @@ function Passometro() {
   function Seletor(obj, array, variavel) {
     let x = [];
     x = array;
-    console.log(x.map(item => item.valor));
 
     return (
       <div className='fundo'
@@ -522,8 +565,10 @@ function Passometro() {
               style={{ width: 200, backgroundColor: item.cor }}
               onClick={() => {
                 document.getElementById("camposelecao - " + variavel + " - " + obj.id).innerHTML = item.valor;
+                document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = item.cor;
+                document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.opacity = 1;
+                updatePaciente(obj, obj.id);
                 document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none';
-                updatePaciente(obj, obj.id,);
               }}
             >
               {item.valor}
@@ -561,6 +606,38 @@ function Passometro() {
       </div >
     )
   }
+  function CampoSelecaoTag(obj, item, array, variavel) {
+    return (
+      <div>
+        <div
+          className='text2'
+          id={"camposelecao - " + variavel + " - " + obj.id}
+          style={{
+            minHeight: 30, height: 30, maxHeight: 30,
+            padding: 2.5, paddingLeft: 10, paddingRight: 10,
+            margin: 2.5,
+            borderRadius: 5,
+            backgroundColor: array.filter(valor => valor.valor == item).length == 1 ? array.filter(valor => valor.valor == item).map(valor => valor.cor) : 'grey',
+            opacity: item != null ? 1 : 0.3,
+          }}
+          onDoubleClick={() => {
+            document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'flex';
+          }}
+          onClick={() => {
+            document.getElementById("camposelecao - " + variavel + " - " + obj.id).innerHTML = 'TAG';
+            document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = 'grey';
+            document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.opacity = 0.3;
+            updatePaciente(obj, obj.id,);
+          }}
+        >
+          {item != null ? item : 'TAG'}
+        </div>
+        {
+          Seletor(obj, array, variavel)
+        }
+      </div >
+    )
+  }
   // campo no passômetro para edição (texto).
   function CampoTexto(obj, item, placeholder, variavel, largura_minima, largura, largura_maxima, altura) {
     return (
@@ -569,7 +646,8 @@ function Passometro() {
         placeholder={placeholder}
         onFocus={(e) => (e.target.placeholder = '')}
         style={{
-          display: 'flex', flexDirection: 'center', alignSelf: 'center',
+          display: 'flex', flexDirection: 'center',
+          alignSelf: horizontal == 0 ? 'center' : 'flex-start',
           minWidth: largura_minima, width: largura, maxWidth: largura_maxima,
           minHeight: altura, height: altura, maxHeight: altura,
           padding: 5, margin: 2.5,
@@ -588,10 +666,10 @@ function Passometro() {
     )
   }
   // campo para checklist.
-  function CampoChecklist(titulo, obj, item, variavel) {
+  function CampoChecklist(titulo, obj, item, variavel, largura) {
     return (
       <div
-        style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: 300 }}>
+        style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start', width: largura }}>
         <div
           id={'check - ' + variavel + ' - ' + obj.id}
           className='button'
@@ -617,7 +695,7 @@ function Passometro() {
         >
           {item}
         </div>
-        <div className='text1' style={{ alignSelf: 'center' }}>{titulo}</div>
+        <div className='text1' style={{ alignSelf: 'center', textAlign: 'left', marginLeft: 0 }}>{titulo}</div>
       </div>
     )
   }
@@ -645,12 +723,12 @@ function Passometro() {
     document.getElementById("detalhes: " + item.id).classList.toggle("expand");
     document.getElementById('logo alerta ' + item.id).classList.toggle("show");
   }
+
   function PassometroSbar() {
     return (
       <div style={{
         display: 'flex', flexDirection: 'column', justifyContent: 'center',
         alignSelf: 'center', alignContent: 'center',
-        width: '100%',
       }}>
         <div
           id="header - passômetro"
@@ -665,11 +743,11 @@ function Passometro() {
           {Header('SETOR', '10vw', '10vw', '10vw')}
           {Header('LEITO', 75, 75, 75)}
           {Header('STATUS', '10vw', '10vw', '10vw')}
-          {Header('NOME', '25vw', '25vw', '25vw')}
+          {Header('NOME', '20vw', '20vw', '20vw')}
           {Header('SITUAÇÃO', '20vw', '20vw', '20vw')}
           <div style={{ width: 80 }}></div>
         </div>
-        {arraypacientes.filter(item => item.unidade_origem == unidade).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => {
+        {arraypacientes.filter(item => item.unidade_origem == unidade && item.passometro_leito != null).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => {
           let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
           let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
           let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
@@ -678,6 +756,7 @@ function Passometro() {
             <div key={'pacientes' + item.id}
               style={{
                 display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
+                position: 'relative',
               }}>
               <div
                 className="row"
@@ -716,11 +795,32 @@ function Passometro() {
                   </img>
                 </div>
                 {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
-                {CampoTexto(item, parseInt(item.passometro_leito), 'LEITO', "passometro_leito", 75, 75, 75, 40)}
+                {CampoTexto(item, isNaN(parseInt(item.passometro_leito)) ? '' : parseInt(item.passometro_leito), 'LEITO', "passometro_leito", 75, 75, 75, 40)}
                 {CampoSelecao(item, item.status, arraystatus, "status", '10vw')}
-                {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '25vw', '25vw', '25vw', 40)}
-                {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '20vw', '20vw', '20vw', 40)}
-                <div style={{ display: 'flex', flexDirection: 'row', width: 95 }}>
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '20vw', '20vw', '20vw', 40)}
+                    {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '20vw', '20vw', '20vw', 40)}
+                  </div>
+                  <div id={"checklist para horizontal"}
+                    style={{
+                      display: horizontal == 1 ? 'flex' : 'none',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {CampoChecklist('LAB', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio", 80)}
+                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx", 80)}
+                    {CampoChecklist('E', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao", 80)}
+                    {CampoChecklist('P', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao", 80)}
+                    {CampoSelecaoTag(item, item.tag, arraytag, 'tag')}
+                  </div>
+                </div>
+                <div style={{
+                  display: 'flex', flexDirection: 'row', width: 95,
+                  alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                }}>
                   <div id={"toggle_details " + item.id}
                     className='button-green'
                     title={'EXIBIR/OCULTAR DETALHES'}
@@ -780,19 +880,23 @@ function Passometro() {
                   alignItems: 'center',
                   backgroundColor: '#d7dbdd',
                   marginTop: -8,
+                  marginBottom: 20,
                   alignSelf: 'center',
-                  width: 'calc(100vw - 60px)',
                 }}
               >
                 {alertas(item)}
-                {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", 300, 'calc(100% - 20px)', 'calc(100% - 20px)', 100)}
-                {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", 300, 'calc(100% - 20px)', 'calc(100% - 20px)', 100)}
-                {CampoTexto(item, item.passometro_recomendacao, "RECOMENDAÇÃO", "passometro_recomendacao", 300, 'calc(100% - 20px)', 'calc(100% - 20px)', 100)}
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: 'calc(100% - 20px)' }}>
+                  {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", '25vw', '25vw', '25vw', 100)}
+                  {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", '25vw', '25vw', '25vw', 100)}
+                  {CampoTexto(item, item.passometro_recomendacao, "RECOMENDAÇÃO", "passometro_recomendacao", '25vw', '25vw', '25vw', 100)}
+                </div>
                 <div style={{
                   display: 'flex', flexDirection: 'column',
                   justifyContent: 'flex-start',
                   alignContent: 'flex-start',
+                  alignSelf: 'flex-start',
                   marginTop: 10,
+                  width: '80vw',
                 }}>
                   <div
                     style={{
@@ -801,22 +905,23 @@ function Passometro() {
                       alignContent: 'flex-start',
                     }}
                   >
-                    {CampoChecklist('NOTIFICAÇÃO SRAG', item, item.passometro_notificacao_srag, "passometro_notificacao_srag")}
-                    {CampoChecklist('NOTIFICAÇÃO DENGUE', item, item.passometro_notificacao_dengue, "passometro_notificacao_dengue")}
-                    {CampoChecklist('TESTE COVID', item, item.passometro_checklist_teste_covid, "passometro_checklist_teste_covid")}
-                    {CampoChecklist('TESTE DENGUE', item, item.passometro_checklist_teste_dengue, "passometro_checklist_teste_dengue")}
+                    {CampoChecklist('NOTIFICAÇÃO SRAG', item, item.passometro_notificacao_srag, "passometro_notificacao_srag", 250)}
+                    {CampoChecklist('NOTIFICAÇÃO DENGUE', item, item.passometro_notificacao_dengue, "passometro_notificacao_dengue", 250)}
+                    {CampoChecklist('TESTE COVID', item, item.passometro_checklist_teste_covid, "passometro_checklist_teste_covid", 250)}
+                    {CampoChecklist('TESTE DENGUE', item, item.passometro_checklist_teste_dengue, "passometro_checklist_teste_dengue", 250)}
                   </div>
                   <div
                     style={{
-                      display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                      display: horizontal == 1 ? 'none' : 'flex',
+                      flexDirection: 'row', flexWrap: 'wrap',
                       justifyContent: 'flex-start',
                       alignContent: 'flex-start',
                     }}
                   >
-                    {CampoChecklist('LABORATÓRIO', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio")}
-                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx")}
-                    {CampoChecklist('EVOLUÇÃO', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao")}
-                    {CampoChecklist('PRESCRIÇÃO', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao")}
+                    {CampoChecklist('LABORATÓRIO', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio", 250)}
+                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx", 250)}
+                    {CampoChecklist('EVOLUÇÃO', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao", 250)}
+                    {CampoChecklist('PRESCRIÇÃO', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao", 250)}
                   </div>
                   <div className='text1' style={{ marginTop: 10, marginLeft: 0, alignSelf: 'flex-start' }}>SOCIAL:</div>
                   <div
@@ -826,16 +931,209 @@ function Passometro() {
                       alignContent: 'flex-start',
                     }}
                   >
-                    {CampoChecklist('VULNERABILIDADE SOCIAL', item, item.passometro_vulnerabilidade, "passometro_vulnerabilidade")}
-                    {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam")}
+                    {CampoChecklist('VULNERABILIDADE SOCIAL', item, item.passometro_vulnerabilidade, "passometro_vulnerabilidade", 250)}
+                    {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam", 250)}
                   </div>
                 </div>
               </div>
             </div>
           )
-        })
-        }
-        <div id="botão para deletar paciente do passômetro"
+        })}
+        {arraypacientes.filter(item => item.unidade_origem == unidade && item.passometro_leito == null).map(item => {
+          let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
+          let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
+          let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
+          let alertaaih = moment().diff(entrada, 'hours') > 12 && item.status == 'REAVALIAÇÃO';
+          return (
+            <div key={'pacientes' + item.id}
+              style={{
+                display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
+                position: 'relative',
+                backgroundColor: '#fcf3cf',
+                borderRadius: 5,
+              }}>
+              <div
+                className="row"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center', flexWrap: 'nowrap',
+                }}
+              >
+                <div className="button" style={{
+                  minWidth: 100, width: 100, maxWidth: 100,
+                  height: 50, minHeight: 50, maxHeight: 50,
+                  margin: 2.5,
+                  display: 'flex', flexDirection: 'column',
+                  position: 'relative',
+                }}>
+                  <div>
+                    {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('DD/MM/YYYY')}
+                  </div>
+                  <div>
+                    {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('HH:mm')}
+                  </div>
+                  <img
+                    id={'logo alerta ' + item.id}
+                    className='show'
+                    alt=""
+                    src={alerta}
+                    style={{
+                      display: alertalaboratorio == true || alertarx == true || alertaaih == true ? 'flex' : 'none',
+                      position: 'absolute',
+                      left: -10, bottom: -20,
+                      margin: 0, marginTop: 5,
+                      height: 50,
+                      width: 50,
+                    }}
+                  >
+                  </img>
+                </div>
+                {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
+                {CampoTexto(item, isNaN(parseInt(item.passometro_leito)) ? '' : parseInt(item.passometro_leito), 'LEITO', "passometro_leito", 75, 75, 75, 40)}
+                {CampoSelecao(item, item.status, arraystatus, "status", '10vw')}
+
+                <div style={{ display: 'flex', flexDirection: 'column' }}>
+                  <div style={{ display: 'flex', flexDirection: 'row' }}>
+                    {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '20vw', '20vw', '20vw', 40)}
+                    {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '20vw', '20vw', '20vw', 40)}
+                  </div>
+                  <div id={"checklist para horizontal"}
+                    style={{
+                      display: horizontal == 1 ? 'flex' : 'none',
+                      flexDirection: 'row',
+                      justifyContent: 'flex-start',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {CampoChecklist('LAB', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio", 80)}
+                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx", 80)}
+                    {CampoChecklist('E', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao", 80)}
+                    {CampoChecklist('P', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao", 80)}
+                    {CampoSelecaoTag(item, item.tag, arraytag, 'tag')}
+                  </div>
+                </div>
+                <div style={{
+                  display: 'flex', flexDirection: 'row', width: 95,
+                  alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                }}>
+                  <div id={"toggle_details " + item.id}
+                    className='button-green'
+                    title={'EXIBIR/OCULTAR DETALHES'}
+                    style={{
+                      minWidth: 30, width: 30, maxWidth: 30,
+                      minHeight: 30, height: 30, maxHeight: 30,
+                      alignSelf: 'center',
+                      fontWeight: 'bolder',
+                      fontSize: 20,
+                      marginRight: 0,
+                    }}
+                    onClick={() => { expand(item) }}
+                  >
+                    <img
+                      alt=""
+                      src={editar}
+                      style={{
+                        margin: 10,
+                        height: 20,
+                        width: 20,
+                      }}
+                    ></img>
+                  </div>
+                  <div id="botão para deletar paciente do passômetro"
+                    className='button-red'
+                    title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
+                    style={{
+                      minWidth: 30, width: 30, maxWidth: 30,
+                      minHeight: 30, height: 30, maxHeight: 30,
+                      alignSelf: 'center',
+                    }}
+                    onClick={
+                      (e) => {
+                        modal(setdialogo, item.id, 'CONFIRMAR EXCLUSÃO DO PACIENTE?', deletePaciente, item.id); e.stopPropagation();
+                      }}
+                  >
+                    <img
+                      alt=""
+                      src={deletar}
+                      style={{
+                        margin: 10,
+                        height: 20,
+                        width: 20,
+                      }}
+                    ></img>
+                  </div>
+                </div>
+              </div>
+              <div id={"detalhes: " + item.id}
+                title="MAIS CAMPOS"
+                className='retract'
+                style={{
+                  flexDirection: 'column',
+                  flexWrap: 'nowrap',
+                  justifyContent: 'center',
+                  alignContent: 'center',
+                  alignItems: 'center',
+                  backgroundColor: '#d7dbdd',
+                  marginTop: -8,
+                  marginBottom: 20,
+                  alignSelf: 'center',
+                }}
+              >
+                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', width: 'calc(100% - 20px)' }}>
+                  {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", '25vw', '25vw', '25vw', 100)}
+                  {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", '25vw', '25vw', '25vw', 100)}
+                  {CampoTexto(item, item.passometro_recomendacao, "RECOMENDAÇÃO", "passometro_recomendacao", '25vw', '25vw', '25vw', 100)}
+                </div>
+                <div style={{
+                  display: 'flex', flexDirection: 'column',
+                  justifyContent: 'flex-start',
+                  alignContent: 'flex-start',
+                  alignSelf: 'flex-start',
+                  marginTop: 10,
+                  width: '80vw'
+                }}>
+                  <div
+                    style={{
+                      display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                      justifyContent: 'flex-start',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {CampoChecklist('NOTIFICAÇÃO SRAG', item, item.passometro_notificacao_srag, "passometro_notificacao_srag", 250)}
+                    {CampoChecklist('NOTIFICAÇÃO DENGUE', item, item.passometro_notificacao_dengue, "passometro_notificacao_dengue", 250)}
+                    {CampoChecklist('TESTE COVID', item, item.passometro_checklist_teste_covid, "passometro_checklist_teste_covid", 250)}
+                    {CampoChecklist('TESTE DENGUE', item, item.passometro_checklist_teste_dengue, "passometro_checklist_teste_dengue", 250)}
+                  </div>
+                  <div
+                    style={{
+                      display: horizontal == 1 ? 'none' : 'flex',
+                      flexDirection: 'row', flexWrap: 'wrap',
+                      justifyContent: 'flex-start',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {CampoChecklist('LABORATÓRIO', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio", 250)}
+                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx", 250)}
+                    {CampoChecklist('EVOLUÇÃO', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao", 250)}
+                    {CampoChecklist('PRESCRIÇÃO', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao", 250)}
+                  </div>
+                  <div className='text1' style={{ marginTop: 10, marginLeft: 0, alignSelf: 'flex-start' }}>SOCIAL:</div>
+                  <div
+                    style={{
+                      display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                      justifyContent: 'flex-start',
+                      alignContent: 'flex-start',
+                    }}
+                  >
+                    {CampoChecklist('VULNERABILIDADE SOCIAL', item, item.passometro_vulnerabilidade, "passometro_vulnerabilidade", 250)}
+                    {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam", 250)}
+                  </div>
+                </div>
+              </div>
+            </div>
+          )
+        })}
+        <div id="botão para inserir paciente no passômetro"
           className='button-green'
           title={'INSERIR PACIENTE'}
           style={{
@@ -856,7 +1154,7 @@ function Passometro() {
             }}
           ></img>
         </div>
-      </div >
+      </div>
     )
   }
 
@@ -865,6 +1163,8 @@ function Passometro() {
     let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
     let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
     let alertaaih = moment().diff(entrada, 'hours') > 12 && item.status == 'REAVALIAÇÃO';
+    let alertavulneravel = item.passometro_vulnerabilidade;
+    let alertacersam = item.passometro_cersam;
     return (
       <div
         style={{
@@ -918,6 +1218,18 @@ function Passometro() {
         >
           {'• DEFINIR CONDUTA (ALTA, AIH, TRANSFERÊNCIA)'}
         </div>
+        <div
+          className='text2'
+          style={{ display: alertavulneravel == 2 ? 'flex' : 'none', margin: 2.5, textAlign: 'left', alignSelf: 'flex-start' }}
+        >
+          {'• ALERTA DE VULNERABILIDADE SOCIAL'}
+        </div>
+        <div
+          className='text2'
+          style={{ display: alertacersam == 2 ? 'flex' : 'none', margin: 2.5, textAlign: 'left', alignSelf: 'flex-start' }}
+        >
+          {'• PACIENTE VINCULADO AO CERSAM'}
+        </div>
       </div>
     )
   }
@@ -937,7 +1249,6 @@ function Passometro() {
             }}
             onClick={() => {
               setstatus(valor.valor);
-              console.log(valor.valor);
               loadPacientes(pacientes.filter(item => item.status == valor.valor && item.setor_origem == setor));
             }}
           >
@@ -979,7 +1290,7 @@ function Passometro() {
   }
   function Conteudo() {
     let array = [];
-    pacientes.filter(item => item.passometro_setor == setor).map(item => array.push(item));
+    pacientes.filter(item => item.passometro_setor == setor && item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => array.push(item));
     return (
       <div id="PDF passometro"
         style={{
@@ -1110,9 +1421,9 @@ function Passometro() {
   let localpage = 1;
   const changePages = (quantidade, intervalo) => {
     axios.get(html + 'list_pacientes').then((response) => {
-      var x = response.data.rows;
+      var y = response.data.rows;
+      var x = y.filter(item => item.status == 'REAVALIAÇÃO');
       setpacientes(x);
-      // let totalpacientes = x.filter(item => item.setor_origem == 'UDC').length;
       let totalpacientes = x.length;
       console.log('TOTAL DE PACIENTES: ' + totalpacientes);
       let totalpaginas = Math.ceil(totalpacientes / quantidade);
@@ -1124,15 +1435,11 @@ function Passometro() {
         if (localpage == 1) {
           inicio = 0;
           final = quantidade;
-          // console.log('INICIO: ' + inicio);
-          // console.log('FINAL: ' + final);
           setindexpacientes(x.slice(inicio, final));
           localpage = localpage + 1;
         } else if (localpage > 1 && localpage <= totalpaginas) {
           inicio = inicio + quantidade;
           final = inicio + quantidade;
-          // console.log('INICIO: ' + inicio);
-          // console.log('FINAL: ' + final);
           setindexpacientes(x.slice(inicio, final));
           localpage = localpage + 1;
         } else if (localpage > totalpaginas) {
@@ -1165,49 +1472,47 @@ function Passometro() {
           {Header('LEITO', 75, 75, 75)}
           {Header('NOME', '30vw', '30vw', '30vw')}
           {Header('STATUS', '30vw', '30vw', '30vw')}
-          <div style={{ width: 80 }}></div>
         </div>
-        {indexpacientes
-          .map(item => {
-            return (
-              <div key={'pacientes' + item.id}
+        {indexpacientes.sort().sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => {
+          return (
+            <div key={'pacientes' + item.id}
+              style={{
+                display: 'flex',
+                flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
+              }} >
+              <div
+                className="row"
                 style={{
                   display: 'flex',
-                  flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
-                }} >
+                  justifyContent: 'center', flexWrap: 'nowrap',
+                }}
+              >
                 <div
-                  className="row"
+                  className="button"
                   style={{
-                    display: 'flex',
-                    justifyContent: 'center', flexWrap: 'nowrap',
-                  }}
-                >
-                  <div
-                    className="button"
-                    style={{
-                      minWidth: 100, width: 100, maxWidth: 100,
-                      height: 50, minHeight: 50, maxHeight: 50,
-                      margin: 2.5,
-                      display: 'flex', flexDirection: 'column',
-                      position: 'relative',
-                    }}>
-                    <div>
-                      {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('DD/MM/YYYY')}
-                    </div>
-                    <div>
-                      {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('HH:mm')}
-                    </div>
+                    minWidth: 100, width: 100, maxWidth: 100,
+                    height: 50, minHeight: 50, maxHeight: 50,
+                    margin: 2.5,
+                    display: 'flex', flexDirection: 'column',
+                    position: 'relative',
+                  }}>
+                  <div>
+                    {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('DD/MM/YYYY')}
                   </div>
-                  {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
-                  {CampoTexto(item, item.passometro_leito, 'LEITO', "passometro_leito", 75, 75, 75, 40)}
-                  {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '30vw', '30vw', '30vw', 40)}
-                  {CampoSelecao(item, item.status, arraystatus, "status", '30vw')}
+                  <div>
+                    {moment(item.passometro_data, 'DD/MM/YYYY - HH:mm').format('HH:mm')}
+                  </div>
                 </div>
+                {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
+                {CampoTexto(item, parseInt(item.passometro_leito), 'LEITO', "passometro_leito", 75, 75, 75, 40)}
+                {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '30vw', '30vw', '30vw', 40)}
+                {CampoSelecao(item, item.status, arraystatus, "status", '30vw')}
               </div>
-            )
-          })
+            </div>
+          )
+        })
         }
-      </div >
+      </div>
     )
   }
 
