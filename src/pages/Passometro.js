@@ -187,7 +187,7 @@ function Passometro() {
       clearInterval(interval);
       loadSetores();
       loadPacientes(pacientes.filter(item => item.status == 'REAVALIAÇÃO' && item.setor_origem == 'UDC'));
-      changePages(10, 5000, 'UDC');
+      // changePages(10, 5000, 'UDC');
     }
 
     // eslint-disable-next-line
@@ -268,6 +268,7 @@ function Passometro() {
           if (modo == 1) {
             setmodo(0);
           } else {
+            changePages(6, 5000, 'UDC');
             setmodo(1);
           }
         }}
@@ -1480,7 +1481,7 @@ function Passometro() {
   const changePages = (quantidade, intervalo) => {
     axios.get(html + 'list_pacientes').then((response) => {
       var y = response.data.rows;
-      var x = y.filter(item => item.status == 'REAVALIAÇÃO');
+      var x = y.filter(item => item.setor_origem == setor);
       setpacientes(x);
       let totalpacientes = x.length;
       console.log('TOTAL DE PACIENTES: ' + totalpacientes);

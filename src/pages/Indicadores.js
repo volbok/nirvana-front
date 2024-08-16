@@ -30,6 +30,7 @@ function Indicadores() {
     usuario,
     pagina, setpagina,
     settoast,
+    pacientes, setpacientes,
   } = useContext(Context);
 
   var html = 'http://localhost:3333/'
@@ -82,7 +83,6 @@ function Indicadores() {
   */
 
   // carregar lista de pacientes internados.
-  const [pacientes, setpacientes] = useState([0, 1]);
   const [setpacientesgrafico] = useState([0, 1]);
   const loadPacientes = (arraydays) => {
     axios.get(html + 'list_pacientes').then((response) => {
