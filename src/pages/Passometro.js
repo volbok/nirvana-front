@@ -186,7 +186,7 @@ function Passometro() {
     if (pagina == 'PASSOMETRO') {
       clearInterval(interval);
       loadSetores();
-      loadPacientes();
+      loadPacientes(pacientes.filter(item => item.status == 'REAVALIAÇÃO' && item.setor_origem == 'UDC'));
       changePages(10, 5000, 'UDC');
     }
 
@@ -210,6 +210,17 @@ function Passometro() {
             }}
           ></img>
         </div>
+        <div className='button' onClick={() => printDiv()} title="IMPRIMIR PASSÔMETRO">
+          <img
+            alt=""
+            src={imprimir}
+            style={{
+              margin: 10,
+              height: 30,
+              width: 30,
+            }}
+          ></img>
+        </div>
         <div className='button' onClick={() => setpagina('USUARIOS')} title="CADASTRO DE USUÁRIOS"
           style={{ position: 'relative' }}
         >
@@ -223,7 +234,7 @@ function Passometro() {
             }}
           ></img>
           <div
-            className='button-green'
+            className={horizontal == 1 ? 'button-green' : 'button-red'}
             onClick={(e) => {
               if (horizontal == 0) {
                 sethorizontal(1);
@@ -234,23 +245,15 @@ function Passometro() {
             }}
             style={{
               position: 'absolute',
-              right: -10, bottom: -10,
+              right: -20, bottom: -20,
               borderRadius: 50,
               width: 10, minWidth: 10, maxWidth: 10,
               height: 10, minHeight: 10, maxHeight: 10,
+              borderWidth: 5,
+              borderStyle: 'solid',
+              borderColor: '#f2f2f2',
             }}>
           </div>
-        </div>
-        <div className='button' onClick={() => printDiv()} title="IMPRIMIR PASSÔMETRO">
-          <img
-            alt=""
-            src={imprimir}
-            style={{
-              margin: 10,
-              height: 30,
-              width: 30,
-            }}
-          ></img>
         </div>
         <div className='text1'>{usuario.nome}</div>
       </div>
@@ -273,7 +276,6 @@ function Passometro() {
           width: 50, maxWidth: 50,
           height: 50, maxHeight: 50,
           alignSelf: 'flex-end',
-          backgroundColor: 'white',
         }}
       >
         <img
@@ -401,7 +403,7 @@ function Passometro() {
       cor: '#a9dfbf',
     },
     {
-      valor: 'TRANSFERÊNCIA CEERSAM',
+      valor: 'TRANSFERÊNCIA CERSAM',
       cor: '#a9dfbf',
     },
     {
@@ -552,7 +554,6 @@ function Passometro() {
   function Seletor(obj, array, variavel) {
     let x = [];
     x = array;
-
     return (
       <div className='fundo'
         id={"lista - " + variavel + " - " + obj.id}
@@ -565,10 +566,68 @@ function Passometro() {
               style={{ width: 200, backgroundColor: item.cor }}
               onClick={() => {
                 document.getElementById("camposelecao - " + variavel + " - " + obj.id).innerHTML = item.valor;
-                document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = item.cor;
-                document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.opacity = 1;
-                updatePaciente(obj, obj.id);
-                document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none';
+                let objeto = {
+                  aih: obj.aih,
+                  procedimento: obj.procedimento,
+                  unidade_origem: obj.unidade_origem,
+                  setor_origem: document.getElementById("camposelecao - passometro_setor - " + obj.id).innerHTML,
+                  nome_paciente: document.getElementById("campotexto - nome_paciente - " + obj.id).value.toUpperCase(),
+                  nome_mae: obj.nome_mae,
+                  dn_paciente: obj.dn_paciente,
+                  status: document.getElementById("camposelecao - status - " + obj.id).innerHTML,
+                  unidade_destino: obj.unidade_destino,
+                  setor_destino: obj.setor_destino,
+                  indicador_data_cadastro: obj.indicador_data_cadastro,
+                  indicador_data_confirmacao: obj.indicador_data_confirmacao,
+                  indicador_relatorio: obj.indicador_relatorio,
+                  indicador_solicitacao_transporte: obj.indicador_solicitacao_transporte,
+                  indicador_saida_origem: obj.indicador_saida_origem,
+                  indicador_chegada_destino: obj.indicador_chegada_destino,
+                  dados_susfacil: obj.dados_susfacil,
+                  exames_ok: obj.exames_ok,
+                  aih_ok: obj.aih_ok,
+                  glasgow: obj.glasgow,
+                  pas: obj.pas,
+                  pad: obj.pad,
+                  fc: obj.fc,
+                  fr: obj.fr,
+                  sao2: obj.sao2,
+                  ofertao2: obj.ofertao2,
+                  tipo_leito: obj.tipo_leito,
+                  contato_nome: obj.contato_nome,
+                  contato_telefone: obj.contato_telefone,
+                  leito_destino: obj.leito_destino,
+                  passometro_leito: document.getElementById("campotexto - passometro_leito - " + obj.id).value.toUpperCase(),
+                  passometro_situacao: document.getElementById("campotexto - passometro_situacao - " + obj.id).value.toUpperCase(),
+                  passometro_breve_historico: document.getElementById("campotexto - passometro_breve_historico - " + obj.id).value.toUpperCase(),
+                  passometro_avaliacao: document.getElementById("campotexto - passometro_avaliacao - " + obj.id).value.toUpperCase(),
+                  passometro_recomendacao: document.getElementById("campotexto - passometro_recomendacao - " + obj.id).value.toUpperCase(),
+                  passometro_peso: item.passometro_peso,
+                  passometro_notificacao_srag: document.getElementById("check - passometro_notificacao_srag - " + obj.id).innerHTML,
+                  passometro_notificacao_dengue: document.getElementById("check - passometro_notificacao_dengue - " + obj.id).innerHTML,
+                  passometro_checklist_teste_covid: document.getElementById("check - passometro_checklist_teste_covid - " + obj.id).innerHTML,
+                  passometro_checklist_teste_dengue: document.getElementById("check - passometro_checklist_teste_dengue - " + obj.id).innerHTML,
+                  passometro_checklist_evolucao: document.getElementById("check - passometro_checklist_evolucao - " + obj.id).innerHTML,
+                  passometro_checklist_prescricao: document.getElementById("check - passometro_checklist_prescricao - " + obj.id).innerHTML,
+                  passometro_checklist_laboratorio: document.getElementById("check - passometro_checklist_laboratorio - " + obj.id).innerHTML,
+                  passometro_checklist_rx: document.getElementById("check - passometro_checklist_rx - " + obj.id).innerHTML,
+                  passometro_setor: document.getElementById("camposelecao - passometro_setor - " + obj.id).innerHTML,
+                  passometro_data: item.passometro_data,
+                  passometro_vulnerabilidade: document.getElementById("check - passometro_vulnerabilidade - " + obj.id).innerHTML,
+                  passometro_cersam: document.getElementById("check - passometro_cersam - " + obj.id).innerHTML,
+                  tag: document.getElementById("camposelecao - tag - " + obj.id).innerHTML,
+                }
+                console.log(objeto);
+                axios.post(html + 'update_paciente/' + obj.id, objeto).then(() => {
+                  console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
+                  axios.get(html + 'list_pacientes').then((response) => {
+                    var x = [];
+                    x = response.data.rows;
+                    setpacientes(x);
+                    setarraypacientes(x.filter(item => item.status == status && item.setor_origem == setor));
+                    console.log('## INFO ## \nLISTA DE PACIENTES INTERNADOS CARREGADA.\nTOTAL DE PACIENTES INTERNADOS: ' + response.data.rows.length);
+                  });
+                });
               }}
             >
               {item.valor}
@@ -577,7 +636,6 @@ function Passometro() {
         </div>
       </div>
     )
-
   }
 
   // campo no passômetro para seleção de uma opção.
@@ -618,7 +676,7 @@ function Passometro() {
             margin: 2.5,
             borderRadius: 5,
             backgroundColor: array.filter(valor => valor.valor == item).length == 1 ? array.filter(valor => valor.valor == item).map(valor => valor.cor) : 'grey',
-            opacity: item != null ? 1 : 0.3,
+            opacity: item != 'TAG' ? 1 : 0.5,
           }}
           onDoubleClick={() => {
             document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'flex';
@@ -626,8 +684,8 @@ function Passometro() {
           onClick={() => {
             document.getElementById("camposelecao - " + variavel + " - " + obj.id).innerHTML = 'TAG';
             document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = 'grey';
-            document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.opacity = 0.3;
-            updatePaciente(obj, obj.id,);
+            document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.opacity = 0.5;
+            updatePaciente(obj, obj.id);
           }}
         >
           {item != null ? item : 'TAG'}
