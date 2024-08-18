@@ -730,7 +730,7 @@ function Passometro() {
         title={placeholder}
         defaultValue={item}
         id={"campotexto - " + variavel + " - " + obj.id}
-        onKeyUp={() => {
+        onChange={() => {
           clearTimeout(timeout);
           timeout = setTimeout(() => {
             updatePaciente(obj, obj.id);
