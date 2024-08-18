@@ -1288,35 +1288,6 @@ function Passometro() {
                   position: 'relative',
                 }}
               >
-                <div style={{
-                  position: 'absolute', top: 2.5, right: 2.5,
-                  display: 'flex', flexDirection: 'row', width: 50,
-                  alignSelf: horizontal == 0 ? 'center' : 'flex-start',
-                }}>
-                  <div id="botão para deletar paciente do passômetro"
-                    className='button-red'
-                    title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
-                    style={{
-                      minWidth: 30, width: 30, maxWidth: 30,
-                      minHeight: 30, height: 30, maxHeight: 30,
-                      alignSelf: 'center',
-                    }}
-                    onClick={
-                      (e) => {
-                        modal(setdialogo, item.id, 'CONFIRMAR EXCLUSÃO DO PACIENTE?', deletePaciente, item.id); e.stopPropagation();
-                      }}
-                  >
-                    <img
-                      alt=""
-                      src={deletar}
-                      style={{
-                        margin: 10,
-                        height: 20,
-                        width: 20,
-                      }}
-                    ></img>
-                  </div>
-                </div>
                 {alertas(item)}
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: 'calc(100% - 20px)' }}>
                   {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", '80vw', '80vw', '80vw', 100)}
@@ -1368,6 +1339,35 @@ function Passometro() {
                     {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam", 250)}
                   </div>
                 </div>
+                <div style={{
+                  position: 'absolute', top: 2.5, right: 2.5,
+                  display: 'flex', flexDirection: 'row', width: 50,
+                  alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                }}>
+                  <div id="botão para deletar paciente do passômetro"
+                    className='button-red'
+                    title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
+                    style={{
+                      minWidth: 30, width: 30, maxWidth: 30,
+                      minHeight: 30, height: 30, maxHeight: 30,
+                      alignSelf: 'center',
+                    }}
+                    onClick={
+                      (e) => {
+                        modal(setdialogo, item.id, 'CONFIRMAR EXCLUSÃO DO PACIENTE?', deletePaciente, item.id); e.stopPropagation();
+                      }}
+                  >
+                    <img
+                      alt=""
+                      src={deletar}
+                      style={{
+                        margin: 10,
+                        height: 20,
+                        width: 20,
+                      }}
+                    ></img>
+                  </div>
+                </div>
               </div>
             </div>
           )
@@ -1408,35 +1408,6 @@ function Passometro() {
                   position: 'relative',
                 }}
               >
-                <div style={{
-                  position: 'absolute', top: 2.5, right: 2.5,
-                  display: 'flex', flexDirection: 'row', width: 50,
-                  alignSelf: horizontal == 0 ? 'center' : 'flex-start',
-                }}>
-                  <div id="botão para deletar paciente do passômetro"
-                    className='button-red'
-                    title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
-                    style={{
-                      minWidth: 30, width: 30, maxWidth: 30,
-                      minHeight: 30, height: 30, maxHeight: 30,
-                      alignSelf: 'center',
-                    }}
-                    onClick={
-                      (e) => {
-                        modal(setdialogo, item.id, 'CONFIRMAR EXCLUSÃO DO PACIENTE?', deletePaciente, item.id); e.stopPropagation();
-                      }}
-                  >
-                    <img
-                      alt=""
-                      src={deletar}
-                      style={{
-                        margin: 10,
-                        height: 20,
-                        width: 20,
-                      }}
-                    ></img>
-                  </div>
-                </div>
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: 'calc(100% - 20px)' }}>
                   {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", '80vw', '80vw', '80vw', 100)}
                   {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", '80vw', '80vw', '80vw', 100)}
@@ -1485,6 +1456,35 @@ function Passometro() {
                   >
                     {CampoChecklist('VULNERABILIDADE SOCIAL', item, item.passometro_vulnerabilidade, "passometro_vulnerabilidade", 250)}
                     {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam", 250)}
+                  </div>
+                </div>
+                <div style={{
+                  position: 'absolute', top: 2.5, right: 2.5,
+                  display: 'flex', flexDirection: 'row', width: 50,
+                  alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                }}>
+                  <div id="botão para deletar paciente do passômetro"
+                    className='button-red'
+                    title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
+                    style={{
+                      minWidth: 30, width: 30, maxWidth: 30,
+                      minHeight: 30, height: 30, maxHeight: 30,
+                      alignSelf: 'center',
+                    }}
+                    onClick={
+                      (e) => {
+                        modal(setdialogo, item.id, 'CONFIRMAR EXCLUSÃO DO PACIENTE?', deletePaciente, item.id); e.stopPropagation();
+                      }}
+                  >
+                    <img
+                      alt=""
+                      src={deletar}
+                      style={{
+                        margin: 10,
+                        height: 20,
+                        width: 20,
+                      }}
+                    ></img>
                   </div>
                 </div>
               </div>
