@@ -185,10 +185,8 @@ function Passometro() {
   var interval = null;
   useEffect(() => {
     if (pagina == 'PASSOMETRO') {
-      clearInterval(interval);
       loadSetores();
       loadPacientes(pacientes.filter(item => item.status == 'REAVALIAÇÃO' && item.setor_origem == 'UDC'));
-      // changePages(10, 5000, 'UDC');
     }
 
     // eslint-disable-next-line
@@ -366,18 +364,20 @@ function Passometro() {
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
           marginTop: 100, width: '100%',
         }}>
-          <div className="text3">{'PASSÔMETRO - ' + unidade}</div>
-          <div className='scroll'
+          <div className="text3" style={{ fontSize: 20 }}>{'PASSÔMETRO - ' + unidade}</div>
+          <div className="text3" style={{ marginTop: 20 }}>{'SITUAÇÃO'}</div>
+          <div
             style={{
-              width: '80vw',
-              overflowX: window.innerWidth > mobilewidth ? 'scroll' : 'hidden',
+              width: window.innerWidth > mobilewidth ? '80vw' : '80vw',
+              overflowX: 'hidden',
               overflowY: 'hidden',
-              display: 'flex', flexDirection: 'row', justifyContent: 'flex-start',
-              flexWrap: 'wrap',
+              alignContent: 'center',
+              alignSelf: 'center',
             }}
           >
             {resumo()}
           </div>
+          <div className="text3" style={{ marginTop: 20 }}>{'SETORES'}</div>
           <FilterSetores></FilterSetores>
           <PassometroSbar></PassometroSbar>
           <PassometroSbarMobile></PassometroSbarMobile>
@@ -391,39 +391,39 @@ function Passometro() {
   const arraystatus = [
     {
       valor: 'REAVALIAÇÃO',
-      cor: '#f9e79f',
+      cor: '#f7dc6f',
     },
     {
       valor: 'AIH ENFERMARIA',
-      cor: '#aed6f1',
+      cor: '#85c1e9',
     },
     {
       valor: 'AIH CTI',
-      cor: '#f5b7b1',
+      cor: '#f1948a',
     },
     {
       valor: 'ALTA',
-      cor: '#a9dfbf',
+      cor: '#7dcea0',
     },
     {
       valor: 'TRANSFERÊNCIA AIH',
-      cor: '#a9dfbf',
+      cor: '#7dcea0',
     },
     {
       valor: 'TRANSFERÊNCIA CONTATO DIRETO',
-      cor: '#a9dfbf',
+      cor: '#7dcea0',
     },
     {
       valor: 'TRANSFERÊNCIA CERSAM',
-      cor: '#a9dfbf',
+      cor: '#7dcea0',
     },
     {
       valor: 'TRANSFERÊNCIA CONVÊNIOS',
-      cor: '#a9dfbf',
+      cor: '#7dcea0',
     },
     {
       valor: 'EMAD',
-      cor: '#a9dfbf',
+      cor: '#7dcea0',
     },
     {
       valor: 'EVASÃO',
@@ -464,31 +464,31 @@ function Passometro() {
         [
           {
             valor: 'SE',
-            cor: '#f5b7b1',
+            cor: '#f1948a',
           },
           {
             valor: 'UDC',
-            cor: '#f9e79f',
+            cor: '#f7dc6f',
           },
           {
             valor: 'OBS 1',
-            cor: '#aed6f1',
+            cor: '#85c1e9',
           },
           {
             valor: 'OBS 2',
-            cor: '#aed6f1',
+            cor: '#85c1e9',
           },
           {
             valor: 'OBS 3',
-            cor: '#aed6f1',
+            cor: '#85c1e9',
           },
           {
             valor: 'SE PED',
-            cor: '#f5b7b1',
+            cor: '#f1948a',
           },
           {
             valor: 'OBS PED',
-            cor: '#aed6f1',
+            cor: '#85c1e9',
           },
         ]
       );
@@ -502,12 +502,14 @@ function Passometro() {
         style={{
           display: 'flex', flexDirection: 'row', justifyContent: 'center',
           flexWrap: 'wrap',
+          width: window.innerWidth > mobilewidth ? '90vw' : '80vw',
+          alignSelf: 'center',
         }}>
         <div
           id="botao todos os setores"
           className={setor == 'TODOS' ? 'button' : 'button weak'}
           style={{
-            width: 150,
+            width: window.innerWidth > mobilewidth ? 120 : 80,
             height: 30, minHeight: 30, maxHeight: 30,
           }}
           onClick={() => {
@@ -536,7 +538,7 @@ function Passometro() {
             id={"botao de unidade " + item.valor}
             style={{
               backgroundColor: item.cor,
-              width: 150,
+              width: window.innerWidth > mobilewidth ? 120 : 80,
               height: 30, minHeight: 30, maxHeight: 30,
             }}
             onClick={() => {
@@ -690,7 +692,7 @@ function Passometro() {
             margin: 2.5,
             borderRadius: 5,
             backgroundColor: array.filter(valor => valor.valor == item).length == 1 ? array.filter(valor => valor.valor == item).map(valor => valor.cor) : 'grey',
-            opacity: item != 'TAG' ? 1 : 0.5,
+            opacity: item != 'TAG' ? 1 : 0.7,
           }}
           onDoubleClick={() => {
             document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'flex';
@@ -698,7 +700,7 @@ function Passometro() {
           onClick={() => {
             document.getElementById("camposelecao - " + variavel + " - " + obj.id).innerHTML = 'TAG';
             document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.backgroundColor = 'grey';
-            document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.opacity = 0.5;
+            document.getElementById("camposelecao - " + variavel + " - " + obj.id).style.opacity = 0.7;
             updatePaciente(obj, obj.id);
           }}
         >
@@ -1535,6 +1537,8 @@ function Passometro() {
           marginBottom: 10,
           alignContent: 'flex-start',
           alignSelf: 'flex-start',
+          width: window.innerWidth > mobilewidth ? '' : '80vw',
+          fontSize:window.innerWidth > mobilewidth ? '' : 10,
         }}>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
           <img
@@ -1595,7 +1599,9 @@ function Passometro() {
   const resumo = () => {
     return (
       <div style={{
-        display: 'flex', flexDirection: 'row', justifyContent: 'center',
+        display: 'flex', flexDirection: 'row',
+        justifyContent: 'center',
+        alignSelf: 'center',
         flexWrap: 'wrap',
       }}>
         {arraystatus.map(valor => (
@@ -1603,7 +1609,10 @@ function Passometro() {
             className={status == valor.valor ? 'button' : 'button weak'}
             key={'resumo ' + valor.valor}
             style={{
-              width: 100, minWidth: 100, height: 100,
+              width: window.innerWidth > mobilewidth ? 100 : 70,
+              minWidth: window.innerWidth > mobilewidth ? 100 : 70,
+              height: window.innerWidth > mobilewidth ? 100 : 70,
+              fontSize: window.innerWidth > mobilewidth ? '' : 10,
               padding: 10,
               display: 'flex', flexDirection: 'column', justifyContent: 'center',
               backgroundColor: valor.cor,
@@ -1783,7 +1792,7 @@ function Passometro() {
   const changePages = (quantidade, intervalo) => {
     axios.get(html + 'list_pacientes').then((response) => {
       var y = response.data.rows;
-      var x = y.filter(item => item.setor_origem == setor);
+      var x = y.filter(item => item.setor_origem == setor && (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI'));
       setpacientes(x);
       let totalpacientes = x.length;
       console.log('TOTAL DE PACIENTES: ' + totalpacientes);

@@ -7,6 +7,7 @@ function Modal() {
   // context.
   const {
     dialogo, setdialogo,
+    mobilewidth,
   } = useContext(Context);
 
   return (
@@ -18,7 +19,10 @@ function Modal() {
         onClick={(e) => e.stopPropagation()}
       >
         <div className="text1">{dialogo.mensagem}</div>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', margin: 10 }}>
+        <div style={{
+          display: 'flex', flexDirection: window.innerWidth < mobilewidth ? 'column' : 'row',
+          justifyContent: 'center', margin: 10
+        }}>
           <div
             className="button-green" style={{ width: 200 }}
             onClick={() => { dialogo.funcao(dialogo.parametros); setdialogo({ id: 0, mensagem: '', funcao: null, parametros: [] }); }}
