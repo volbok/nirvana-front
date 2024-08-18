@@ -116,7 +116,11 @@ function Login() {
   const [viewunidades, setviewunidades] = useState(0);
   function SeletorUnidade() {
     return (
-      <div style={{ display: viewunidades == 1 && usuario.senha != '' ? 'flex' : 'none' }}>
+      <div style={{
+        display: viewunidades == 1 && usuario.senha != '' ? 'flex' : 'none', flexDirection: 'row',
+        justifyContent: 'center',
+        flexWrap: 'wrap'
+      }}>
         {Unidade('UPA-VN', usuario.upa_vn)}
         {Unidade('UPA-PAMPULHA', usuario.upa_pampulha)}
       </div>
