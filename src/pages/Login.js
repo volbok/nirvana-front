@@ -248,6 +248,7 @@ function Login() {
           onChange={(e) => (user = e.target.value)}
           onKeyUp={(e) => {
             clearTimeout(timeout);
+            console.log(document.getElementById("inputUsuario").value);
             timeout = setTimeout(() => {
               let checkusuario = usuarios.filter(valor => valor.usuario == document.getElementById('inputUsuario').value);
               if (checkusuario.length == 1 && checkusuario.map(valor => valor.senha).pop() == '') {

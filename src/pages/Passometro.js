@@ -1,5 +1,5 @@
 /* eslint eqeqeq: "off" */
-import React, { useContext, useEffect, useCallback, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import Context from './Context';
 import moment from 'moment';
@@ -345,7 +345,7 @@ function Passometro() {
 
   // lista de pacientes internados.
   const [horizontal, sethorizontal] = useState(0);
-  const ListaDePacientes = useCallback(() => {
+  function ListaDePacientes() {
     return (
       <div
         style={{
@@ -386,7 +386,7 @@ function Passometro() {
       </div>
     )
     // eslint-disable-next-line
-  }, [arraypacientes, setor, status, horizontal]);
+  };
 
   const arraystatus = [
     {
@@ -730,7 +730,9 @@ function Passometro() {
         title={placeholder}
         defaultValue={item}
         id={"campotexto - " + variavel + " - " + obj.id}
-        onChange={() => {
+        onKeyUp={(e) => {
+          console.log(e.target.value);
+          document.getElementById("campotexto - " + variavel + " - " + obj.id).value = e.target.value.toUpperCase();
           clearTimeout(timeout);
           timeout = setTimeout(() => {
             updatePaciente(obj, obj.id);
@@ -1538,7 +1540,7 @@ function Passometro() {
           alignContent: 'flex-start',
           alignSelf: 'flex-start',
           width: window.innerWidth > mobilewidth ? '' : '80vw',
-          fontSize:window.innerWidth > mobilewidth ? '' : 10,
+          fontSize: window.innerWidth > mobilewidth ? '' : 10,
         }}>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
           <img
