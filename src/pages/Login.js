@@ -69,7 +69,7 @@ function Login() {
           );
           // usuário já tem senha cadastrada.
           if (objeto.senha != '') {
-            toast(settoast, 'BEM-VINDO, ' + objeto.nome, 'rgb(82, 190, 128, 1)', 3000);
+            // toast(settoast, 'BEM-VINDO, ' + objeto.nome, 'rgb(82, 190, 128, 1)', 3000);
             if (objeto.tipo == 'GESTOR-TS') {
               setpagina(2);
             } else if (objeto.tipo == 'MOTORISTA-TS') {
