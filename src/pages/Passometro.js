@@ -859,9 +859,8 @@ function Passometro() {
       </div>
     )
   }
-  const expand = (item) => {
-    document.getElementById("detalhes: " + item.id).classList.toggle("expand");
-    document.getElementById('logo alerta ' + item.id).classList.toggle("show");
+  const expand = (elemento) => {
+    document.getElementById(elemento).classList.toggle("expand");
   }
 
   function PassometroSbar() {
@@ -974,7 +973,7 @@ function Passometro() {
                       fontSize: 20,
                       marginRight: 0,
                     }}
-                    onClick={() => { expand(item) }}
+                    onClick={() => { expand("detalhes: " + item.id) }}
                   >
                     <img
                       alt=""
@@ -1169,7 +1168,7 @@ function Passometro() {
                       fontSize: 20,
                       marginRight: 0,
                     }}
-                    onClick={() => { expand(item) }}
+                    onClick={() => { expand("detalhes: " + item.id) }}
                   >
                     <img
                       alt=""
@@ -1217,7 +1216,7 @@ function Passometro() {
                   alignItems: 'center',
                   backgroundColor: '#d7dbdd',
                   marginTop: -8,
-                  marginBottom: 20,
+                  marginBottom: 15,
                   alignSelf: 'center',
                 }}
               >
@@ -1332,17 +1331,73 @@ function Passometro() {
                 style={{
                   display: 'flex',
                   justifyContent: 'center', flexWrap: 'nowrap',
+                  position: 'relative',
+                  marginBottom: 20,
                 }}
               >
-                {CampoTexto(item, isNaN(parseInt(item.passometro_leito)) ? '' : parseInt(item.passometro_leito), 'LEITO', "passometro_leito", 30, 30, 30, 40)}
+                {CampoTexto(item, isNaN(parseInt(item.passometro_leito)) ? '' : parseInt(item.passometro_leito), 'LTO', "passometro_leito", 30, 30, 30, 40)}
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
                   {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '40vw', '40vw', '40vw', 40)}
                   {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '20vw', '20vw', '20vw', 40)}
                 </div>
+                <div id="botões para expandir detalhes e deletar registro."
+                  style={{
+                    position: 'absolute', bottom: -30, right: 20,
+                    display: 'flex', flexDirection: 'row', width: 50,
+                    alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                  }}>
+                  <div id={"toggle_details " + item.id}
+                    className='button-green'
+                    title={'EXIBIR/OCULTAR DETALHES'}
+                    style={{
+                      minWidth: 20, width: 20, maxWidth: 20,
+                      minHeight: 20, height: 20, maxHeight: 20,
+                      alignSelf: 'center',
+                      fontWeight: 'bolder',
+                      fontSize: 20,
+                      marginRight: 0,
+                    }}
+                    onClick={() => { expand("detalhes_mobile: " + item.id) }}
+                  >
+                    <img
+                      alt=""
+                      src={editar}
+                      style={{
+                        margin: 5,
+                        height: 15,
+                        width: 15,
+                      }}
+                    ></img>
+                  </div>
+                  <div id="botão para deletar paciente do passômetro"
+                    className='button-red'
+                    title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
+                    style={{
+                      minWidth: 20, width: 20, maxWidth: 20,
+                      minHeight: 20, height: 20, maxHeight: 20,
+                      marginLeft: 2.5,
+                      alignSelf: 'center',
+                    }}
+                    onClick={
+                      (e) => {
+                        modal(setdialogo, item.id, 'CONFIRMAR EXCLUSÃO DO PACIENTE?', deletePaciente, item.id); e.stopPropagation();
+                      }}
+                  >
+                    <img
+                      alt=""
+                      src={deletar}
+                      style={{
+                        margin: 5,
+                        height: 15,
+                        width: 15,
+                      }}
+                    ></img>
+                  </div>
+                </div>
               </div>
-              <div id={"detalhes: " + item.id}
+              <div id={"detalhes_mobile: " + item.id}
                 title="MAIS CAMPOS"
-                className='expand'
+                className='retract'
                 style={{
                   flexDirection: 'column',
                   flexWrap: 'nowrap',
@@ -1350,17 +1405,16 @@ function Passometro() {
                   alignContent: 'center',
                   alignItems: 'center',
                   backgroundColor: '#d7dbdd',
-                  marginTop: -8,
+                  marginTop: -23,
                   marginBottom: 20,
                   alignSelf: 'center',
-                  position: 'relative',
                 }}
               >
                 {alertas(item)}
                 <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: 'calc(100% - 20px)' }}>
-                  {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", '80vw', '80vw', '80vw', 100)}
-                  {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", '80vw', '80vw', '80vw', 100)}
-                  {CampoTexto(item, item.passometro_recomendacao, "RECOMENDAÇÃO", "passometro_recomendacao", '80vw', '80vw', '80vw', 100)}
+                  {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", '70vw', '70vw', '70vw', 100)}
+                  {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", '70vw', '70vw', '70vw', 100)}
+                  {CampoTexto(item, item.passometro_recomendacao, "RECOMENDAÇÃO", "passometro_recomendacao", '70vw', '70vw', '70vw', 100)}
                 </div>
                 <div style={{
                   display: 'flex', flexDirection: 'column',
@@ -1405,35 +1459,6 @@ function Passometro() {
                   >
                     {CampoChecklist('VULNERABILIDADE SOCIAL', item, item.passometro_vulnerabilidade, "passometro_vulnerabilidade", 250)}
                     {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam", 250)}
-                  </div>
-                </div>
-                <div style={{
-                  position: 'absolute', top: 2.5, right: 2.5,
-                  display: 'flex', flexDirection: 'row', width: 50,
-                  alignSelf: horizontal == 0 ? 'center' : 'flex-start',
-                }}>
-                  <div id="botão para deletar paciente do passômetro"
-                    className='button-red'
-                    title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
-                    style={{
-                      minWidth: 30, width: 30, maxWidth: 30,
-                      minHeight: 30, height: 30, maxHeight: 30,
-                      alignSelf: 'center',
-                    }}
-                    onClick={
-                      (e) => {
-                        modal(setdialogo, item.id, 'CONFIRMAR EXCLUSÃO DO PACIENTE?', deletePaciente, item.id); e.stopPropagation();
-                      }}
-                  >
-                    <img
-                      alt=""
-                      src={deletar}
-                      style={{
-                        margin: 10,
-                        height: 20,
-                        width: 20,
-                      }}
-                    ></img>
                   </div>
                 </div>
               </div>
@@ -1450,93 +1475,53 @@ function Passometro() {
                 className="row"
                 style={{
                   display: 'flex',
+                  flexDirection: 'column',
                   justifyContent: 'center', flexWrap: 'nowrap',
                   backgroundColor: '#fcf3cf',
-                }}
-              >
-                {CampoTexto(item, isNaN(parseInt(item.passometro_leito)) ? '' : parseInt(item.passometro_leito), 'LEITO', "passometro_leito", 30, 30, 30, 40)}
-                <div style={{ display: 'flex', flexDirection: 'row' }}>
-                  {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '40vw', '40vw', '40vw', 40)}
-                  {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '20vw', '20vw', '20vw', 40)}
-                </div>
-              </div>
-              <div id={"detalhes: " + item.id}
-                title="MAIS CAMPOS"
-                className='expand'
-                style={{
-                  flexDirection: 'column',
-                  flexWrap: 'nowrap',
-                  justifyContent: 'center',
-                  alignContent: 'center',
-                  alignItems: 'center',
-                  backgroundColor: '#d7dbdd',
-                  marginTop: -8,
-                  marginBottom: 20,
-                  alignSelf: 'center',
                   position: 'relative',
                 }}
               >
-                <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: 'calc(100% - 20px)' }}>
-                  {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", '80vw', '80vw', '80vw', 100)}
-                  {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", '80vw', '80vw', '80vw', 100)}
-                  {CampoTexto(item, item.passometro_recomendacao, "RECOMENDAÇÃO", "passometro_recomendacao", '80vw', '80vw', '80vw', 100)}
+                <div style={{ display: 'flex', flexDirection: 'row' }}>
+                  {CampoTexto(item, isNaN(parseInt(item.passometro_leito)) ? '' : parseInt(item.passometro_leito), 'LTO', "passometro_leito", 30, 30, 30, 40)}
+                  {CampoTexto(item, item.nome_paciente, 'NOME DO PACIENTE', "nome_paciente", '40vw', '40vw', '40vw', 40)}
+                  {CampoTexto(item, item.passometro_situacao, 'SITUAÇÃO', "passometro_situacao", '20vw', '20vw', '20vw', 40)}
                 </div>
-                <div style={{
-                  display: 'flex', flexDirection: 'column',
-                  justifyContent: 'flex-start',
-                  alignContent: 'flex-start',
-                  alignSelf: 'flex-start',
-                  marginTop: 10,
-                  width: '80vw',
-                }}>
-                  <div
+                <div id="botões para expandir detalhes e deletar registro."
+                  style={{
+                    position: 'absolute', top: 65, right: 20,
+                    display: 'flex', flexDirection: 'row', width: 50,
+                    alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                  }}>
+                  <div id={"toggle_details " + item.id}
+                    className='button-green'
+                    title={'EXIBIR/OCULTAR DETALHES'}
                     style={{
-                      display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
-                      justifyContent: 'flex-start',
-                      alignContent: 'flex-start',
+                      minWidth: 20, width: 20, maxWidth: 20,
+                      minHeight: 20, height: 20, maxHeight: 20,
+                      alignSelf: 'center',
+                      fontWeight: 'bolder',
+                      fontSize: 20,
+                      marginRight: 0,
                     }}
+                    onClick={() => { expand("detalhes_mobile_new: " + item.id) }}
                   >
-                    {CampoChecklist('NOTIFICAÇÃO SRAG', item, item.passometro_notificacao_srag, "passometro_notificacao_srag", 250)}
-                    {CampoChecklist('NOTIFICAÇÃO DENGUE', item, item.passometro_notificacao_dengue, "passometro_notificacao_dengue", 250)}
-                    {CampoChecklist('TESTE COVID', item, item.passometro_checklist_teste_covid, "passometro_checklist_teste_covid", 250)}
-                    {CampoChecklist('TESTE DENGUE', item, item.passometro_checklist_teste_dengue, "passometro_checklist_teste_dengue", 250)}
+                    <img
+                      alt=""
+                      src={editar}
+                      style={{
+                        margin: 5,
+                        height: 15,
+                        width: 15,
+                      }}
+                    ></img>
                   </div>
-                  <div
-                    style={{
-                      display: horizontal == 1 ? 'none' : 'flex',
-                      flexDirection: 'row', flexWrap: 'wrap',
-                      justifyContent: 'flex-start',
-                      alignContent: 'flex-start',
-                    }}
-                  >
-                    {CampoChecklist('LABORATÓRIO', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio", 250)}
-                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx", 250)}
-                    {CampoChecklist('EVOLUÇÃO', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao", 250)}
-                    {CampoChecklist('PRESCRIÇÃO', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao", 250)}
-                  </div>
-                  <div className='text1' style={{ marginTop: 10, marginLeft: 0, alignSelf: 'flex-start' }}>SOCIAL:</div>
-                  <div
-                    style={{
-                      display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
-                      justifyContent: 'flex-start',
-                      alignContent: 'flex-start',
-                    }}
-                  >
-                    {CampoChecklist('VULNERABILIDADE SOCIAL', item, item.passometro_vulnerabilidade, "passometro_vulnerabilidade", 250)}
-                    {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam", 250)}
-                  </div>
-                </div>
-                <div style={{
-                  position: 'absolute', top: 2.5, right: 2.5,
-                  display: 'flex', flexDirection: 'row', width: 50,
-                  alignSelf: horizontal == 0 ? 'center' : 'flex-start',
-                }}>
                   <div id="botão para deletar paciente do passômetro"
                     className='button-red'
                     title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
                     style={{
-                      minWidth: 30, width: 30, maxWidth: 30,
-                      minHeight: 30, height: 30, maxHeight: 30,
+                      minWidth: 20, width: 20, maxWidth: 20,
+                      minHeight: 20, height: 20, maxHeight: 20,
+                      marginLeft: 2.5,
                       alignSelf: 'center',
                     }}
                     onClick={
@@ -1548,11 +1533,76 @@ function Passometro() {
                       alt=""
                       src={deletar}
                       style={{
-                        margin: 10,
-                        height: 20,
-                        width: 20,
+                        margin: 5,
+                        height: 15,
+                        width: 15,
                       }}
                     ></img>
+                  </div>
+                </div>
+                <div id={"detalhes_mobile_new: " + item.id}
+                  title="MAIS CAMPOS"
+                  className='expand'
+                  style={{
+                    flexDirection: 'column',
+                    flexWrap: 'nowrap',
+                    justifyContent: 'center',
+                    alignContent: 'center',
+                    alignItems: 'center',
+                    backgroundColor: '#d7dbdd',
+                    marginTop: 2.5,
+                    alignSelf: 'center',
+                  }}
+                >
+                  <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center', width: 'calc(100% - 20px)' }}>
+                    {CampoTexto(item, item.passometro_breve_historico, "BREVE HISTÓRICO", "passometro_breve_historico", '70vw', '70vw', '70vw', 100)}
+                    {CampoTexto(item, item.passometro_avaliacao, "AVALIAÇÃO", "passometro_avaliacao", '70vw', '70vw', '70vw', 100)}
+                    {CampoTexto(item, item.passometro_recomendacao, "RECOMENDAÇÃO", "passometro_recomendacao", '70vw', '70vw', '70vw', 100)}
+                  </div>
+                  <div style={{
+                    display: 'flex', flexDirection: 'column',
+                    justifyContent: 'flex-start',
+                    alignContent: 'flex-start',
+                    alignSelf: 'flex-start',
+                    marginTop: 10,
+                    width: '80vw',
+                  }}>
+                    <div
+                      style={{
+                        display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                        justifyContent: 'flex-start',
+                        alignContent: 'flex-start',
+                      }}
+                    >
+                      {CampoChecklist('NOTIFICAÇÃO SRAG', item, item.passometro_notificacao_srag, "passometro_notificacao_srag", 250)}
+                      {CampoChecklist('NOTIFICAÇÃO DENGUE', item, item.passometro_notificacao_dengue, "passometro_notificacao_dengue", 250)}
+                      {CampoChecklist('TESTE COVID', item, item.passometro_checklist_teste_covid, "passometro_checklist_teste_covid", 250)}
+                      {CampoChecklist('TESTE DENGUE', item, item.passometro_checklist_teste_dengue, "passometro_checklist_teste_dengue", 250)}
+                    </div>
+                    <div
+                      style={{
+                        display: horizontal == 1 ? 'none' : 'flex',
+                        flexDirection: 'row', flexWrap: 'wrap',
+                        justifyContent: 'flex-start',
+                        alignContent: 'flex-start',
+                      }}
+                    >
+                      {CampoChecklist('LABORATÓRIO', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio", 250)}
+                      {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx", 250)}
+                      {CampoChecklist('EVOLUÇÃO', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao", 250)}
+                      {CampoChecklist('PRESCRIÇÃO', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao", 250)}
+                    </div>
+                    <div className='text1' style={{ marginTop: 10, marginLeft: 0, alignSelf: 'flex-start' }}>SOCIAL:</div>
+                    <div
+                      style={{
+                        display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+                        justifyContent: 'flex-start',
+                        alignContent: 'flex-start',
+                      }}
+                    >
+                      {CampoChecklist('VULNERABILIDADE SOCIAL', item, item.passometro_vulnerabilidade, "passometro_vulnerabilidade", 250)}
+                      {CampoChecklist('CERSAM', item, item.passometro_cersam, "passometro_cersam", 250)}
+                    </div>
                   </div>
                 </div>
               </div>
@@ -1603,25 +1653,26 @@ function Passometro() {
           marginBottom: 10,
           alignContent: 'flex-start',
           alignSelf: 'flex-start',
-          width: window.innerWidth > mobilewidth ? '' : '80vw',
+          width: window.innerWidth > mobilewidth ? '' : '',
           fontSize: window.innerWidth > mobilewidth ? '' : 10,
         }}>
         <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'flex-start' }}>
           <img
-            id="botão de alertas"
+            id="logo de alertas"
             alt=""
             src={alerta}
             style={{
-              display: alertalaboratorio == true || alertarx == true || alertaaih == true ? 'flex' : 'none',
+              display: 'flex',
               margin: 0,
-              height: 60,
-              width: 60,
+              height: window.innerWidth > mobilewidth ? 50 : 40,
+              width: window.innerWidth > mobilewidth ? 50 : 40,
             }}
           >
           </img>
           <div className='text2'
             style={{
-              margin: 2.5, textAlign: 'left', textDecoration: 'underline', fontSize: 16,
+              margin: 2.5, textAlign: 'left', textDecoration: 'underline',
+              fontSize: window.innerWidth > mobilewidth ? 14 : 12,
               alignSelf: 'center',
             }}
           >

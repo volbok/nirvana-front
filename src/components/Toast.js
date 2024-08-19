@@ -15,12 +15,15 @@ function Toast() {
         bottom: 20,
         left: window.innerWidth > 768 ? '' : 20,
         right: window.innerWidth > 768 ? 20 : 20,
-        display: 'flex', flexDirection: 'column', justifyContent: 'center',
+        display: toast.display,
+        visibility: toast.visibility,
+        flexDirection: 'column', justifyContent: 'center',
         alignContent: 'center', alignItems: 'center',
       }}>
       <div
         style={{
           display: toast.display,
+          visibility: toast.visibility,
           alignItems: 'center',
           textAlign: 'center',
           backgroundColor: toast.cor,

@@ -166,14 +166,24 @@ body {
     transform: rotate(0deg);
   }
 
-  10% {
+  2% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  3% {
     opacity: 1;
     transform: rotate(5deg);
   }
 
-  90% {
+  4% {
     opacity: 1;
-    transform: rotate(5deg);
+    transform: rotate(-5deg);
+  }
+
+  5% {
+    opacity: 1;
+    transform: rotate(0deg);
   }
 
   100% {

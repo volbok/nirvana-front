@@ -143,7 +143,6 @@ function Login() {
         upa_nordeste: usuario.upa_nordeste,
         upa_barreiro: usuario.upa_barreiro,
       }
-      console.log(obj);
       axios.post(html + 'update_usuario/' + usuario.id, obj).then(() => {
         console.log('SENHA REGISTRADA COM SUCESSO.');
         setcadastrasenha(0);
@@ -248,7 +247,6 @@ function Login() {
           onChange={(e) => (user = e.target.value)}
           onKeyUp={(e) => {
             clearTimeout(timeout);
-            console.log(document.getElementById("inputUsuario").value);
             timeout = setTimeout(() => {
               let checkusuario = usuarios.filter(valor => valor.usuario == document.getElementById('inputUsuario').value);
               if (checkusuario.length == 1 && checkusuario.map(valor => valor.senha).pop() == '') {
