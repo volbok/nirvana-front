@@ -225,10 +225,10 @@ function Passometro() {
         passometro_checklist_teste_dengue: document.getElementById("check - passometro_checklist_teste_dengue - " + id).innerHTML,
 
 
-        passometro_checklist_evolucao: document.getElementById("check - hor-passometro_checklist_evolucao - " + id).innerHTML,
-        passometro_checklist_prescricao: document.getElementById("check - hor-passometro_checklist_prescricao - " + id).innerHTML,
-        passometro_checklist_laboratorio: document.getElementById("check - hor-passometro_checklist_laboratorio - " + id).innerHTML,
-        passometro_checklist_rx: document.getElementById("check - hor-passometro_checklist_rx - " + id).innerHTML,
+        passometro_checklist_evolucao: document.getElementById("check - passometro_checklist_evolucao - " + id).innerHTML,
+        passometro_checklist_prescricao: document.getElementById("check - passometro_checklist_prescricao - " + id).innerHTML,
+        passometro_checklist_laboratorio: document.getElementById("check - passometro_checklist_laboratorio - " + id).innerHTML,
+        passometro_checklist_rx: document.getElementById("check - passometro_checklist_rx - " + id).innerHTML,
 
         passometro_setor: document.getElementById("camposelecao - passometro_setor - " + id).innerHTML,
         passometro_data: item.passometro_data,
@@ -952,10 +952,10 @@ function Passometro() {
                       alignContent: 'flex-start',
                     }}
                   >
-                    {CampoChecklist('LAB', item, item.passometro_checklist_laboratorio, "hor-passometro_checklist_laboratorio", 80)}
-                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "hor-passometro_checklist_rx", 80)}
-                    {CampoChecklist('E', item, item.passometro_checklist_evolucao, "hor-passometro_checklist_evolucao", 80)}
-                    {CampoChecklist('P', item, item.passometro_checklist_prescricao, "hor-passometro_checklist_prescricao", 80)}
+                    {CampoChecklist('LAB', item, item.passometro_checklist_laboratorio, "passometro_checklist_laboratorio", 80)}
+                    {CampoChecklist('RX', item, item.passometro_checklist_rx, "passometro_checklist_rx", 80)}
+                    {CampoChecklist('E', item, item.passometro_checklist_evolucao, "passometro_checklist_evolucao", 80)}
+                    {CampoChecklist('P', item, item.passometro_checklist_prescricao, "passometro_checklist_prescricao", 80)}
                     {CampoSelecaoTag(item, item.tag, arraytag, 'tag')}
                   </div>
                 </div>
