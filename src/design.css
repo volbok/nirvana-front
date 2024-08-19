@@ -155,6 +155,8 @@ body {
 
 /* TOAST */
 .toasty {
+  display: none;
+  visibility: hidden;
   opacity: 1;
   animation-name: fadeinout;
   animation-duration: 3s;

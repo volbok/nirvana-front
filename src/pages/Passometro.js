@@ -1345,6 +1345,7 @@ function Passometro() {
                     position: 'absolute', bottom: -30, right: 20,
                     display: 'flex', flexDirection: 'row', width: 50,
                     alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                    zIndex: 10,
                   }}>
                   <div id={"toggle_details " + item.id}
                     className='button-green'

@@ -12,7 +12,7 @@ function Modal() {
 
   return (
     <div className="fundo"
-      style={{ display: dialogo.id !== 0 ? 'flex' : 'none' }}
+      style={{ display: dialogo.id !== 0 ? 'flex' : 'none', zIndex: 20 }}
       onClick={() => setdialogo({ id: 0, mensagem: '', funcao: null, parametros: [] })}
     >
       <div className="janela"
