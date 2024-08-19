@@ -434,7 +434,7 @@ function Passometro() {
           <div className="text3" style={{ marginTop: 20 }}>{'SITUAÇÃO'}</div>
           <div
             style={{
-              width: window.innerWidth > mobilewidth ? '80vw' : '80vw',
+              width: '90vw',
               overflowX: 'hidden',
               overflowY: 'hidden',
               alignContent: 'center',
@@ -1479,7 +1479,9 @@ function Passometro() {
                   flexDirection: 'column',
                   justifyContent: 'center', flexWrap: 'nowrap',
                   backgroundColor: '#fcf3cf',
+                  borderRadius: 5,
                   position: 'relative',
+                  marginTop: 12.5,
                 }}
               >
                 <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -1492,6 +1494,7 @@ function Passometro() {
                     position: 'absolute', top: 65, right: 20,
                     display: 'flex', flexDirection: 'row', width: 50,
                     alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                    zIndex: 10,
                   }}>
                   <div id={"toggle_details " + item.id}
                     className='button-green'
@@ -1543,7 +1546,7 @@ function Passometro() {
                 </div>
                 <div id={"detalhes_mobile_new: " + item.id}
                   title="MAIS CAMPOS"
-                  className='expand'
+                  className='retract'
                   style={{
                     flexDirection: 'column',
                     flexWrap: 'nowrap',
@@ -1727,10 +1730,10 @@ function Passometro() {
             className={status == valor.valor ? 'button' : 'button weak'}
             key={'resumo ' + valor.valor}
             style={{
-              width: window.innerWidth > mobilewidth ? 100 : 90,
-              minWidth: window.innerWidth > mobilewidth ? 100 : 90,
-              height: window.innerWidth > mobilewidth ? 100 : 90,
-              fontSize: window.innerWidth > mobilewidth ? '' : 10,
+              width: window.innerWidth > mobilewidth ? 100 : '35vw',
+              minWidth: window.innerWidth > mobilewidth ? 100 : '35vw',
+              height: window.innerWidth > mobilewidth ? 100 : '35vw',
+              fontSize: window.innerWidth > mobilewidth ? '' : 12,
               padding: 10,
               display: 'flex', flexDirection: 'column', justifyContent: 'center',
               backgroundColor: valor.cor,
