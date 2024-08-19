@@ -1614,9 +1614,9 @@ function Passometro() {
             className={status == valor.valor ? 'button' : 'button weak'}
             key={'resumo ' + valor.valor}
             style={{
-              width: window.innerWidth > mobilewidth ? 100 : 70,
-              minWidth: window.innerWidth > mobilewidth ? 100 : 70,
-              height: window.innerWidth > mobilewidth ? 100 : 70,
+              width: window.innerWidth > mobilewidth ? 100 : 90,
+              minWidth: window.innerWidth > mobilewidth ? 100 : 90,
+              height: window.innerWidth > mobilewidth ? 100 : 90,
               fontSize: window.innerWidth > mobilewidth ? '' : 10,
               padding: 10,
               display: 'flex', flexDirection: 'column', justifyContent: 'center',
