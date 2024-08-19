@@ -125,59 +125,117 @@ function Passometro() {
   var obj = {}
   // atualizar registro de pacientes.
   const updatePaciente = (item, id) => {
-    obj = {
-      aih: item.aih,
-      procedimento: item.procedimento,
-      unidade_origem: item.unidade_origem,
-      setor_origem: document.getElementById("camposelecao - passometro_setor - " + id).innerHTML,
-      nome_paciente: document.getElementById("campotexto - nome_paciente - " + id).value.toUpperCase(),
-      nome_mae: item.nome_mae,
-      dn_paciente: item.dn_paciente,
-      status: document.getElementById("camposelecao - status - " + id).innerHTML,
-      unidade_destino: item.unidade_destino,
-      setor_destino: item.setor_destino,
-      indicador_data_cadastro: item.indicador_data_cadastro,
-      indicador_data_confirmacao: item.indicador_data_confirmacao,
-      indicador_relatorio: item.indicador_relatorio,
-      indicador_solicitacao_transporte: item.indicador_solicitacao_transporte,
-      indicador_saida_origem: item.indicador_saida_origem,
-      indicador_chegada_destino: item.indicador_chegada_destino,
-      dados_susfacil: item.dados_susfacil,
-      exames_ok: item.exames_ok,
-      aih_ok: item.aih_ok,
-      glasgow: item.glasgow,
-      pas: item.pas,
-      pad: item.pad,
-      fc: item.fc,
-      fr: item.fr,
-      sao2: item.sao2,
-      ofertao2: item.ofertao2,
-      tipo_leito: item.tipo_leito,
-      contato_nome: item.contato_nome,
-      contato_telefone: item.contato_telefone,
-      leito_destino: item.leito_destino,
-      passometro_leito: document.getElementById("campotexto - passometro_leito - " + id).value.toUpperCase(),
-      passometro_situacao: document.getElementById("campotexto - passometro_situacao - " + id).value.toUpperCase(),
-      passometro_breve_historico: document.getElementById("campotexto - passometro_breve_historico - " + id).value.toUpperCase(),
-      passometro_avaliacao: document.getElementById("campotexto - passometro_avaliacao - " + id).value.toUpperCase(),
-      passometro_recomendacao: document.getElementById("campotexto - passometro_recomendacao - " + id).value.toUpperCase(),
-      passometro_peso: item.passometro_peso,
-      passometro_notificacao_srag: document.getElementById("check - passometro_notificacao_srag - " + id).innerHTML,
-      passometro_notificacao_dengue: document.getElementById("check - passometro_notificacao_dengue - " + id).innerHTML,
-      passometro_checklist_teste_covid: document.getElementById("check - passometro_checklist_teste_covid - " + id).innerHTML,
-      passometro_checklist_teste_dengue: document.getElementById("check - passometro_checklist_teste_dengue - " + id).innerHTML,
+
+    if (horizontal == 0) {
+      obj = {
+        aih: item.aih,
+        procedimento: item.procedimento,
+        unidade_origem: item.unidade_origem,
+        setor_origem: document.getElementById("camposelecao - passometro_setor - " + id).innerHTML,
+        nome_paciente: document.getElementById("campotexto - nome_paciente - " + id).value.toUpperCase(),
+        nome_mae: item.nome_mae,
+        dn_paciente: item.dn_paciente,
+        status: document.getElementById("camposelecao - status - " + id).innerHTML,
+        unidade_destino: item.unidade_destino,
+        setor_destino: item.setor_destino,
+        indicador_data_cadastro: item.indicador_data_cadastro,
+        indicador_data_confirmacao: item.indicador_data_confirmacao,
+        indicador_relatorio: item.indicador_relatorio,
+        indicador_solicitacao_transporte: item.indicador_solicitacao_transporte,
+        indicador_saida_origem: item.indicador_saida_origem,
+        indicador_chegada_destino: item.indicador_chegada_destino,
+        dados_susfacil: item.dados_susfacil,
+        exames_ok: item.exames_ok,
+        aih_ok: item.aih_ok,
+        glasgow: item.glasgow,
+        pas: item.pas,
+        pad: item.pad,
+        fc: item.fc,
+        fr: item.fr,
+        sao2: item.sao2,
+        ofertao2: item.ofertao2,
+        tipo_leito: item.tipo_leito,
+        contato_nome: item.contato_nome,
+        contato_telefone: item.contato_telefone,
+        leito_destino: item.leito_destino,
+        passometro_leito: document.getElementById("campotexto - passometro_leito - " + id).value.toUpperCase(),
+        passometro_situacao: document.getElementById("campotexto - passometro_situacao - " + id).value.toUpperCase(),
+        passometro_breve_historico: document.getElementById("campotexto - passometro_breve_historico - " + id).value.toUpperCase(),
+        passometro_avaliacao: document.getElementById("campotexto - passometro_avaliacao - " + id).value.toUpperCase(),
+        passometro_recomendacao: document.getElementById("campotexto - passometro_recomendacao - " + id).value.toUpperCase(),
+        passometro_peso: item.passometro_peso,
+        passometro_notificacao_srag: document.getElementById("check - passometro_notificacao_srag - " + id).innerHTML,
+        passometro_notificacao_dengue: document.getElementById("check - passometro_notificacao_dengue - " + id).innerHTML,
+        passometro_checklist_teste_covid: document.getElementById("check - passometro_checklist_teste_covid - " + id).innerHTML,
+        passometro_checklist_teste_dengue: document.getElementById("check - passometro_checklist_teste_dengue - " + id).innerHTML,
 
 
-      passometro_checklist_evolucao: horizontal != 1 ? document.getElementById("check - passometro_checklist_evolucao - " + id).innerHTML : document.getElementById("check - hor-passometro_checklist_evolucao - " + id).innerHTML,
-      passometro_checklist_prescricao: horizontal != 1 ? document.getElementById("check - passometro_checklist_prescricao - " + id).innerHTML : document.getElementById("check - hor-passometro_checklist_prescricao - " + id).innerHTML,
-      passometro_checklist_laboratorio: horizontal != 1 ? document.getElementById("check - passometro_checklist_laboratorio - " + id).innerHTML : document.getElementById("check - hor-passometro_checklist_laboratorio - " + id).innerHTML,
-      passometro_checklist_rx: horizontal != 1 ? document.getElementById("check - passometro_checklist_rx - " + id).innerHTML : document.getElementById("check - hor-passometro_checklist_rx - " + id).innerHTML,
+        passometro_checklist_evolucao: document.getElementById("check - passometro_checklist_evolucao - " + id).innerHTML,
+        passometro_checklist_prescricao: document.getElementById("check - passometro_checklist_prescricao - " + id).innerHTML,
+        passometro_checklist_laboratorio: document.getElementById("check - passometro_checklist_laboratorio - " + id).innerHTML,
+        passometro_checklist_rx: document.getElementById("check - passometro_checklist_rx - " + id).innerHTML,
 
-      passometro_setor: document.getElementById("camposelecao - passometro_setor - " + id).innerHTML,
-      passometro_data: item.passometro_data,
-      passometro_vulnerabilidade: document.getElementById("check - passometro_vulnerabilidade - " + id).innerHTML,
-      passometro_cersam: document.getElementById("check - passometro_cersam - " + id).innerHTML,
-      tag: document.getElementById("camposelecao - tag - " + id).innerHTML,
+        passometro_setor: document.getElementById("camposelecao - passometro_setor - " + id).innerHTML,
+        passometro_data: item.passometro_data,
+        passometro_vulnerabilidade: document.getElementById("check - passometro_vulnerabilidade - " + id).innerHTML,
+        passometro_cersam: document.getElementById("check - passometro_cersam - " + id).innerHTML,
+        tag: document.getElementById("camposelecao - tag - " + id).innerHTML,
+      }
+    } else {
+      obj = {
+        aih: item.aih,
+        procedimento: item.procedimento,
+        unidade_origem: item.unidade_origem,
+        setor_origem: document.getElementById("camposelecao - passometro_setor - " + id).innerHTML,
+        nome_paciente: document.getElementById("campotexto - nome_paciente - " + id).value.toUpperCase(),
+        nome_mae: item.nome_mae,
+        dn_paciente: item.dn_paciente,
+        status: document.getElementById("camposelecao - status - " + id).innerHTML,
+        unidade_destino: item.unidade_destino,
+        setor_destino: item.setor_destino,
+        indicador_data_cadastro: item.indicador_data_cadastro,
+        indicador_data_confirmacao: item.indicador_data_confirmacao,
+        indicador_relatorio: item.indicador_relatorio,
+        indicador_solicitacao_transporte: item.indicador_solicitacao_transporte,
+        indicador_saida_origem: item.indicador_saida_origem,
+        indicador_chegada_destino: item.indicador_chegada_destino,
+        dados_susfacil: item.dados_susfacil,
+        exames_ok: item.exames_ok,
+        aih_ok: item.aih_ok,
+        glasgow: item.glasgow,
+        pas: item.pas,
+        pad: item.pad,
+        fc: item.fc,
+        fr: item.fr,
+        sao2: item.sao2,
+        ofertao2: item.ofertao2,
+        tipo_leito: item.tipo_leito,
+        contato_nome: item.contato_nome,
+        contato_telefone: item.contato_telefone,
+        leito_destino: item.leito_destino,
+        passometro_leito: document.getElementById("campotexto - passometro_leito - " + id).value.toUpperCase(),
+        passometro_situacao: document.getElementById("campotexto - passometro_situacao - " + id).value.toUpperCase(),
+        passometro_breve_historico: document.getElementById("campotexto - passometro_breve_historico - " + id).value.toUpperCase(),
+        passometro_avaliacao: document.getElementById("campotexto - passometro_avaliacao - " + id).value.toUpperCase(),
+        passometro_recomendacao: document.getElementById("campotexto - passometro_recomendacao - " + id).value.toUpperCase(),
+        passometro_peso: item.passometro_peso,
+        passometro_notificacao_srag: document.getElementById("check - passometro_notificacao_srag - " + id).innerHTML,
+        passometro_notificacao_dengue: document.getElementById("check - passometro_notificacao_dengue - " + id).innerHTML,
+        passometro_checklist_teste_covid: document.getElementById("check - passometro_checklist_teste_covid - " + id).innerHTML,
+        passometro_checklist_teste_dengue: document.getElementById("check - passometro_checklist_teste_dengue - " + id).innerHTML,
+
+
+        passometro_checklist_evolucao: document.getElementById("check - hor-passometro_checklist_evolucao - " + id).innerHTML,
+        passometro_checklist_prescricao: document.getElementById("check - hor-passometro_checklist_prescricao - " + id).innerHTML,
+        passometro_checklist_laboratorio: document.getElementById("check - hor-passometro_checklist_laboratorio - " + id).innerHTML,
+        passometro_checklist_rx: document.getElementById("check - hor-passometro_checklist_rx - " + id).innerHTML,
+
+        passometro_setor: document.getElementById("camposelecao - passometro_setor - " + id).innerHTML,
+        passometro_data: item.passometro_data,
+        passometro_vulnerabilidade: document.getElementById("check - passometro_vulnerabilidade - " + id).innerHTML,
+        passometro_cersam: document.getElementById("check - passometro_cersam - " + id).innerHTML,
+        tag: document.getElementById("camposelecao - tag - " + id).innerHTML,
+      }
     }
     axios.post(html + 'update_paciente/' + id, obj).then(() => {
       console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
@@ -191,7 +249,6 @@ function Passometro() {
       loadSetores();
       loadPacientes(pacientes.filter(item => item.status == 'REAVALIAÇÃO' && item.setor_origem == 'UDC'));
     }
-
     // eslint-disable-next-line
   }, [pagina])
 
@@ -244,8 +301,14 @@ function Passometro() {
             onClick={(e) => {
               if (horizontal == 0) {
                 sethorizontal(1);
+                setstatus(null);
+                setsetor(null);
+                loadPacientes(pacientes.filter(item => item.status == '' && item.setor_origem == ''));
               } else {
                 sethorizontal(0);
+                setstatus(null);
+                setsetor(null);
+                loadPacientes(pacientes.filter(item => item.status == '' && item.setor_origem == ''));
               }
               e.stopPropagation();
             }}
@@ -636,7 +699,6 @@ function Passometro() {
                   passometro_cersam: document.getElementById("check - passometro_cersam - " + obj.id).innerHTML,
                   tag: document.getElementById("camposelecao - tag - " + obj.id).innerHTML,
                 }
-                console.log(objeto);
                 axios.post(html + 'update_paciente/' + obj.id, objeto).then(() => {
                   console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
                   axios.get(html + 'list_pacientes').then((response) => {
@@ -734,7 +796,6 @@ function Passometro() {
         defaultValue={item}
         id={"campotexto - " + variavel + " - " + obj.id}
         onKeyUp={(e) => {
-          console.log(e.target.value);
           document.getElementById("campotexto - " + variavel + " - " + obj.id).value = e.target.value.toUpperCase();
           clearTimeout(timeout);
           timeout = setTimeout(() => {
