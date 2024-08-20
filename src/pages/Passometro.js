@@ -4,7 +4,7 @@ import axios from 'axios';
 import Context from './Context';
 import moment from 'moment';
 // funções.
-import toast from '../functions/toast';
+// import toast from '../functions/toast';
 import modal from '../functions/modal';
 // imagens.
 import power from '../images/power.svg';
@@ -26,7 +26,7 @@ function Passometro() {
     usuario,
     pagina, setpagina,
     pacientes, setpacientes,
-    settoast,
+    // settoast,
     setdialogo,
     unidade,
     mobilewidth,
@@ -34,15 +34,24 @@ function Passometro() {
 
   // carregar lista de pacientes internados.
   const [arraypacientes, setarraypacientes] = useState(pacientes);
-  const loadPacientes = (valor) => {
+  const loadPacientes = (status, setor) => {
     axios.get(html + 'list_pacientes').then((response) => {
-      setpacientes(response.data.rows);
-      setarraypacientes(response.data.rows);
-      console.log('## INFO ## \nLISTA DE PACIENTES INTERNADOS CARREGADA.\nTOTAL DE PACIENTES INTERNADOS: ' + response.data.rows.length);
-      if (valor != null) {
-        setarraypacientes(valor);
-      }
+      var x = response.data.rows;
+      filtermanager(x, status, setor);
     });
+  }
+
+  const filtermanager = (array, status, setor) => {
+    setpacientes(array);
+    if (status == null && setor != null) {
+      setarraypacientes(array.filter(item => item.setor_origem == setor));
+    } else if (status != null && setor == null) {
+      setarraypacientes(array.filter(item => item.status == status));
+    } else if (status == null && setor == null) {
+      setarraypacientes(array);
+    } else {
+      setarraypacientes(array.filter(item => item.status == status && item.setor_origem == setor));
+    }
   }
 
   // inserir registro de pacientes.
@@ -99,26 +108,14 @@ function Passometro() {
       tag: 'TAG',
     }
     axios.post(html + 'insert_paciente/', obj).then(() => {
-      axios.get(html + 'list_pacientes').then((response) => {
-        var x = [];
-        x = response.data.rows;
-        setpacientes(x);
-        setarraypacientes(x.filter(valor => valor.setor_origem == setor && valor.status == status));
-        toast(settoast, 'REGISTRO INSERIDO COM SUCESSO', 'rgb(82, 190, 128, 1)', 3000);
-      });
+      loadPacientes(status, setor);
     });
   }
 
   // excluir registro de pacientes.
   const deletePaciente = (id) => {
     axios.get(html + 'delete_paciente/' + id).then(() => {
-      axios.get(html + 'list_pacientes').then((response) => {
-        var x = [];
-        x = response.data.rows;
-        setpacientes(x);
-        setarraypacientes(x.filter(item => item.status == status && item.setor_origem == setor));
-        toast(settoast, 'REGISTRO EXCLUÍDO COM SUCESSO', 'rgb(82, 190, 128, 1)', 3000);
-      })
+      loadPacientes(status, setor);
     });
   }
 
@@ -247,7 +244,7 @@ function Passometro() {
   useEffect(() => {
     if (pagina == 'PASSOMETRO') {
       loadSetores();
-      loadPacientes(pacientes.filter(item => item.status == 'REAVALIAÇÃO' && item.setor_origem == 'UDC'));
+      loadPacientes('REAVALIAÇÃO', 'UDC');
     }
     // eslint-disable-next-line
   }, [pagina])
@@ -303,12 +300,12 @@ function Passometro() {
                 sethorizontal(1);
                 setstatus(null);
                 setsetor(null);
-                loadPacientes(pacientes.filter(item => item.status == '' && item.setor_origem == ''));
+                loadPacientes(null, 'UDC');
               } else {
                 sethorizontal(0);
                 setstatus(null);
                 setsetor(null);
-                loadPacientes(pacientes.filter(item => item.status == '' && item.setor_origem == ''));
+                loadPacientes(null, 'OBS 1');
               }
               e.stopPropagation();
             }}
@@ -573,31 +570,14 @@ function Passometro() {
         }}>
         <div
           id="botao todos os setores"
-          className={setor == 'TODOS' ? 'button' : 'button weak'}
+          className={setor == null ? 'button' : 'button weak'}
           style={{
             width: window.innerWidth > mobilewidth ? 120 : 80,
             height: 30, minHeight: 30, maxHeight: 30,
           }}
           onClick={() => {
-            axios.get(html + 'list_pacientes').then((response) => {
-              var x = [];
-              x = response.data.rows;
-              setpacientes(x);
-              if (status != null) {
-                setarraypacientes(x.filter(item => item.status == status))
-              } else {
-                setarraypacientes(x);
-              }
-              ;
-              setsetor('TODOS');
-              setTimeout(() => {
-                var botoes = document.getElementById("lista de botões para filtro de setores").getElementsByClassName("button strong");
-                for (var i = 0; i < botoes.length; i++) {
-                  botoes.item(i).className = 'button weak';
-                }
-                document.getElementById("botao todos os setores").className = "button strong";
-              }, 100);
-            })
+            setsetor(null);
+            loadPacientes(status, null);
           }}
         >
           {'TODOS'}
@@ -613,26 +593,8 @@ function Passometro() {
               height: 30, minHeight: 30, maxHeight: 30,
             }}
             onClick={() => {
-              axios.get(html + 'list_pacientes').then((response) => {
-                var x = [];
-                x = response.data.rows;
-                setpacientes(response.data.rows);
-                if (status != null) {
-                  setarraypacientes(x.filter(valor => valor.setor_origem == item.valor && valor.status == status));
-                } else{
-                  setarraypacientes(x.filter(valor => valor.setor_origem == item.valor));
-                }
-                setsetor(item.valor);
-                console.log('STATUS: ' + status);
-                console.log('SETOR: ' + item.valor);
-                setTimeout(() => {
-                  var botoes = document.getElementById("lista de botões para filtro de setores").getElementsByClassName("button strong");
-                  for (var i = 0; i < botoes.length; i++) {
-                    botoes.item(i).className = 'button weak';
-                  }
-                  document.getElementById("botao de unidade " + item.valor).className = "button strong";
-                }, 100);
-              })
+              setsetor(item.valor);
+              loadPacientes(status, item.valor);
             }}
           >
             {item.valor}
@@ -710,13 +672,7 @@ function Passometro() {
                 }
                 axios.post(html + 'update_paciente/' + obj.id, objeto).then(() => {
                   console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
-                  axios.get(html + 'list_pacientes').then((response) => {
-                    var x = [];
-                    x = response.data.rows;
-                    setpacientes(x);
-                    setarraypacientes(x.filter(item => item.status == status && item.setor_origem == setor));
-                    console.log('## INFO ## \nLISTA DE PACIENTES INTERNADOS CARREGADA.\nTOTAL DE PACIENTES INTERNADOS: ' + response.data.rows.length);
-                  });
+                  loadPacientes(status, setor);
                 });
               }}
             >
@@ -1749,7 +1705,7 @@ function Passometro() {
           }}
           onClick={() => {
             setstatus(null);
-            loadPacientes(pacientes.filter(item => item.setor_origem == setor));
+            loadPacientes(null, setor);
           }}
         >
           <div>{'TODOS'}</div>
@@ -1769,7 +1725,7 @@ function Passometro() {
             }}
             onClick={() => {
               setstatus(valor.valor);
-              loadPacientes(pacientes.filter(item => item.status == valor.valor && item.setor_origem == setor));
+              loadPacientes(valor.valor, setor);
             }}
           >
             <div>{valor.valor}</div>
