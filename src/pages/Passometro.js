@@ -583,7 +583,12 @@ function Passometro() {
               var x = [];
               x = response.data.rows;
               setpacientes(x);
-              setarraypacientes(x.filter(item => item.status == status));
+              if (status != null) {
+                setarraypacientes(x.filter(item => item.status == status))
+              } else {
+                setarraypacientes(x);
+              }
+              ;
               setsetor('TODOS');
               setTimeout(() => {
                 var botoes = document.getElementById("lista de botões para filtro de setores").getElementsByClassName("button strong");
@@ -612,7 +617,11 @@ function Passometro() {
                 var x = [];
                 x = response.data.rows;
                 setpacientes(response.data.rows);
-                setarraypacientes(x.filter(valor => valor.setor_origem == item.valor && valor.status == status));
+                if (status != null) {
+                  setarraypacientes(x.filter(valor => valor.setor_origem == item.valor && valor.status == status));
+                } else{
+                  setarraypacientes(x.filter(valor => valor.setor_origem == item.valor));
+                }
                 setsetor(item.valor);
                 console.log('STATUS: ' + status);
                 console.log('SETOR: ' + item.valor);
@@ -1725,6 +1734,26 @@ function Passometro() {
         alignSelf: 'center',
         flexWrap: 'wrap',
       }}>
+        <div
+          id='status todos'
+          className='button'
+          style={{
+            width: window.innerWidth > mobilewidth ? 100 : '35vw',
+            minWidth: window.innerWidth > mobilewidth ? 100 : '35vw',
+            height: window.innerWidth > mobilewidth ? 100 : '35vw',
+            fontSize: window.innerWidth > mobilewidth ? '' : 12,
+            padding: 10,
+            display: 'flex', flexDirection: 'column', justifyContent: 'center',
+            backgroundColor: 'grey',
+            opacity: status == null ? 1 : 0.7
+          }}
+          onClick={() => {
+            setstatus(null);
+            loadPacientes(pacientes.filter(item => item.setor_origem == setor));
+          }}
+        >
+          <div>{'TODOS'}</div>
+        </div>
         {arraystatus.map(valor => (
           <div
             className={status == valor.valor ? 'button' : 'button weak'}
