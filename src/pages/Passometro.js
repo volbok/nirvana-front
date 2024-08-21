@@ -346,8 +346,8 @@ function Passometro() {
           src={modo == 0 ? modo_edicao : modo_visualizacao}
           style={{
             margin: 10,
-            height: 60,
-            width: 60,
+            height: 40,
+            width: 40,
           }}
         ></img>
       </div>
