@@ -300,7 +300,7 @@ function Login() {
       <SeletorUnidade></SeletorUnidade>
       <CadastroDeSenha></CadastroDeSenha>
       <div
-        style={{ marginTop: 10 }}
+        style={{ display: 'none', marginTop: 10 }}
         className='button-red'
         onClick={() => {
           window.location.reload();
