@@ -45,13 +45,13 @@ function Passometro() {
   const filtermanager = (array, status, setor) => {
     setpacientes(array);
     if (status == null && setor != null) {
-      setarraypacientes(array.filter(item => item.setor_origem == setor));
+      setarraypacientes(array.filter(item => item.setor_origem == setor && (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI')).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status != null && setor == null) {
-      setarraypacientes(array.filter(item => item.status == status));
+      setarraypacientes(array.filter(item => item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status == null && setor == null) {
-      setarraypacientes(array);
+      setarraypacientes(array.filter(item => item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI').sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else {
-      setarraypacientes(array.filter(item => item.status == status && item.setor_origem == setor));
+      setarraypacientes(array.filter(item => item.status == status && item.setor_origem == setor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     }
   }
 
@@ -1763,18 +1763,18 @@ function Passometro() {
       var x = response.data.rows;
       var arrayfilter = [0, 1];
       setpacientes(x);
+
       if (status == null && setor != null) {
-        arrayfilter = x.filter(item => item.setor_origem == setor);
+        arrayfilter = x.filter(item => item.setor_origem == setor && (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI')).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1);
       } else if (status != null && setor == null) {
-        arrayfilter = x.filter(item => item.status == status);
+        arrayfilter = x.filter(item => item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1);
       } else if (status == null && setor == null) {
-        arrayfilter = x;
+        arrayfilter = x.filter(item => item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI').sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1);
       } else {
-        arrayfilter = x.filter(item => item.status == status && item.setor_origem == setor);
+        arrayfilter = x.filter(item => item.status == status && item.setor_origem == setor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1);
       }
-      if (coluna == 'SETOR') {
-        setarraypacientes(arrayfilter.sort((a, b) => a.setor_origem > b.setor_origem ? 1 : -1));
-      } else if (coluna == 'LEITO') {
+
+      if (coluna == 'LEITO') {
         setarraypacientes(arrayfilter.sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
       } else if (coluna == 'STATUS') {
         setarraypacientes(arrayfilter.sort((a, b) => a.status > b.status ? 1 : -1));
