@@ -1817,7 +1817,7 @@ function Passometro() {
   }
   function Conteudo() {
     let array = [];
-    pacientes.filter(item => item.passometro_setor == setor && item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => array.push(item));
+    arraypacientes.map(item => array.push(item));
     return (
       <div id="PDF passometro"
         style={{
