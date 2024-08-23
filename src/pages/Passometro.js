@@ -55,6 +55,24 @@ function Passometro() {
     }
   }
 
+  const filterassistenciasocial = () => {
+    axios.get(html + 'list_pacientes').then((response) => {
+      var x = response.data.rows;
+      if (status == null && setor != null) {
+        setarraypacientes(x.filter(item => item.setor_origem == setor && (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI') && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+      } else if (status != null && setor == null) {
+        setarraypacientes(x.filter(item => item.status == status && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+      } else if (status == null && setor == null) {
+        setarraypacientes(x.filter(item => (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI') && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+      } else {
+        setarraypacientes(x.filter(item => (item.status == status && item.setor_origem == setor) && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+      }
+      setTimeout(() => {
+        document.getElementById('status assistencia social').style.opacity = 0.7;
+      }, 500);
+    });
+  }
+
   // inserir registro de pacientes.
   const insertPaciente = () => {
     obj = {
@@ -1673,6 +1691,25 @@ function Passometro() {
             </div>
           </div>
         ))}
+        <div
+          id='status assistencia social'
+          className='button'
+          style={{
+            width: window.innerWidth > mobilewidth ? 100 : '35vw',
+            minWidth: window.innerWidth > mobilewidth ? 100 : '35vw',
+            height: window.innerWidth > mobilewidth ? 100 : '35vw',
+            fontSize: window.innerWidth > mobilewidth ? '' : 12,
+            padding: 10,
+            display: 'flex', flexDirection: 'column', justifyContent: 'center',
+            backgroundColor: 'purple',
+            opacity: 0.3
+          }}
+          onClick={() => {
+            filterassistenciasocial();
+          }}
+        >
+          <div>{'ASSISTÊNCIA SOCIAL'}</div>
+        </div>
       </div>
     )
   }
