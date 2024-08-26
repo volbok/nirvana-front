@@ -1285,6 +1285,7 @@ function Passometro() {
           className='button-green'
           title={'INSERIR PACIENTE'}
           style={{
+            display: setor != null ? 'flex' : 'none',
             minWidth: 40, width: 40, maxWidth: 40,
             minHeight: 40, height: 40, maxHeight: 40,
             alignSelf: 'center',
