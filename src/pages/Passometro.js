@@ -1943,7 +1943,10 @@ function Passometro() {
           <thead style={{ width: '100%' }}>
             <tr style={{ width: '100%' }}>
               <td style={{ width: '100%' }}>
-                <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignSelf: 'center' }}>
+                <div style={{
+                  display: 'flex', flexDirection: 'row', justifyContent: 'center', alignSelf: 'center',
+                  breakInside: 'avoid',
+                }}>
                   <img
                     alt=""
                     src={pbh}
@@ -1963,7 +1966,7 @@ function Passometro() {
                       fontWeight: 'bolder',
                       textDecoration: 'underline',
                     }}>
-                    {'PASSÔMETRO: ' + unidade + ' - ' + setor}
+                    {'PASSÔMETRO: ' + unidade}
                   </div>
                 </div>
               </td>
@@ -1988,7 +1991,7 @@ function Passometro() {
                 <div
                   style={{
                     fontFamily: 'Helvetica',
-                    breakInside: 'auto',
+                    breakInside: 'avoid',
                     whiteSpace: 'pre-wrap',
                   }}>
                   {moment().format('DD/MM/YYYY')}
