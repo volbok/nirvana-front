@@ -941,7 +941,7 @@ function Passometro() {
                       </img>
                     </div>
                     {CampoSelecao(item, item.passometro_setor, arraypassometrosetor, "passometro_setor", '10vw')}
-                    {CampoTexto(item, isNaN(parseInt(item.passometro_leito)) ? '' : parseInt(item.passometro_leito), 'LEITO', "passometro_leito", 75, 75, 75, 40)}
+                    {CampoTexto(item, isNaN(parseInt(item.passometro_leito)) ? item.passometro_leito : parseInt(item.passometro_leito), 'LEITO', "passometro_leito", 75, 75, 75, 40)}
                     {CampoSelecao(item, item.status, arraystatus, "status", '10vw')}
                     <div style={{ display: 'flex', flexDirection: 'column' }}>
                       <div style={{ display: 'flex', flexDirection: 'row' }}>
@@ -1889,13 +1889,20 @@ function Passometro() {
 
         {arraypassometrosetor.map(setor => (
           <div>
-            <div className='text2' style={{ margin: 30, fontWeight: 'bolder', fontSize: 20, alignSelf: 'center', width: '100%', textAlign: 'center' }}>{'SETOR: ' + setor.valor}</div>
+            <div className='text2'
+              style={{
+                display: arraypacientes.filter(item => item.passometro_setor == setor.valor).length > 0 ? 'flex' : 'none',
+                flexDirection: 'row',
+                justifyContent: 'center',
+                margin: 30, fontWeight: 'bolder', fontSize: 20, alignSelf: 'center', width: '100%', textAlign: 'center'
+              }}>
+              {'SETOR: ' + setor.valor}
+            </div>
             {array.filter(item => item.passometro_setor == setor.valor).map(item => (
               <div key={'pacientes_pdf ' + item.id}
                 style={{
                   display: 'flex', flexDirection: 'row', justifyContent: 'center',
-                  // backgroundColor: array.indexOf(item) % 2 == 0 ? '#f0f3f4' : '',
-                  // borderWidth: 1, borderStyle: 'solid', borderColor: 'black',
+                  breakInside: 'avoid',
                 }}>
                 {pdfItens(item.passometro_setor, 75)}
                 {pdfItens(item.passometro_leito, 50)}
