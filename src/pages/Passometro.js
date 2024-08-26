@@ -45,11 +45,11 @@ function Passometro() {
   const filtermanager = (array, status, setor) => {
     setpacientes(array);
     if (status == null && setor != null) {
-      setarraypacientes(array.filter(item => item.setor_origem == setor && (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI')).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+      setarraypacientes(array.filter(item => item.setor_origem == setor && (item.status == 'VAGO' || item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI')).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status != null && setor == null) {
       setarraypacientes(array.filter(item => item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status == null && setor == null) {
-      setarraypacientes(array.filter(item => item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI').sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+      setarraypacientes(array.filter(item => item.status == 'VAGO' || item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI').sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else {
       setarraypacientes(array.filter(item => item.status == status && item.setor_origem == setor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     }
@@ -59,11 +59,11 @@ function Passometro() {
     axios.get(html + 'list_pacientes').then((response) => {
       var x = response.data.rows;
       if (status == null && setor != null) {
-        setarraypacientes(x.filter(item => item.setor_origem == setor && (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI') && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+        setarraypacientes(x.filter(item => item.setor_origem == setor && (item.status == 'VAGO' || item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI') && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
       } else if (status != null && setor == null) {
         setarraypacientes(x.filter(item => item.status == status && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
       } else if (status == null && setor == null) {
-        setarraypacientes(x.filter(item => (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI') && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+        setarraypacientes(x.filter(item => (item.status == 'VAGO' || item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI') && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
       } else {
         setarraypacientes(x.filter(item => (item.status == status && item.setor_origem == setor) && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
       }
@@ -1844,7 +1844,8 @@ function Passometro() {
       <div
         style={{
           padding: 5,
-          borderColor: 'black', borderWidth: 2.5, borderStyle: 'solid',
+          borderColor: 'black', borderWidth: 1, borderStyle: 'solid',
+          backgroundColor: '#b2bebe',
           width: largura,
           margin: 2.5,
         }}>
@@ -1880,14 +1881,6 @@ function Passometro() {
           breakInside: 'auto',
           whiteSpace: 'pre-wrap',
         }}>
-        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
-          {pdfHeaders('SETOR', 75)}
-          {pdfHeaders('LEITO', 50)}
-          {pdfHeaders('NOME', 400)}
-          {pdfHeaders('SITUAÇÃO', 400)}
-          {pdfHeaders('STATUS', 200)}
-        </div>
-
         {arraypassometrosetor.map(setor => (
           <div>
             <div className='text2'
@@ -1898,6 +1891,16 @@ function Passometro() {
                 margin: 30, fontWeight: 'bolder', fontSize: 20, alignSelf: 'center', width: '100%', textAlign: 'center'
               }}>
               {'SETOR: ' + setor.valor}
+            </div>
+            <div style={{
+              display: arraypacientes.filter(item => item.passometro_setor == setor.valor).length > 0 ? 'flex' : 'none',
+              flexDirection: 'row', justifyContent: 'center'
+            }}>
+              {pdfHeaders('SETOR', 75)}
+              {pdfHeaders('LEITO', 50)}
+              {pdfHeaders('NOME', 400)}
+              {pdfHeaders('SITUAÇÃO', 400)}
+              {pdfHeaders('STATUS', 200)}
             </div>
             {array.filter(item => item.passometro_setor == setor.valor).map(item => (
               <div key={'pacientes_pdf ' + item.id}
@@ -1940,67 +1943,39 @@ function Passometro() {
           whiteSpace: 'pre-wrap',
         }}
       >
-        <table style={{ width: '100%' }}>
-          <thead style={{ width: '100%' }}>
-            <tr style={{ width: '100%' }}>
-              <td style={{ width: '100%' }}>
-                <div style={{
-                  display: 'flex', flexDirection: 'row', justifyContent: 'center', alignSelf: 'center',
-                  breakInside: 'avoid',
-                }}>
-                  <img
-                    alt=""
-                    src={pbh}
-                    style={{
-                      margin: 10,
-                      height: 50,
-                      marginRight: 50
-                    }}
-                  >
-                  </img>
-                  <div
-                    style={{
-                      fontFamily: 'Helvetica',
-                      breakInside: 'auto',
-                      whiteSpace: 'pre-wrap',
-                      alignSelf: 'center',
-                      fontWeight: 'bolder',
-                      textDecoration: 'underline',
-                    }}>
-                    {'PASSÔMETRO: ' + unidade}
-                  </div>
-                </div>
-              </td>
-            </tr>
-          </thead>
-          <tbody style={{ width: '100%' }}>
-            <tr style={{ width: '100%' }}>
-              <td style={{ width: '100%' }}>
-                <div id="campos"
-                  style={{
-                    display: 'flex', flexDirection: 'column',
-                    breakInside: 'auto', alignSelf: 'center', width: '100%'
-                  }}>
-                  <Conteudo></Conteudo>
-                </div>
-              </td>
-            </tr>
-          </tbody>
-          <tfoot style={{ width: '100%' }}>
-            <tr style={{ width: '100%' }}>
-              <td style={{ width: '100%' }}>
-                <div
-                  style={{
-                    fontFamily: 'Helvetica',
-                    breakInside: 'avoid',
-                    whiteSpace: 'pre-wrap',
-                  }}>
-                  {moment().format('DD/MM/YYYY')}
-                </div>
-              </td>
-            </tr>
-          </tfoot>
-        </table>
+        <div style={{
+          display: 'flex', flexDirection: 'row', justifyContent: 'center', alignSelf: 'center',
+          breakInside: 'avoid',
+        }}>
+          <img
+            alt=""
+            src={pbh}
+            style={{
+              margin: 10,
+              height: 50,
+              marginRight: 50
+            }}
+          >
+          </img>
+          <div
+            style={{
+              fontFamily: 'Helvetica',
+              breakInside: 'auto',
+              whiteSpace: 'pre-wrap',
+              alignSelf: 'center',
+              fontWeight: 'bolder',
+              textDecoration: 'underline',
+            }}>
+            {'PASSÔMETRO: ' + unidade}
+          </div>
+        </div>
+        <div id="campos"
+          style={{
+            display: 'flex', flexDirection: 'column',
+            breakInside: 'auto', alignSelf: 'center', width: '100%'
+          }}>
+          <Conteudo></Conteudo>
+        </div>
       </div >
     )
   };
@@ -2015,7 +1990,7 @@ function Passometro() {
   const changePages = (quantidade, intervalo) => {
     axios.get(html + 'list_pacientes').then((response) => {
       var y = response.data.rows;
-      var x = y.filter(item => item.setor_origem == setor && (item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI'));
+      var x = y.filter(item => item.setor_origem == setor && (item.status == 'VAGO' || item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI'));
       setpacientes(x);
       let totalpacientes = x.length;
       console.log('TOTAL DE PACIENTES: ' + totalpacientes);
