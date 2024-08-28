@@ -781,6 +781,7 @@ function Passometro() {
                 axios.post(html + 'update_paciente/' + obj.id, objeto).then(() => {
                   console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
                   loadPacientes(status, setor);
+                  document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none';
                 });
               }}
             >
@@ -854,7 +855,7 @@ function Passometro() {
                 console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
                 loadPacientes(status, setor);
               });
-              // document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none'
+              document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none'
             }}>
             {'LIBERAR'}
           </div>
