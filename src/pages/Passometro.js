@@ -50,26 +50,30 @@ function Passometro() {
   const filtermanager = (array, status, setor) => {
     setpacientes(array);
     if (status == null && setor != null) {
-      // correto.
-      setarraypacientes(array.filter(item => item.setor_origem == setor && (
-        item.status == 'VAGO' ||
-        item.status == 'REAVALIAÇÃO' ||
-        item.status == 'AIH ENFERMARIA' ||
-        item.status == 'AIH CTI' ||
-        item.status.includes('AUTORIZADA') // inclui aqui po pacientes com vaga liberada, mas ainda não transferidos.
-      )).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+      let xarray = [];
+      arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => xarray.push(item)));
+      setarraypacientes(xarray.filter(item => item.setor_origem == setor &&
+        (
+          item.status == 'VAGO' ||
+          item.status == 'REAVALIAÇÃO' ||
+          item.status == 'AIH ENFERMARIA' ||
+          item.status == 'AIH CTI' ||
+          item.status.includes('AUTORIZADA') // inclui aqui pacientes com vaga liberada, mas ainda não transferidos.
+        )
+      ).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status != null && setor == null) {
       // correto.
       setarraypacientes(array.filter(item => item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status == null && setor == null) {
-      // erro!
-      setarraypacientes(array.filter(item => item.setor_origem != null && (
+      let xarray = [];
+      arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => xarray.push(item)));
+      setarraypacientes(xarray.filter(item =>
         item.status == 'VAGO' ||
         item.status == 'REAVALIAÇÃO' ||
         item.status == 'AIH ENFERMARIA' ||
         item.status == 'AIH CTI' ||
-        item.status.includes('AUTORIZADA') // inclui aqui po pacientes com vaga liberada, mas ainda não transferidos.
-      )).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+        item.status.includes('AUTORIZADA') // inclui aqui pacientes com vaga liberada, mas ainda não transferidos.
+      ).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else {
       // correto.
       setarraypacientes(array.filter(item => item.status == status && item.setor_origem == setor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
@@ -346,12 +350,12 @@ function Passometro() {
                 sethorizontal(1);
                 setstatus(null);
                 setsetor(null);
-                loadPacientes(null, 'UDC');
+                loadPacientes(null, null);
               } else {
                 sethorizontal(0);
                 setstatus(null);
                 setsetor(null);
-                loadPacientes(null, 'OBS 1');
+                loadPacientes(null, null);
               }
               e.stopPropagation();
             }}
