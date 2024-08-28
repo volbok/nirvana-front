@@ -77,7 +77,7 @@ function Login() {
             } else if (objeto.tipo == 'GERENTE') {
               // abrir componente para acesso ao passômetro, cadastro de usuários e indicadores.
               setpagina(4);
-            } else if (objeto.tipo == 'ASSISTENCIAL' || objeto.tipo == 'NIR') {
+            } else if (objeto.tipo == 'ASSISTENCIAL' || objeto.tipo == 'NIR' || objeto.tipo == 'HORIZONTAL') {
               setviewunidades(1);
             }
           } else {
@@ -101,7 +101,7 @@ function Login() {
         }}
         onClick={() => {
           setunidade(titulo);
-          if (usuario.tipo == 'ASSISTENCIAL') {
+          if (usuario.tipo == 'ASSISTENCIAL' || usuario.tipo == 'HORIZONTAL') {
             setpagina('PASSOMETRO');
           } else if (usuario.tipo == 'NIR') {
             setpagina(1);

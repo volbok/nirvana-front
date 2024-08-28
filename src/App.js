@@ -25,6 +25,8 @@ function App() {
   const [transportes, settransportes] = useState([]);
   const [unidade, setunidade] = useState(null);
   const [mobilewidth, setmobilewidth] = useState(426);
+  const [status, setstatus] = useState(null);
+  const [setor, setsetor] = useState(null);
   const html = 'https://nirvana-api.up.railway.app/';
 
   return (
@@ -38,6 +40,8 @@ function App() {
         transportes, settransportes,
         unidade, setunidade,
         mobilewidth, setmobilewidth,
+        status, setstatus,
+        setor, setsetor,
         html,
       }}
     >
