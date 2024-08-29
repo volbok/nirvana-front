@@ -7,7 +7,7 @@
   --cor4hover: rgb(229, 126, 52, 1);
   --cor5: #52be80;
   --cor5hover: rgb(82, 190, 128, 1);
-  --cor6: rgb(231, 76, 60, 1);
+  --cor6: #e74c3c;
   --cor6hover: rgb(231, 76, 60, 1);
   --texto1: #000000;
   --texto2: #ffffff;
@@ -506,10 +506,20 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .strong {
   opacity: 1;
+  border-color: #3498db;
+  border-style: solid;
+  border-width: 5px;
+  border-radius: 5;
+  transition: 200ms ease-in-out;
 }
 
 .weak {
-  opacity: 0.5;
+  opacity: 0.8;
+  border-color: transparent;
+  border-style: solid;
+  border-width: 5px;
+  border-radius: 5;
+  transition: 200ms ease-in-out;
 }
 
 .button:hover {

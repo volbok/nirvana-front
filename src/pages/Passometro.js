@@ -39,8 +39,6 @@ function Passometro() {
   // carregar lista de pacientes internados.
   const [arraypacientes, setarraypacientes] = useState(pacientes);
   const loadPacientes = (status, setor) => {
-    console.log('STATUS: ' + status);
-    console.log('SETOR: ' + setor);
     axios.get(html + 'list_pacientes').then((response) => {
       var x = response.data.rows;
       filtermanager(x, status, setor);
@@ -48,16 +46,14 @@ function Passometro() {
   }
 
   const filtermanager = (array, status, setor) => {
-    console.log('STATUS NA FUNÇÃO FILTERMANAGER: ' + status);
     setpacientes(array);
-    if (status == null && setor != null) {
+    if (status == 'TODOS' && setor != 'TODOS') {
       let xarray = [];
       arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => xarray.push(item)));
       setarraypacientes(xarray.filter(item => item.setor_origem == setor &&
         (
           item.status == 'VAGO' ||
-          item.status == 'REAVALIAÇÃO VERDE' ||
-          item.status == 'REAVALIAÇÃO AMARELA' ||
+          item.status.includes('REAVALIAÇÃO') == true ||
           item.status == 'AIH' ||
           item.status == 'CONTATO DIRETO' ||
           item.status == 'CERSAM' ||
@@ -65,15 +61,14 @@ function Passometro() {
           item.status == 'EMAD'
         )
       ).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
-    } else if (status != null && status != 'TRANSFERIDOS' && setor == null) {
+    } else if (status != 'TODOS' && status != 'TRANSFERIDOS' && setor == 'TODOS') {
       setarraypacientes(array.filter(item => item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
-    } else if (status == null && setor == null) {
+    } else if (status == 'TODOS' && setor == 'TODOS') {
       let xarray = [];
       arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => xarray.push(item)));
       setarraypacientes(xarray.filter(item =>
         item.status == 'VAGO' ||
-        item.status == 'REAVALIAÇÃO VERDE' ||
-        item.status == 'REAVALIAÇÃO AMARELA' ||
+        item.status.includes('REAVALIAÇÃO') == true ||
         item.status == 'AIH' ||
         item.status == 'CONTATO DIRETO' ||
         item.status == 'CERSAM' ||
@@ -81,7 +76,6 @@ function Passometro() {
         item.status == 'EMAD'
       ).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status == 'TRANSFERIDOS') {
-      console.log('DISPARA!')
       setarraypacientes(array.filter(item => item.status.includes('LIBERADO') == true).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else {
       setarraypacientes(array.filter(item => item.status == status && item.setor_origem == setor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
@@ -91,18 +85,14 @@ function Passometro() {
   const filterassistenciasocial = () => {
     axios.get(html + 'list_pacientes').then((response) => {
       var x = response.data.rows;
-      if (status == null && setor != null) {
-        setarraypacientes(x.filter(item => item.setor_origem == setor && (item.status == 'VAGO' || item.status == 'REAVALIAÇÃO VERDE' || item.status == 'REAVALIAÇÃO AMARELA' || item.status == 'AIH') && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
-      } else if (status != null && setor == null) {
-        setarraypacientes(x.filter(item => item.status == status && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
-      } else if (status == null && setor == null) {
-        setarraypacientes(x.filter(item => (item.status == 'VAGO' || item.status == 'REAVALIAÇÃO VERDE' || item.status == 'REAVALIAÇÃO AMARELA' || item.status == 'AIH') && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
-      } else {
-        setarraypacientes(x.filter(item => (item.status == status && item.setor_origem == setor) && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
-      }
-      setTimeout(() => {
-        document.getElementById('status assistencia social').style.opacity = 0.7;
-      }, 500);
+      setarraypacientes(x.filter(item => (
+        item.status == 'AIH' ||
+        item.status == 'CONTADO DIRETO' ||
+        item.staatus == 'CERSAM' ||
+        item.status == 'CONVÊNIOS' ||
+        item.status == 'EMAD'
+      )
+        && item.setor_origem != null && (item.passometro_vulnerabilidade != 0 || item.passometro_cersam != 0)).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     });
   }
 
@@ -112,11 +102,11 @@ function Passometro() {
       aih: null,
       procedimento: null,
       unidade_origem: unidade,
-      setor_origem: setor,
+      setor_origem: setor == null ? 'UDC' : setor,
       nome_paciente: null,
       nome_mae: null,
       dn_paciente: null,
-      status: status == null ? 'REAVALIAÇÃO AMARELA' : status,
+      status: status == 'TODOS' ? 'REAVALIAÇÃO' : status,
       unidade_destino: null,
       setor_destino: null,
       indicador_data_cadastro: null,
@@ -290,7 +280,27 @@ function Passometro() {
   useEffect(() => {
     if (pagina == 'PASSOMETRO') {
       loadSetores();
-      loadPacientes(status, setor);
+      axios.get(html + 'list_pacientes').then((response) => {
+        var x = response.data.rows;
+
+        let xarray = [];
+        arraypassometrosetor.map(valor => x.filter(item => item.setor_origem == valor.valor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => console.log(item)));
+
+        console.log(xarray);
+        setarraypacientes(xarray.filter(item => item.setor_origem == setor &&
+          (
+            item.status == 'VAGO' ||
+            item.status.includes('REAVALIAÇÃO') == true ||
+            item.status == 'AIH' ||
+            item.status == 'CONTATO DIRETO' ||
+            item.status == 'CERSAM' ||
+            item.status == 'CONVÊNIOS' ||
+            item.status == 'EMAD'
+          )
+        ));
+
+        // refreshpage();
+      })
     }
     // eslint-disable-next-line
   }, [pagina])
@@ -300,10 +310,11 @@ function Passometro() {
   const refreshpage = () => {
     clearInterval(refreshinterval);
     refreshinterval = setInterval(() => {
-      console.log(setor);
-      loadPacientes(status, setor);
       console.log('ATUALIZANDO LISTA.');
-    }, 5000);
+      console.log('REFRESH STATUS: ' + status);
+      console.log('REFRESH SETOR: ' + setor);
+      // loadPacientes(status, setor);
+    }, 10000);
   }
   */
 
@@ -356,13 +367,13 @@ function Passometro() {
             onClick={(e) => {
               if (horizontal == 0) {
                 sethorizontal(1);
-                setstatus(null);
-                setsetor(null);
+                setstatus('TODOS');
+                setsetor('TODOS');
                 loadPacientes(null, null);
               } else {
                 sethorizontal(0);
-                setstatus(null);
-                setsetor(null);
+                setstatus('TODOS');
+                setsetor('TODOS');
                 loadPacientes(null, null);
               }
               e.stopPropagation();
@@ -537,7 +548,7 @@ function Passometro() {
           <FilterSetores></FilterSetores>
           <PassometroSbar></PassometroSbar>
           <PassometroSbarMobile></PassometroSbarMobile>
-          <div className="text3" style={{ height: '70vh', display: arraypacientes.length > 0 ? 'none' : 'flex', color: 'rgb(82, 190, 128, 1)' }}>SEM PACIENTES INTERNADOS NA UNIDADE</div>
+          <div className="text3" style={{ height: '70vh', display: arraypacientes.length > 0 ? 'none' : 'flex', color: 'rgb(82, 190, 128, 1)' }}>CLIQUE NOS SETORES PARA EXIBIR PACIENTES</div>
         </div>
       </div>
     )
@@ -562,19 +573,23 @@ function Passometro() {
     },
     {
       valor: 'REAVALIAÇÃO VERDE',
-      cor: '#f7dc6f',
+      cor: '#a6acaf ',
     },
     {
       valor: 'REAVALIAÇÃO AMARELA',
-      cor: '#f7dc6f',
+      cor: '#a6acaf ',
     },
     {
-      valor: 'ALTA',
-      cor: '#7dcea0',
+      valor: 'REAVALIAÇÃO VERMELHA',
+      cor: '#a6acaf ',
     },
     {
       valor: 'AIH',
       cor: '#85c1e9',
+    },
+    {
+      valor: 'ALTA',
+      cor: '#7dcea0',
     },
     {
       valor: 'CONTATO DIRETO',
@@ -594,11 +609,11 @@ function Passometro() {
     },
     {
       valor: 'EVASÃO',
-      cor: '#d5d8dc',
+      cor: '#edbb99',
     },
     {
       valor: 'ÓBITO',
-      cor: '#d5d8dc',
+      cor: '#edbb99',
     },
     {
       valor: 'LIMBO',
@@ -677,21 +692,21 @@ function Passometro() {
         }}>
         <div
           id="botao todos os setores"
-          className={setor == null ? 'button' : 'button weak'}
+          className={setor == 'TODOS' ? 'button strong' : 'button weak'}
           style={{
             width: window.innerWidth > mobilewidth ? 120 : 80,
             height: 30, minHeight: 30, maxHeight: 30,
           }}
           onClick={() => {
-            setsetor(null);
-            loadPacientes(null, null);
+            setsetor('TODOS');
+            loadPacientes('TODOS', 'TODOS');
           }}
         >
           {'TODOS'}
         </div>
         {arraypassometrosetor.map(item => (
           <div
-            className={setor == item.valor ? 'button' : 'button weak'}
+            className={setor == item.valor ? 'button strong' : 'button weak'}
             key={"botao de unidade " + item.valor}
             id={"botao de unidade " + item.valor}
             style={{
@@ -884,9 +899,10 @@ function Passometro() {
     return (
       <div>
         <div
-          id={"camposelecao - " + variavel + " - " + obj.id}
           className='button'
           style={{
+            position: 'relative',
+            display: 'flex', flexDirection: 'row',
             minWidth: largura, width: largura, maxWidth: largura,
             minHeight: 40, height: 40, maxHeight: 40,
             padding: 5, margin: 2.5,
@@ -899,12 +915,34 @@ function Passometro() {
             document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'flex';
           }}
         >
-          {item}
+          <div
+            style={{
+              display: item != null && item.includes('REAVALIAÇÃO ') ? 'flex' : 'none',
+              flexDirection: 'row',
+              justifyContent: 'flex-start',
+              position: 'absolute', top: 0, left: 0, bottom: 0,
+            }}>
+            <div style={{
+              display: 'flex',
+              backgroundColor: item == 'REAVALIAÇÃO AMARELA' ? '#f4d03f' : item == 'REAVALIAÇÃO VERDE' ? '#7dcea0' : '#ec7063',
+              width: 20, height: '100%',
+              borderRadius: 5,
+            }}>
+            </div>
+            <div id={"camposelecao - " + variavel + " - " + obj.id}
+              style={{ alignSelf: 'center' }}>{item}
+            </div>
+          </div>
+          <div id={"camposelecao - " + variavel + " - " + obj.id}
+            style={{
+              display: item != null && !item.includes('REAVALIAÇÃO ') ? 'flex' : 'none'
+            }}>{item}
+          </div>
         </div>
         {
           Seletor(obj, array, variavel)
         }
-      </div >
+      </div>
     )
   }
   // tag para atividades do horizontal.
@@ -1057,14 +1095,14 @@ function Passometro() {
           <div style={{ width: 80 }}></div>
         </div>
         {arraypassometrosetor.map(setor => (
-          <div>
+          <div key={'passometro desktop ' + setor.valor}>
             {arraypacientes.filter(item => item.setor_origem == setor.valor && item.unidade_origem == unidade && !isNaN(parseInt(item.passometro_leito))).map(item => {
               let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
               let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
               let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
-              let alertaaih = moment().diff(entrada, 'hours') > 12 && (item.status == 'REAVALIAÇÃO AMARELA' || item.status == 'REAVALIAÇÃO VERDE');
+              let alertaaih = moment().diff(entrada, 'hours') > 12 && (item.status.includes('REAVALIAÇÃO') == true);
               return (
-                <div key={'pacientes' + item.id}
+                <div key={'pacientes desktop ' + item.id}
                   style={{
                     display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
                     position: 'relative',
@@ -1251,13 +1289,13 @@ function Passometro() {
                 </div>
               )
             })}
-            {arraypacientes.filter(item => item.setor_origem == setor.valor && item.unidade_origem == unidade && (item.passometro_leito == null || item.passometro_leito == '' || isNaN(parseInt(item.passometro_leito)))).map(item => {
+            {arraypacientes.filter(item => item.setor_origem == setor.valor && item.status != 'VAGO' && item.unidade_origem == unidade && (item.nome_paciente == null || item.nome_paciente == '' || isNaN(parseInt(item.passometro_leito)))).map(item => {
               let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
               let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
               let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
-              let alertaaih = moment().diff(entrada, 'hours') > 12 && (item.status == 'REAVALIAÇÃO AMARELA' || item.status == 'REAVALIAÇÃO VERDE');
+              let alertaaih = moment().diff(entrada, 'hours') > 12 && (item.status.includes('REAVALIAÇÃO') == true);
               return (
-                <div key={'pacientes' + item.id}
+                <div key={'pacientes dektop new' + item.id}
                   style={{
                     display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
                     position: 'relative',
@@ -1451,7 +1489,7 @@ function Passometro() {
           className='button-green'
           title={'INSERIR PACIENTE'}
           style={{
-            display: setor != null ? 'flex' : 'none',
+            display: setor != 'TODOS' ? 'flex' : 'none',
             minWidth: 40, width: 40, maxWidth: 40,
             minHeight: 40, height: 40, maxHeight: 40,
             alignSelf: 'center',
@@ -1471,7 +1509,7 @@ function Passometro() {
         </div>
       </div>
     )
-  }
+  };
   // visualização de pacientes para a versão mobile.
   function PassometroSbarMobile() {
     return (
@@ -1495,10 +1533,10 @@ function Passometro() {
           {Header('SITUAÇÃO', '20vw', '20vw', '20vw')}
         </div>
         {arraypassometrosetor.map(setor => (
-          <div>
+          <div key={'passometro mobile ' + setor.valor}>
             {arraypacientes.filter(item => item.setor_origem == setor.valor && item.unidade_origem == unidade && item.passometro_leito != null).map(item => {
               return (
-                <div key={'pacientes' + item.id}
+                <div key={'pacientes mobile' + item.id}
                   style={{
                     display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
                   }}>
@@ -1644,7 +1682,7 @@ function Passometro() {
             })}
             {arraypacientes.filter(item => item.setor_origem == setor.valor && item.unidade_origem == unidade && item.passometro_leito == null).map(item => {
               return (
-                <div key={'pacientes' + item.id}
+                <div key={'pacientes mobile new' + item.id}
                   style={{
                     display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
                   }}>
@@ -1827,7 +1865,7 @@ function Passometro() {
       }}>
         <div
           id='status todos'
-          className='button'
+          className={status == 'TODOS' ? 'button strong' : 'button weak'}
           style={{
             width: window.innerWidth > mobilewidth ? 100 : '35vw',
             minWidth: window.innerWidth > mobilewidth ? 100 : '35vw',
@@ -1836,10 +1874,10 @@ function Passometro() {
             padding: 10,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
             backgroundColor: 'grey',
-            opacity: status == null ? 1 : 0.7
+            opacity: status == 'TODOS' ? 1 : 0.7
           }}
           onClick={() => {
-            setstatus(null);
+            setstatus('TODOS');
             loadPacientes(null, setor);
           }}
         >
@@ -1847,7 +1885,7 @@ function Passometro() {
         </div>
         {arraystatus.map(valor => (
           <div
-            className={status == valor.valor ? 'button' : 'button weak'}
+            className={status == valor.valor ? 'button strong' : 'button weak'}
             key={'resumo ' + valor.valor}
             style={{
               width: window.innerWidth > mobilewidth ? 100 : '35vw',
@@ -1856,7 +1894,8 @@ function Passometro() {
               fontSize: window.innerWidth > mobilewidth ? '' : 12,
               padding: 10,
               display: 'flex', flexDirection: 'column', justifyContent: 'center',
-              backgroundColor: valor.cor,
+              // backgroundColor: valor.cor,
+              background: valor.cor,
             }}
             onClick={() => {
               setstatus(valor.valor);
@@ -1871,7 +1910,7 @@ function Passometro() {
         ))}
         <div
           id='status todos'
-          className='button'
+          className={status == 'TRANSFERIDOS' ? 'button strong' : 'button weak'}
           style={{
             width: window.innerWidth > mobilewidth ? 100 : '35vw',
             minWidth: window.innerWidth > mobilewidth ? 100 : '35vw',
@@ -1880,7 +1919,7 @@ function Passometro() {
             padding: 10,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
             backgroundColor: '#7dcea0',
-            opacity: status == null ? 1 : 0.7
+            opacity: status == 'TRANSFERIDOS' ? 1 : 0.8
           }}
           onClick={() => {
             setstatus('TRANSFERIDOS');
@@ -1891,7 +1930,7 @@ function Passometro() {
         </div>
         <div
           id='status assistencia social'
-          className='button'
+          className={status == 'ASSISTÊNCIA SOCIAL' ? 'button strong' : 'button weak'}
           style={{
             width: window.innerWidth > mobilewidth ? 100 : '35vw',
             minWidth: window.innerWidth > mobilewidth ? 100 : '35vw',
@@ -1899,10 +1938,12 @@ function Passometro() {
             fontSize: window.innerWidth > mobilewidth ? '' : 12,
             padding: 10,
             display: 'flex', flexDirection: 'column', justifyContent: 'center',
-            backgroundColor: 'purple',
-            opacity: 0.3
+            backgroundColor: '#c39bd3',
+            opacity: status == 'ASSISTÊNCIA SOCIAL' ? 1 : 0.8
           }}
           onClick={() => {
+            setstatus('ASSISTÊNCIA SOCIAL');
+            setsetor('TODOS');
             filterassistenciasocial();
           }}
         >
@@ -1917,7 +1958,7 @@ function Passometro() {
     let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
     let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
     let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
-    let alertaaih = moment().diff(entrada, 'hours') > 12 && (item.status == 'REAVALIAÇÃO AMARELA' || item.status == 'REAVALIAÇÃO VERDE');
+    let alertaaih = moment().diff(entrada, 'hours') > 12 && (item.status.includes('REAVALIAÇÃO') == true);
     let alertavulneravel = item.passometro_vulnerabilidade;
     let alertacersam = item.passometro_cersam;
     return (
@@ -1992,39 +2033,6 @@ function Passometro() {
     )
   }
 
-  // classificador de registros por coluna (setor, leito, status, nome, situação).
-  /*
-  const classificador = (coluna) => {
-    axios.get(html + 'list_pacientes').then((response) => {
-      var x = response.data.rows;
-      var arrayfilter = [0, 1];
-      setpacientes(x);
-  
-      if (status == null && setor != null) {
-        arrayfilter = x.filter(item => item.setor_origem == setor && (item.status == 'VAGO' || item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI')).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1);
-      } else if (status != null && setor == null) {
-        arrayfilter = x.filter(item => item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1);
-      } else if (status == null && setor == null) {
-        arrayfilter = x.filter(item => item.status == 'VAGO' || item.status == 'REAVALIAÇÃO' || item.status == 'AIH ENFERMARIA' || item.status == 'AIH CTI').sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1);
-      } else {
-        arrayfilter = x.filter(item => item.status == status && item.setor_origem == setor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1);
-      }
-  
-      if (coluna == 'LEITO') {
-        setarraypacientes(arrayfilter.sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
-      } else if (coluna == 'STATUS') {
-        setarraypacientes(arrayfilter.sort((a, b) => a.status > b.status ? 1 : -1));
-      } else if (coluna == 'NOME') {
-        setarraypacientes(arrayfilter.sort((a, b) => a.nome_paciente > b.nome_paciente ? 1 : -1));
-      } else if (coluna == 'SITUAÇÃO') {
-        setarraypacientes(arrayfilter.sort((a, b) => a.passometro_situacao > b.passmetro_situacao ? 1 : -1));
-      } else {
-        console.log(coluna + ' não permite classificação');
-      }
-    });
-  }
-  */
-
   // ## IMPRESSÃO EM PDF ##
   const pdfHeaders = (item, largura) => {
     return (
@@ -2068,7 +2076,7 @@ function Passometro() {
           whiteSpace: 'pre-wrap',
         }}>
         {arraypassometrosetor.map(setor => (
-          <div>
+          <div key={'pdf ' + setor.valor}>
             <div className='text2'
               style={{
                 display: arraypacientes.filter(item => item.passometro_setor == setor.valor).length > 0 ? 'flex' : 'none',
@@ -2103,7 +2111,6 @@ function Passometro() {
             ))}
           </div>
         ))}
-
       </div>
     )
   }
@@ -2175,7 +2182,7 @@ function Passometro() {
   const changePages = (quantidade, intervalo) => {
     axios.get(html + 'list_pacientes').then((response) => {
       var y = response.data.rows;
-      var x = y.filter(item => item.setor_origem == setor && (item.status == 'VAGO' || item.status == 'REAVALIAÇÃO VERDE' || item.status == 'REAVALIAÇÃO AMARELO' || item.status == 'AIH'));
+      var x = y.filter(item => item.setor_origem == setor && (item.status == 'VAGO' || item.status.includes('REAVALIAÇÃO') == true || item.status == 'AIH'));
       setpacientes(x);
       let totalpacientes = x.length;
       console.log('TOTAL DE PACIENTES: ' + totalpacientes);
@@ -2227,7 +2234,7 @@ function Passometro() {
         </div>
         {indexpacientes.sort().sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => {
           return (
-            <div key={'pacientes' + item.id}
+            <div key={'pacientes exibição' + item.id}
               style={{
                 display: 'flex',
                 flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
