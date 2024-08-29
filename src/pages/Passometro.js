@@ -49,11 +49,15 @@ function Passometro() {
     setpacientes(array);
     if (status == 'TODOS' && setor != 'TODOS') {
       let xarray = [];
-      arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => xarray.push(item)));
+      // inserindo em seguida os leitos em texto (cadeira, maca baixa, etc.).
+      arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor && isNaN(item.passometro_leito) == true).sort((a, b) => a.passometro_leito < b.passometro_leito ? 1 : -1).map(item => xarray.push(item)));
+      // inserindo primeiro os leitos numéricos.
+      arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor && isNaN(item.passometro_leito) == false).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => xarray.push(item)));
       setarraypacientes(xarray.filter(item => item.setor_origem == setor &&
         (
           item.status == 'VAGO' ||
           item.status.includes('REAVALIAÇÃO') == true ||
+          item.status.includes('AUTORIZADO') == true ||
           item.status == 'AIH' ||
           item.status == 'CONTATO DIRETO' ||
           item.status == 'CERSAM' ||
@@ -65,10 +69,14 @@ function Passometro() {
       setarraypacientes(array.filter(item => item.status == status).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status == 'TODOS' && setor == 'TODOS') {
       let xarray = [];
-      arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => xarray.push(item)));
+      // inserindo em seguida os leitos em texto (cadeira, maca baixa, etc.).
+      arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor && isNaN(item.passometro_leito) == true).sort((a, b) => a.passometro_leito < b.passometro_leito ? 1 : -1).map(item => xarray.push(item)));
+      // inserindo primeiro os leitos numéricos.
+      arraypassometrosetor.map(valor => array.filter(item => item.setor_origem == valor.valor && isNaN(item.passometro_leito) == false).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => xarray.push(item)));
       setarraypacientes(xarray.filter(item =>
         item.status == 'VAGO' ||
         item.status.includes('REAVALIAÇÃO') == true ||
+        item.status.includes('AUTORIZADO') == true ||
         item.status == 'AIH' ||
         item.status == 'CONTATO DIRETO' ||
         item.status == 'CERSAM' ||
@@ -76,7 +84,7 @@ function Passometro() {
         item.status == 'EMAD'
       ).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status == 'TRANSFERIDOS') {
-      setarraypacientes(array.filter(item => item.status.includes('LIBERADO') == true).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
+      setarraypacientes(array.filter(item => item.status.includes('TRANSFERIDO') == true).sort((a, b) => moment(a.passometro_data, 'DD/MM/YYYY - HH:mm') > moment(b.passometro_data, 'DD/MM/YYYY - HH:mm') ? 1 : -1));
     } else {
       setarraypacientes(array.filter(item => item.status == status && item.setor_origem == setor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     }
@@ -277,38 +285,18 @@ function Passometro() {
 
   var timeout = null;
   var interval = null;
+  var refreshinterval = null;
   useEffect(() => {
     if (pagina == 'PASSOMETRO') {
+      clearInterval(refreshinterval);
       loadSetores();
-      axios.get(html + 'list_pacientes').then((response) => {
-        var x = response.data.rows;
-
-        let xarray = [];
-        arraypassometrosetor.map(valor => x.filter(item => item.setor_origem == valor.valor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => console.log(item)));
-
-        console.log(xarray);
-        setarraypacientes(xarray.filter(item => item.setor_origem == setor &&
-          (
-            item.status == 'VAGO' ||
-            item.status.includes('REAVALIAÇÃO') == true ||
-            item.status == 'AIH' ||
-            item.status == 'CONTATO DIRETO' ||
-            item.status == 'CERSAM' ||
-            item.status == 'CONVÊNIOS' ||
-            item.status == 'EMAD'
-          )
-        ));
-
-        // refreshpage();
-      })
+      refreshpage();
     }
     // eslint-disable-next-line
-  }, [pagina])
+  }, [pagina]);
 
-  /*
-  var refreshinterval = null;
+
   const refreshpage = () => {
-    clearInterval(refreshinterval);
     refreshinterval = setInterval(() => {
       console.log('ATUALIZANDO LISTA.');
       console.log('REFRESH STATUS: ' + status);
@@ -316,7 +304,6 @@ function Passometro() {
       // loadPacientes(status, setor);
     }, 10000);
   }
-  */
 
   // identificação do usuário.
   function Usuario() {
@@ -324,7 +311,9 @@ function Passometro() {
       <div style={{
         display: 'flex', flexDirection: 'row',
       }}>
-        <div className='button-red' onClick={() => setpagina(0)} title="SAIR">
+        <div className='button-red'
+          onClick={() => window.location.reload()}
+          title="SAIR">
           <img
             alt=""
             src={power}
@@ -369,12 +358,12 @@ function Passometro() {
                 sethorizontal(1);
                 setstatus('TODOS');
                 setsetor('TODOS');
-                loadPacientes(null, null);
+                loadPacientes('TODOS', 'TODOS');
               } else {
                 sethorizontal(0);
                 setstatus('TODOS');
                 setsetor('TODOS');
-                loadPacientes(null, null);
+                loadPacientes('TODOS', 'TODOS');
               }
               e.stopPropagation();
             }}
@@ -548,7 +537,7 @@ function Passometro() {
           <FilterSetores></FilterSetores>
           <PassometroSbar></PassometroSbar>
           <PassometroSbarMobile></PassometroSbarMobile>
-          <div className="text3" style={{ height: '70vh', display: arraypacientes.length > 0 ? 'none' : 'flex', color: 'rgb(82, 190, 128, 1)' }}>CLIQUE NOS SETORES PARA EXIBIR PACIENTES</div>
+          <div className="text3" style={{ height: '70vh', display: arraypacientes.length > 0 ? 'none' : 'flex' }}>CLIQUE NOS SETORES PARA EXIBIR PACIENTES</div>
         </div>
       </div>
     )
@@ -608,6 +597,10 @@ function Passometro() {
       cor: '#7dcea0',
     },
     {
+      valor: 'TRANSFERIDOS',
+      cor: '#7dcea0',
+    },
+    {
       valor: 'EVASÃO',
       cor: '#edbb99',
     },
@@ -618,7 +611,7 @@ function Passometro() {
     {
       valor: 'LIMBO',
       cor: '#edbb99',
-    }
+    },
   ]
 
   const arraytag = [
@@ -699,7 +692,7 @@ function Passometro() {
           }}
           onClick={() => {
             setsetor('TODOS');
-            loadPacientes('TODOS', 'TODOS');
+            loadPacientes(status, 'TODOS');
           }}
         >
           {'TODOS'}
@@ -739,7 +732,10 @@ function Passometro() {
             <div className="button"
               key={'seletor ' + item.valor}
               id={"opcao - " + item.valor}
-              style={{ width: 200, backgroundColor: item.cor }}
+              style={{
+                display: item.valor == 'TRANSFERIDOS' ? 'none' : 'flex',
+                width: 200, backgroundColor: item.cor
+              }}
               onClick={() => {
                 document.getElementById("camposelecao - " + variavel + " - " + obj.id).innerHTML = item.valor;
                 let objeto = {
@@ -807,6 +803,7 @@ function Passometro() {
             className='button'
             style={{
               width: 200,
+              backgroundColor: 'black',
               display:
                 obj.status == 'AIH' ||
                   obj.status == 'CONTATO DIRETO' ||
@@ -815,64 +812,29 @@ function Passometro() {
                   obj.status == 'EMAD' ? 'flex' : 'none'
             }}
             onClick={() => {
-              let objeto = {
-                aih: obj.aih,
-                procedimento: obj.procedimento,
-                unidade_origem: obj.unidade_origem,
-                setor_origem: document.getElementById("camposelecao - passometro_setor - " + obj.id).innerHTML,
-                nome_paciente: document.getElementById("campotexto - nome_paciente - " + obj.id).value.toUpperCase(),
-                nome_mae: obj.nome_mae,
-                dn_paciente: obj.dn_paciente,
-                status: document.getElementById("camposelecao - status - " + obj.id).innerHTML + ' - LIBERADO',
-                unidade_destino: obj.unidade_destino,
-                setor_destino: obj.setor_destino,
-                indicador_data_cadastro: obj.indicador_data_cadastro,
-                indicador_data_confirmacao: obj.indicador_data_confirmacao,
-                indicador_relatorio: obj.indicador_relatorio,
-                indicador_solicitacao_transporte: obj.indicador_solicitacao_transporte,
-                indicador_saida_origem: obj.indicador_saida_origem,
-                indicador_chegada_destino: obj.indicador_chegada_destino,
-                dados_susfacil: obj.dados_susfacil,
-                exames_ok: obj.exames_ok,
-                aih_ok: obj.aih_ok,
-                glasgow: obj.glasgow,
-                pas: obj.pas,
-                pad: obj.pad,
-                fc: obj.fc,
-                fr: obj.fr,
-                sao2: obj.sao2,
-                ofertao2: obj.ofertao2,
-                tipo_leito: document.getElementById("camposelecao - tipo_leito - " + obj.id).innerHTML,
-                contato_nome: obj.contato_nome,
-                contato_telefone: obj.contato_telefone,
-                leito_destino: obj.leito_destino,
-                passometro_leito: document.getElementById("campotexto - passometro_leito - " + obj.id).value.toUpperCase(),
-                passometro_situacao: document.getElementById("campotexto - passometro_situacao - " + obj.id).value.toUpperCase(),
-                passometro_breve_historico: document.getElementById("campotexto - passometro_breve_historico - " + obj.id).value.toUpperCase(),
-                passometro_avaliacao: document.getElementById("campotexto - passometro_avaliacao - " + obj.id).value.toUpperCase(),
-                passometro_recomendacao: document.getElementById("campotexto - passometro_recomendacao - " + obj.id).value.toUpperCase(),
-                passometro_peso: obj.passometro_peso,
-                passometro_notificacao_srag: document.getElementById("check - passometro_notificacao_srag - " + obj.id).innerHTML,
-                passometro_notificacao_dengue: document.getElementById("check - passometro_notificacao_dengue - " + obj.id).innerHTML,
-                passometro_checklist_teste_covid: document.getElementById("check - passometro_checklist_teste_covid - " + obj.id).innerHTML,
-                passometro_checklist_teste_dengue: document.getElementById("check - passometro_checklist_teste_dengue - " + obj.id).innerHTML,
-                passometro_checklist_evolucao: document.getElementById("check - passometro_checklist_evolucao - " + obj.id).innerHTML,
-                passometro_checklist_prescricao: document.getElementById("check - passometro_checklist_prescricao - " + obj.id).innerHTML,
-                passometro_checklist_laboratorio: document.getElementById("check - passometro_checklist_laboratorio - " + obj.id).innerHTML,
-                passometro_checklist_rx: document.getElementById("check - passometro_checklist_rx - " + obj.id).innerHTML,
-                passometro_setor: document.getElementById("camposelecao - passometro_setor - " + obj.id).innerHTML,
-                passometro_data: obj.passometro_data,
-                passometro_vulnerabilidade: document.getElementById("check - passometro_vulnerabilidade - " + obj.id).innerHTML,
-                passometro_cersam: document.getElementById("check - passometro_cersam - " + obj.id).innerHTML,
-                tag: document.getElementById("camposelecao - tag - " + obj.id).innerHTML,
-              }
-              axios.post(html + 'update_paciente/' + obj.id, objeto).then(() => {
-                console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
-                loadPacientes(status, setor);
-              });
-              document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none'
+              updatePacienteFromSeletor(obj, variavel, document.getElementById("camposelecao - status - " + obj.id).innerHTML + ' AUTORIZADO')
             }}>
-            {'LIBERAR'}
+            {'AUTORIZADO'}
+          </div>
+          <div id="botão para liberação do paciente transferido"
+            className='button'
+            style={{
+              width: 200,
+              backgroundColor: 'black',
+              display:
+                obj.status == 'AIH AUTORIZADO' ||
+                  obj.status == 'CONTATO DIRETO AUTORIZADO' ||
+                  obj.status == 'CERSAM AUTORIZADO' ||
+                  obj.status == 'CONVÊNIOS AUTORIZADO' ||
+                  obj.status == 'EMAD AUTORIZADO' ? 'flex' : 'none'
+            }}
+            onClick={() => {
+              let status = document.getElementById("camposelecao - status - " + obj.id).innerHTML;
+              let changestatus = status.replace('AUTORIZADO', 'TRANSFERIDO');
+              document.getElementById("camposelecao - status - " + obj.id).innerHTML = changestatus;
+              updatePacienteFromSeletor(obj, variavel, changestatus);
+            }}>
+            {'TRANSFERIDO'}
           </div>
           <div
             className='button'
@@ -894,6 +856,65 @@ function Passometro() {
     )
   }
 
+  const updatePacienteFromSeletor = (obj, variavel, valor) => {
+    let objeto = {
+      aih: obj.aih,
+      procedimento: obj.procedimento,
+      unidade_origem: obj.unidade_origem,
+      setor_origem: document.getElementById("camposelecao - passometro_setor - " + obj.id).innerHTML,
+      nome_paciente: document.getElementById("campotexto - nome_paciente - " + obj.id).value.toUpperCase(),
+      nome_mae: obj.nome_mae,
+      dn_paciente: obj.dn_paciente,
+      status: valor,
+      unidade_destino: obj.unidade_destino,
+      setor_destino: obj.setor_destino,
+      indicador_data_cadastro: obj.indicador_data_cadastro,
+      indicador_data_confirmacao: obj.indicador_data_confirmacao,
+      indicador_relatorio: obj.indicador_relatorio,
+      indicador_solicitacao_transporte: obj.indicador_solicitacao_transporte,
+      indicador_saida_origem: obj.indicador_saida_origem,
+      indicador_chegada_destino: obj.indicador_chegada_destino,
+      dados_susfacil: obj.dados_susfacil,
+      exames_ok: obj.exames_ok,
+      aih_ok: obj.aih_ok,
+      glasgow: obj.glasgow,
+      pas: obj.pas,
+      pad: obj.pad,
+      fc: obj.fc,
+      fr: obj.fr,
+      sao2: obj.sao2,
+      ofertao2: obj.ofertao2,
+      tipo_leito: document.getElementById("camposelecao - tipo_leito - " + obj.id).innerHTML,
+      contato_nome: obj.contato_nome,
+      contato_telefone: obj.contato_telefone,
+      leito_destino: obj.leito_destino,
+      passometro_leito: document.getElementById("campotexto - passometro_leito - " + obj.id).value.toUpperCase(),
+      passometro_situacao: document.getElementById("campotexto - passometro_situacao - " + obj.id).value.toUpperCase(),
+      passometro_breve_historico: document.getElementById("campotexto - passometro_breve_historico - " + obj.id).value.toUpperCase(),
+      passometro_avaliacao: document.getElementById("campotexto - passometro_avaliacao - " + obj.id).value.toUpperCase(),
+      passometro_recomendacao: document.getElementById("campotexto - passometro_recomendacao - " + obj.id).value.toUpperCase(),
+      passometro_peso: obj.passometro_peso,
+      passometro_notificacao_srag: document.getElementById("check - passometro_notificacao_srag - " + obj.id).innerHTML,
+      passometro_notificacao_dengue: document.getElementById("check - passometro_notificacao_dengue - " + obj.id).innerHTML,
+      passometro_checklist_teste_covid: document.getElementById("check - passometro_checklist_teste_covid - " + obj.id).innerHTML,
+      passometro_checklist_teste_dengue: document.getElementById("check - passometro_checklist_teste_dengue - " + obj.id).innerHTML,
+      passometro_checklist_evolucao: document.getElementById("check - passometro_checklist_evolucao - " + obj.id).innerHTML,
+      passometro_checklist_prescricao: document.getElementById("check - passometro_checklist_prescricao - " + obj.id).innerHTML,
+      passometro_checklist_laboratorio: document.getElementById("check - passometro_checklist_laboratorio - " + obj.id).innerHTML,
+      passometro_checklist_rx: document.getElementById("check - passometro_checklist_rx - " + obj.id).innerHTML,
+      passometro_setor: document.getElementById("camposelecao - passometro_setor - " + obj.id).innerHTML,
+      passometro_data: obj.passometro_data,
+      passometro_vulnerabilidade: document.getElementById("check - passometro_vulnerabilidade - " + obj.id).innerHTML,
+      passometro_cersam: document.getElementById("check - passometro_cersam - " + obj.id).innerHTML,
+      tag: document.getElementById("camposelecao - tag - " + obj.id).innerHTML,
+    }
+    axios.post(html + 'update_paciente/' + obj.id, objeto).then(() => {
+      console.log('ATUALIZAÇÃO DO REGISTRO REALIZADA COM SUCESSO.');
+      loadPacientes(status, setor);
+    });
+    document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'none'
+  }
+
   // campo no passômetro para seleção de uma opção.
   function CampoSelecao(obj, item, array, variavel, largura) {
     return (
@@ -909,7 +930,7 @@ function Passometro() {
             borderStyle: 'solid', borderWidth: 5,
             backgroundColor: array.filter(valor => valor.valor == item).length == 1 ?
               array.filter(valor => valor.valor == item).map(valor => valor.cor) :
-              (item != null && item.includes('LIBERADO')) ? '#a9dfbf' : '',
+              (item != null && (item.includes('AUTORIZADO') || item.includes('TRANSFERIDO'))) ? '#a9dfbf' : '',
           }}
           onClick={() => {
             document.getElementById("lista - " + variavel + " - " + obj.id).style.display = 'flex';
@@ -919,14 +940,14 @@ function Passometro() {
             style={{
               display: item != null && item.includes('REAVALIAÇÃO ') ? 'flex' : 'none',
               flexDirection: 'row',
-              justifyContent: 'flex-start',
+              justifyContent: 'center',
               position: 'absolute', top: 0, left: 0, bottom: 0,
             }}>
             <div style={{
               display: 'flex',
               backgroundColor: item == 'REAVALIAÇÃO AMARELA' ? '#f4d03f' : item == 'REAVALIAÇÃO VERDE' ? '#7dcea0' : '#ec7063',
               width: 20, height: '100%',
-              borderRadius: 5,
+              borderRadius: 5, marginRight: 5,
             }}>
             </div>
             <div id={"camposelecao - " + variavel + " - " + obj.id}
@@ -1096,7 +1117,7 @@ function Passometro() {
         </div>
         {arraypassometrosetor.map(setor => (
           <div key={'passometro desktop ' + setor.valor}>
-            {arraypacientes.filter(item => item.setor_origem == setor.valor && item.unidade_origem == unidade && !isNaN(parseInt(item.passometro_leito))).map(item => {
+            {arraypacientes.filter(item => item.setor_origem == setor.valor && item.unidade_origem == unidade && item.nome_paciente != null && item.nome_paciente != '' && item.passometro_leito != null && item.passometro_leito != '').map(item => {
               let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
               let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
               let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
@@ -1289,7 +1310,7 @@ function Passometro() {
                 </div>
               )
             })}
-            {arraypacientes.filter(item => item.setor_origem == setor.valor && item.status != 'VAGO' && item.unidade_origem == unidade && (item.nome_paciente == null || item.nome_paciente == '' || isNaN(parseInt(item.passometro_leito)))).map(item => {
+            {arraypacientes.filter(item => item.setor_origem == setor.valor && item.unidade_origem == unidade && item.status != 'VAGO' && (item.nome_paciente == null || item.nome_paciente == '') && (item.passometro_leito == null || item.passometro_leito == '')).map(item => {
               let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
               let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
               let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
@@ -1299,7 +1320,7 @@ function Passometro() {
                   style={{
                     display: 'flex', flexDirection: 'column', justifyContent: 'center', alignContent: 'center',
                     position: 'relative',
-                    backgroundColor: item.nome_paciente == '' || item.nome_paciente == null ? '#fcf3cf' : '',
+                    backgroundColor: '#fcf3cf',
                     borderRadius: 5,
                   }}>
                   <div
@@ -1878,7 +1899,7 @@ function Passometro() {
           }}
           onClick={() => {
             setstatus('TODOS');
-            loadPacientes(null, setor);
+            loadPacientes('TODOS', setor);
           }}
         >
           <div>{'TODOS'}</div>
@@ -1894,7 +1915,6 @@ function Passometro() {
               fontSize: window.innerWidth > mobilewidth ? '' : 12,
               padding: 10,
               display: 'flex', flexDirection: 'column', justifyContent: 'center',
-              // backgroundColor: valor.cor,
               background: valor.cor,
             }}
             onClick={() => {
@@ -1903,31 +1923,14 @@ function Passometro() {
             }}
           >
             <div>{valor.valor}</div>
-            <div>
+            <div style={{ display: valor.valor.includes('TRANSFERIDO') == true ? 'flex' : 'none' }}>
+              {pacientes.filter(item => item.status.includes('TRANSFERIDO')).length}
+            </div>
+            <div style={{ display: valor.valor.includes('TRANSFERIDO') == false ? 'flex' : 'none' }}>
               {pacientes.filter(item => item.status == valor.valor).length}
             </div>
           </div>
         ))}
-        <div
-          id='status todos'
-          className={status == 'TRANSFERIDOS' ? 'button strong' : 'button weak'}
-          style={{
-            width: window.innerWidth > mobilewidth ? 100 : '35vw',
-            minWidth: window.innerWidth > mobilewidth ? 100 : '35vw',
-            height: window.innerWidth > mobilewidth ? 100 : '35vw',
-            fontSize: window.innerWidth > mobilewidth ? '' : 12,
-            padding: 10,
-            display: 'flex', flexDirection: 'column', justifyContent: 'center',
-            backgroundColor: '#7dcea0',
-            opacity: status == 'TRANSFERIDOS' ? 1 : 0.8
-          }}
-          onClick={() => {
-            setstatus('TRANSFERIDOS');
-            loadPacientes('TRANSFERIDOS', null);
-          }}
-        >
-          <div>{'TRANSFERIDOS'}</div>
-        </div>
         <div
           id='status assistencia social'
           className={status == 'ASSISTÊNCIA SOCIAL' ? 'button strong' : 'button weak'}
