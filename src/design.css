@@ -153,6 +153,33 @@ body {
   }
 }
 
+/* BORDAS DESTACADAS PARA OS CARDS SELECIONADOS */
+.blinkbordas {
+  animation-name: blinkbordas;
+  animation-iteration-count: infinite;
+  animation-duration: 1000ms;
+}
+
+@keyframes blinkbordas {
+  0% {
+    border-color: #3498db;
+    border-style: solid;
+    background-color: '';
+  }
+
+  50% {
+    border-color: #85c1e9;
+    border-style: solid;
+    background-color: #3498db;
+  }
+
+  100% {
+    border-color: #3498db;
+    border-style: solid;
+    background-color: '';
+  }
+}
+
 /* TOAST */
 .toasty {
   display: none;
@@ -506,8 +533,6 @@ input[type="date"]::-webkit-calendar-picker-indicator {
 
 .strong {
   opacity: 1;
-  border-color: #3498db;
-  border-style: solid;
   border-width: 5px;
   border-radius: 5;
   transition: 200ms ease-in-out;
