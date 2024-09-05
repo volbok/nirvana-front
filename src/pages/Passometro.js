@@ -2225,7 +2225,7 @@ function Passometro() {
                   display: 'flex', flexDirection: 'row', justifyContent: 'center',
                 }}>
                   {pdfItens(item.passometro_setor, 75)}
-                  {pdfItens(item.passometro_leito.substring(0, 3), 50)}
+                  {pdfItens(item.passometro_leito != null ? item.passometro_leito.substring(0, 3) : null, 50)}
                   {pdfItens(item.nome_paciente, 400)}
                   {pdfItens(item.passometro_situacao, 400)}
                   {pdfItens(item.status, 200)}
