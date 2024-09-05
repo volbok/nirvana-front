@@ -180,6 +180,23 @@ body {
   }
 }
 
+/* ROTAÇÃO */
+.rotacao {
+  animation-name: rotacao;
+  animation-iteration-count: infinite;
+  animation-duration: 5000ms;
+}
+
+@keyframes rotacao {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 /* TOAST */
 .toasty {
   display: none;

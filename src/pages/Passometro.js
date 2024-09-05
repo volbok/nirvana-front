@@ -19,6 +19,7 @@ import pbh from '../images/pbh.svg';
 import modo_edicao from '../images/passometro_edicao.svg';
 import modo_visualizacao from '../images/passometro_visualizacao.svg';
 import lupa from '../images/lupa.svg';
+import dots from '../images/dots.svg';
 
 function Passometro() {
 
@@ -110,7 +111,7 @@ function Passometro() {
         item.status == 'EMAD'
       ).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     } else if (status == 'TRANSFERIDOS') {
-      setarraypacientes(array.filter(item => item.status.includes('TRANSFERIDO') == true).sort((a, b) => moment(a.passometro_data, 'DD/MM/YYYY - HH:mm') > moment(b.passometro_data, 'DD/MM/YYYY - HH:mm') ? 1 : -1));
+      setarraypacientes(array.filter(item => item.status.includes('TRANSFERIDO') == true).sort((a, b) => moment(a.passometro_data, 'DD/MM/YYYY - HH:mm') > moment(b.passometro_data, 'DD/MM/YYYY - HH:mm') ? -1 : 1));
     } else {
       setarraypacientes(array.filter(item => item.status == status && item.setor_origem == setor).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1));
     }
@@ -199,7 +200,7 @@ function Passometro() {
   // atualizar registro de pacientes.
   const updatePaciente = (item, id) => {
 
-    if (horizontal == 0) {
+    if (smartlist == 0) {
       obj = {
         aih: item.aih,
         procedimento: item.procedimento,
@@ -311,8 +312,18 @@ function Passometro() {
 
   var timeout = null;
   var interval = null;
+
+  // opção coringa para facilitar corrida de leitos do horizontal.
+  const [horizontal, sethorizontal] = useState(0);
+  const [smartlist, setsmartlist] = useState(0);
   useEffect(() => {
     if (pagina == 'PASSOMETRO') {
+      console.log(usuario.tipo);
+      if (usuario.tipo.includes('HORIZONTAL')) {
+        sethorizontal(1);
+      } else {
+        sethorizontal(0);
+      }
       loadSetores();
       loadPacientesOnStart();
     }
@@ -368,7 +379,10 @@ function Passometro() {
           ></img>
         </div>
         <div className='button' onClick={() => setpagina('USUARIOS')} title="CADASTRO DE USUÁRIOS"
-          style={{ position: 'relative', display: usuario.tipo == 'HORIZONTAL' ? 'flex' : 'none' }}
+          style={{
+            position: 'relative',
+            display: horizontal == 1 ? 'flex' : 'none',
+          }}
         >
           <img
             alt=""
@@ -380,15 +394,15 @@ function Passometro() {
             }}
           ></img>
           <div
-            className={horizontal == 1 ? 'button-green' : 'button-red'}
+            className={smartlist == 1 ? 'button-green' : 'button-red'}
             onClick={(e) => {
-              if (horizontal == 0) {
-                sethorizontal(1);
+              if (smartlist == 0) {
+                setsmartlist(1);
                 setstatus('TODOS');
                 setsetor('TODOS');
                 loadPacientes('TODOS', 'TODOS');
               } else {
-                sethorizontal(0);
+                setsmartlist(0);
                 setstatus('TODOS');
                 setsetor('TODOS');
                 loadPacientes('TODOS', 'TODOS');
@@ -421,12 +435,12 @@ function Passometro() {
           if (modo == 1) {
             setmodo(0);
           } else {
-            changePages(6, 5000, 'UDC');
+            changePages(5, 5000);
             setmodo(1);
           }
         }}
         style={{
-          display: window.innerWidth > mobilewidth && usuario.tipo == 'HORIZONTAL' ? 'flex' : 'none',
+          display: horizontal == 1 ? 'flex' : 'none',
           width: 50, maxWidth: 50,
           height: 50, maxHeight: 50,
           alignSelf: 'flex-end',
@@ -492,9 +506,6 @@ function Passometro() {
       ></input>
     )
   }
-
-  // opção coringa para facilitar corrida de leitos do horizontal.
-  const [horizontal, sethorizontal] = useState(0);
 
   const [showresumo, setshowresumo] = useState(0);
   // lista de pacientes internados.
@@ -1057,7 +1068,7 @@ function Passometro() {
         onFocus={(e) => (e.target.placeholder = '')}
         style={{
           display: 'flex', flexDirection: 'center',
-          alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+          alignSelf: smartlist == 0 ? 'center' : 'flex-start',
           minWidth: largura_minima, width: largura, maxWidth: largura_maxima,
           minHeight: altura, height: altura, maxHeight: altura,
           padding: 5, margin: 2.5,
@@ -1225,7 +1236,7 @@ function Passometro() {
                       </div>
                       <div id={"checklist para horizontal"}
                         style={{
-                          display: horizontal == 1 ? 'flex' : 'none',
+                          display: smartlist == 1 ? 'flex' : 'none',
                           flexDirection: 'row',
                           justifyContent: 'flex-start',
                           alignContent: 'flex-start',
@@ -1240,7 +1251,7 @@ function Passometro() {
                     </div>
                     <div style={{
                       display: 'flex', flexDirection: 'row', width: 95,
-                      alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                      alignSelf: smartlist == 0 ? 'center' : 'flex-start',
                     }}>
                       <div id={"toggle_details " + item.id}
                         className='button-green'
@@ -1333,7 +1344,7 @@ function Passometro() {
                       </div>
                       <div
                         style={{
-                          display: horizontal == 1 ? 'none' : 'flex',
+                          display: smartlist == 1 ? 'none' : 'flex',
                           flexDirection: 'row', flexWrap: 'wrap',
                           justifyContent: 'flex-start',
                           alignContent: 'flex-start',
@@ -1420,7 +1431,7 @@ function Passometro() {
                       </div>
                       <div id={"checklist para horizontal"}
                         style={{
-                          display: horizontal == 1 ? 'flex' : 'none',
+                          display: smartlist == 1 ? 'flex' : 'none',
                           flexDirection: 'row',
                           justifyContent: 'flex-start',
                           alignContent: 'flex-start',
@@ -1435,7 +1446,7 @@ function Passometro() {
                     </div>
                     <div style={{
                       display: 'flex', flexDirection: 'row', width: 95,
-                      alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                      alignSelf: smartlist == 0 ? 'center' : 'flex-start',
                     }}>
                       <div id={"toggle_details " + item.id}
                         className='button-green'
@@ -1527,7 +1538,7 @@ function Passometro() {
                       </div>
                       <div
                         style={{
-                          display: horizontal == 1 ? 'none' : 'flex',
+                          display: smartlist == 1 ? 'none' : 'flex',
                           flexDirection: 'row', flexWrap: 'wrap',
                           justifyContent: 'flex-start',
                           alignContent: 'flex-start',
@@ -1641,7 +1652,7 @@ function Passometro() {
                       <div id="botões para expandir detalhes e deletar registro."
                         style={{
                           display: 'flex', flexDirection: 'row',
-                          alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                          alignSelf: smartlist == 0 ? 'center' : 'flex-start',
                         }}>
                         <div id={"toggle_details " + item.id}
                           className='button-green'
@@ -1733,7 +1744,7 @@ function Passometro() {
                           </div>
                           <div
                             style={{
-                              display: horizontal == 1 ? 'none' : 'flex',
+                              display: smartlist == 1 ? 'none' : 'flex',
                               flexDirection: 'row', flexWrap: 'wrap',
                               justifyContent: 'flex-start',
                               alignContent: 'flex-start',
@@ -1792,7 +1803,7 @@ function Passometro() {
                       style={{
                         position: 'absolute', top: 65, right: 20,
                         display: 'flex', flexDirection: 'row', width: 50,
-                        alignSelf: horizontal == 0 ? 'center' : 'flex-start',
+                        alignSelf: smartlist == 0 ? 'center' : 'flex-start',
                       }}>
                       <div id={"toggle_details " + item.id}
                         className='button-green'
@@ -1883,7 +1894,7 @@ function Passometro() {
                         </div>
                         <div
                           style={{
-                            display: horizontal == 1 ? 'none' : 'flex',
+                            display: smartlist == 1 ? 'none' : 'flex',
                             flexDirection: 'row', flexWrap: 'wrap',
                             justifyContent: 'flex-start',
                             alignContent: 'flex-start',
@@ -2122,6 +2133,7 @@ function Passometro() {
           borderColor: 'black', borderWidth: 1, borderStyle: 'solid',
           width: largura,
           margin: 2.5,
+          // backgroundColor: item.passometro_setor == 'SE' ? '#d7dbdd' : '',
         }}>
         {item}
       </div>
@@ -2162,17 +2174,86 @@ function Passometro() {
               {pdfHeaders('SITUAÇÃO', 400)}
               {pdfHeaders('STATUS', 200)}
             </div>
-            {array.filter(item => item.passometro_setor == setor.valor).map(item => (
+            {array.filter(item => item.passometro_setor == setor.valor && (item.passometro_leito != null && item.passometro_leito != '')).map(item => (
               <div key={'pacientes_pdf ' + item.id}
                 style={{
-                  display: 'flex', flexDirection: 'row', justifyContent: 'center',
+                  display: 'flex', flexDirection: 'column', justifyContent: 'center',
                   breakInside: 'avoid',
                 }}>
-                {pdfItens(item.passometro_setor, 75)}
-                {pdfItens(item.passometro_leito, 50)}
-                {pdfItens(item.nome_paciente, 400)}
-                {pdfItens(item.passometro_situacao, 400)}
-                {pdfItens(item.status, 200)}
+                <div style={{
+                  display: 'flex', flexDirection: 'row', justifyContent: 'center',
+                }}>
+                  {pdfItens(item.passometro_setor, 75)}
+                  {pdfItens(item.passometro_leito.substring(0, 3), 50)}
+                  {pdfItens(item.nome_paciente, 400)}
+                  {pdfItens(item.passometro_situacao, 400)}
+                  {pdfItens(item.status, 200)}
+                </div>
+                <div
+                  style={{
+                    display: item.passometro_setor == 'SE' ? 'flex' : 'none',
+                    flexDirection: 'row', justifyContent: 'center',
+                  }}>
+                  {pdfItens(item.passometro_breve_historico != undefined && item.passometro_breve_historico != '' ? 'BREVE HISTÓRICO: ' + item.passometro_breve_historico : 'BREVE HITÓRICO: -X-', 375)}
+                  {pdfItens(item.passometro_avaliacao != undefined && item.passometro_avaliacao != '' ? 'AVALIAÇÃO: ' + item.passometro_avaliacao : 'AVALIAÇÃO: -X-', 375)}
+                  {pdfItens(item.passometro_recomoendacao != undefined && item.passometro_recomoendacao != '' ? 'RECOMENDAÇÃO: ' + item.passometro_recomoendacao : 'RECOMENDAÇÃO: -X-', 375)}
+                </div>
+                <div
+                  style={{
+                    display: item.passometro_setor == 'SE' ? 'flex' : 'none',
+                    flexDirection: 'row', justifyContent: 'center',
+                  }}>
+                  <img
+                    alt=""
+                    src={dots}
+                    style={{
+                      margin: 0,
+                      height: 20,
+                    }}
+                  >
+                  </img>
+                </div>
+              </div>
+            ))}
+            {array.filter(item => item.passometro_setor == setor.valor && (item.passometro_leito == null || item.passometro_leito == '')).map(item => (
+              <div key={'pacientes_pdf ' + item.id}
+                style={{
+                  display: 'flex', flexDirection: 'column', justifyContent: 'center',
+                  breakInside: 'avoid',
+                }}>
+                <div style={{
+                  display: 'flex', flexDirection: 'row', justifyContent: 'center',
+                }}>
+                  {pdfItens(item.passometro_setor, 75)}
+                  {pdfItens(item.passometro_leito.substring(0, 3), 50)}
+                  {pdfItens(item.nome_paciente, 400)}
+                  {pdfItens(item.passometro_situacao, 400)}
+                  {pdfItens(item.status, 200)}
+                </div>
+                <div
+                  style={{
+                    display: item.passometro_setor == 'SE' ? 'flex' : 'none',
+                    flexDirection: 'row', justifyContent: 'center',
+                  }}>
+                  {pdfItens(item.passometro_breve_historico != undefined && item.passometro_breve_historico != '' ? 'BREVE HISTÓRICO: ' + item.passometro_breve_historico : 'BREVE HITÓRICO: -X-', 375)}
+                  {pdfItens(item.passometro_avaliacao != undefined && item.passometro_avaliacao != '' ? 'AVALIAÇÃO: ' + item.passometro_avaliacao : 'AVALIAÇÃO: -X-', 375)}
+                  {pdfItens(item.passometro_recomoendacao != undefined && item.passometro_recomoendacao != '' ? 'RECOMENDAÇÃO: ' + item.passometro_recomoendacao : 'RECOMENDAÇÃO: -X-', 375)}
+                </div>
+                <div
+                  style={{
+                    display: item.passometro_setor == 'SE' ? 'flex' : 'none',
+                    flexDirection: 'row', justifyContent: 'center',
+                  }}>
+                  <img
+                    alt=""
+                    src={dots}
+                    style={{
+                      margin: 0,
+                      height: 20,
+                    }}
+                  >
+                  </img>
+                </div>
               </div>
             ))}
           </div>
@@ -2243,19 +2324,52 @@ function Passometro() {
 
   // ## TELA PARA EXIBIÇÃO PÚBLICA DE ATENDIMENTOS (monitores da upa) ##
   const [indexpacientes, setindexpacientes] = useState([]);
-  let localpage = 1;
+  // let localpage = 1;
   // alternar páginas.
   const changePages = (quantidade, intervalo) => {
     axios.get(html + 'list_pacientes').then((response) => {
       var y = response.data.rows;
-      var x = y.filter(item => item.setor_origem == setor && (item.status == 'VAGO' || item.status.includes('REAVALIAÇÃO') == true || item.status == 'AIH'));
+      var x = y.filter(item => item.setor_origem == setor && (item.status.includes('REAVALIAÇÃO') == true || item.status == 'AIH'));
       setpacientes(x);
       let totalpacientes = x.length;
       console.log('TOTAL DE PACIENTES: ' + totalpacientes);
       let totalpaginas = Math.ceil(totalpacientes / quantidade);
       console.log('TOTAL DE PÁGINAS: ' + totalpaginas);
+
+      let page = 1;
+      let arraypct = [];
+      let pctindex = 0;
+
+      while (totalpaginas > 0) {
+        totalpaginas = totalpaginas - 1;
+        console.log('PÁGINA: ' + page);
+        arraypct.push(
+          {
+            pagina: page,
+            array: x.slice(pctindex * quantidade, ((pctindex + 1) * quantidade) - 1),
+          }
+        );
+        page = page + 1;
+        pctindex = pctindex + 1;
+      }
+      console.log(arraypct);
+      setindexpacientes(arraypct);
+
+      clearInterval(interval);
+      let countpage = 1;
+      interval = setInterval(() => {
+        if (countpage <= totalpaginas) {
+          setindexpacientes(arraypct.filter(item => item.page == countpage));
+          countpage = countpage + 1;
+        } else {
+          countpage = 1;
+        }
+      }, intervalo);
+
+      /*
       let inicio = 0;
       let final = 0;
+      
       clearInterval(interval);
       interval = setInterval(() => {
         if (localpage == 1) {
@@ -2272,6 +2386,8 @@ function Passometro() {
           localpage = 1;
         }
       }, intervalo);
+      */
+
     })
   }
   function Tela() {
@@ -2298,7 +2414,7 @@ function Passometro() {
           {Header('NOME', '30vw', '30vw', '30vw')}
           {Header('STATUS', '30vw', '30vw', '30vw')}
         </div>
-        {indexpacientes.sort().sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => {
+        {indexpacientes.map(item => item.array).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => {
           return (
             <div key={'pacientes exibição' + item.id}
               style={{

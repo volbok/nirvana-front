@@ -186,11 +186,11 @@ function Usuarios() {
   }, [arrayusuarios]);
 
   const arraytipouusario = [
-    "GERENTE",
-    "GESTOR-TS",
-    "MOTORISTA-TS",
-    "NIR",
-    "ASSISTENCIAL",
+    'GESTOR',
+    'MÉDICO',
+    'MÉDICO HORIZONTAL',
+    'ENFERMEIRO NIR',
+    'ENFERMEIRO ASSISTENCIAL'
   ]
 
   function Seletor(obj, array, variavel) {
