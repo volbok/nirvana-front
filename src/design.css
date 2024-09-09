@@ -203,7 +203,7 @@ body {
   visibility: hidden;
   opacity: 1;
   animation-name: fadeinout;
-  animation-duration: 3s;
+  animation-duration: 5s;
 }
 
 @keyframes fadeinout {
@@ -228,6 +228,11 @@ body {
   }
 
   5% {
+    opacity: 1;
+    transform: rotate(0deg);
+  }
+
+  95% {
     opacity: 1;
     transform: rotate(0deg);
   }
