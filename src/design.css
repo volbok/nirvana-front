@@ -53,6 +53,21 @@
   }
 }
 
+.littlezoom {
+  animation-name: littlezoom;
+  animation-duration: 1s;
+}
+
+@keyframes littlezoom {
+  0% {
+    scale: 0;
+  }
+
+  10% {
+    scale: 1;
+  }
+}
+
 body {
   -webkit-overflow-scrolling: touch;
   -webkit-touch-callout: none;

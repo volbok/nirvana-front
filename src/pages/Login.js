@@ -235,6 +235,7 @@ function Login() {
         <div id="seletor de categoria profissional" style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap' }}>
           {categoria_profissional.map(item => (
             <div
+              key={'tipo_profissional: ' + item}
               id={'tipo_profissional: ' + item}
               className='button'
               style={{ width: 200 }}
@@ -392,6 +393,18 @@ function Login() {
         }}
       ></img>
       <div className="text3" style={{ margin: 20, fontSize: 20 }}>NIRVANA</div>
+      <div
+        className='button'
+        style={{
+          display: 'flex',
+          justifyContent: 'center',
+          flexWrap: 'wrap',
+          width: 150,
+        }}
+        onClick={() => setpagina('DASHBOARD')}
+      >
+        DASHBOARD
+      </div>
       <div id="inputs_login_senha" style={{ display: 'flex', flexDirection: 'column' }}>
         <input
           autoComplete="off"

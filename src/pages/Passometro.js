@@ -28,6 +28,7 @@ function Passometro() {
     html,
     usuario,
     pagina, setpagina,
+    arraystatus,
     pacientes, setpacientes,
     settoast,
     setdialogo,
@@ -602,6 +603,7 @@ function Passometro() {
     },
   ]
 
+  /*
   const arraystatus = [
     {
       valor: 'VAGO',
@@ -664,6 +666,7 @@ function Passometro() {
       cor: '#edbb99',
     },
   ]
+  */
 
   const arraytag = [
     {
@@ -1191,9 +1194,9 @@ function Passometro() {
           <div key={'passometro desktop ' + setor.valor}>
             {arraypacientes.filter(item => item.setor_origem == setor.valor && item.unidade_origem == unidade && (item.status == 'VAGO' || (item.nome_paciente != null && item.nome_paciente != '' && item.passometro_leito != null && item.passometro_leito != '' && isNaN(parseInt(item.passometro_leito)) == false))).sort((a, b) => parseInt(a.passometro_leito) > parseInt(b.passometro_leito) ? 1 : -1).map(item => {
               let entrada = moment(item.passometro_data, 'DD/MM/YYYY - HH:mm');
-              let alertalaboratorio = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_laboratorio == 1;
-              let alertarx = moment().diff(entrada, 'hours') > 3 && item.passometro_checklist_rx == 1;
-              let alertaaih = moment().diff(entrada, 'hours') > 12 && (item.status.includes('REAVALIAÇÃO') == true);
+              let alertalaboratorio = moment().diff(entrada, 'seconds') > 5 && item.passometro_checklist_laboratorio == 1;
+              let alertarx = moment().diff(entrada, 'seconds') > 5 && item.passometro_checklist_rx == 1;
+              let alertaaih = moment().diff(entrada, 'hours') > 6 && (item.status.includes('REAVALIAÇÃO') == true);
               return (
                 <div key={'pacientes desktop ' + item.id}
                   style={{
@@ -2724,7 +2727,7 @@ function Passometro() {
               fontWeight: 'bolder',
               textDecoration: 'underline',
             }}>
-            {'PASSÔMETRO: ' + unidade}
+            {'PASSÔMETRO: ' + unidade + ' - ' + moment().format('DD/MM/YYYY - HH:mm')}
           </div>
         </div>
         <div id="campos"
