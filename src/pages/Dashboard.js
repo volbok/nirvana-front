@@ -54,7 +54,7 @@ function Dashboard() {
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div className='text1'>PESQUISA: INTERVALO DE DIAS</div>
         <div id="intervalo de dias e predefiições" style={{
-          display: 'flex', flexDirection: 'row', justifyContent: 'center',
+          display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',
           width: '90vw', alignSelf: 'center',
         }}
         >

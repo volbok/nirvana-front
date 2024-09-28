@@ -150,6 +150,8 @@ function Chart(type, status, cor, arraydados, arraydatas, title, width) {
     series: arraydados,
     labels: arraydatas,
     legend: {
+      height: 300,
+      offsetY: 35,
       formatter: function (seriesName, opt) {
         return (
           seriesName + ': ' + opt.w.config.series[opt.seriesIndex]
@@ -187,7 +189,7 @@ function Chart(type, status, cor, arraydados, arraydatas, title, width) {
     },
     plotOptions: {
       pie: {
-        customScale: 0.8,
+        customScale: 0.7,
         expandOnClick: false,
         donut: {
           size: '60%'
@@ -342,16 +344,19 @@ function Chart(type, status, cor, arraydados, arraydatas, title, width) {
         padding: 10,
         margin: 10,
         backgroundColor: 'white',
-        width: width, // 13:9
-        height: 9 * width / 13,
+        width: width,
         alignSelf: 'center',
         position: 'relative',
+        verticalAlign: 'center',
       }}>
       <div className='text1'
-        style={{ display: title == 1 ? 'flex' : 'none', position: 'absolute', top: 10 }}>
+        style={{
+          display: title == 1 ? 'flex' : 'none',
+          top: 10
+        }}>
         {status}
       </div>
-      <div style={{ width: width, height: 9 * width / 13, }} id={'chart ' + status}></div>
+      <div style={{ width: width, height: 9 * width / 13, alignSelf: 'center' }} id={'chart ' + status}></div>
     </div>
   );
 }
