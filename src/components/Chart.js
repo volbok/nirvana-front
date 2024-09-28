@@ -151,7 +151,7 @@ function Chart(type, status, cor, arraydados, arraydatas, title, width) {
     labels: arraydatas,
     legend: {
       height: 300,
-      offsetY: 35,
+      // offsetY: 35,
       formatter: function (seriesName, opt) {
         return (
           seriesName + ': ' + opt.w.config.series[opt.seriesIndex]
@@ -356,7 +356,7 @@ function Chart(type, status, cor, arraydados, arraydatas, title, width) {
         }}>
         {status}
       </div>
-      <div style={{ width: width, height: 9 * width / 13, alignSelf: 'center' }} id={'chart ' + status}></div>
+      <div style={{ width: width, height: 9 * width / 16, alignSelf: 'center' }} id={'chart ' + status}></div>
     </div>
   );
 }
