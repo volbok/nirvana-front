@@ -20,6 +20,7 @@ import modo_edicao from '../images/passometro_edicao.svg';
 import modo_visualizacao from '../images/passometro_visualizacao.svg';
 import lupa from '../images/lupa.svg';
 import dots from '../images/dots.svg';
+import Filter from '../components/Filter';
 
 function Passometro() {
 
@@ -513,6 +514,7 @@ function Passometro() {
   }
 
   const [showresumo, setshowresumo] = useState(0);
+  const [viewseletorhospital, setviewseletorhospital] = useState(0);
   // lista de pacientes internados.
   function ListaDePacientes() {
     return (
@@ -530,7 +532,22 @@ function Passometro() {
             alignContent: 'center', alignItems: 'center',
           }}>
           <Usuario></Usuario>
-          <FilterPaciente></FilterPaciente>
+          <div style={{ display: 'flex', flexDirection: 'row' }}>
+            <FilterPaciente></FilterPaciente>
+            <div
+              className='button'
+              style={{
+                display: unidade != null ? 'flex' : 'none',
+                justifyContent: 'center',
+                flexWrap: 'wrap',
+                width: 150,
+              }}
+              onClick={() => setpagina('DASHBOARD')}
+            >
+              DASHBOARD
+            </div>
+          </div>
+          <SeletorHospital></SeletorHospital>
         </div>
         <div style={{
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
@@ -820,7 +837,7 @@ function Passometro() {
                   status: objstatus, // atualiza aqui.
                   unidade_destino: obj.unidade_destino,
                   setor_destino: obj.setor_destino,
-                  indicador_data_cadastro: obj.indicador_data_cadastro,
+                  indicador_data_cadastro: item.valor == 'AIH' ? moment().format('DD/MM/YYYY - HH:mm') : obj.indicador_data_cadastro,
                   indicador_data_confirmacao: obj.indicador_data_confirmacao,
                   indicador_relatorio: obj.indicador_relatorio,
                   indicador_solicitacao_transporte: obj.indicador_solicitacao_transporte,
@@ -884,7 +901,7 @@ function Passometro() {
                   obj.status == 'EMAD' ? 'flex' : 'none'
             }}
             onClick={() => {
-              updatePacienteFromSeletor(obj, variavel, document.getElementById("camposelecao - status - " + obj.id).innerHTML + ' AUTORIZADO')
+              updatePacienteFromSeletor(obj, variavel, document.getElementById("camposelecao - status - " + obj.id).innerHTML + ' AUTORIZADO', null, moment().format('DD/MM/YYYY - HH:mm'), null);
             }}>
             {'AUTORIZADO'}
           </div>
@@ -904,7 +921,11 @@ function Passometro() {
               let status = document.getElementById("camposelecao - status - " + obj.id).innerHTML;
               let changestatus = status.replace('AUTORIZADO', 'TRANSFERIDO');
               document.getElementById("camposelecao - status - " + obj.id).innerHTML = changestatus;
-              updatePacienteFromSeletor(obj, variavel, changestatus);
+              localStorage.setItem('objeto', JSON.stringify(obj));
+              console.log(JSON.parse(localStorage.getItem('objeto')))
+              localStorage.setItem('variavel', variavel);
+              localStorage.setItem('changestatus', changestatus);
+              setviewseletorhospital(1);
             }}>
             {'TRANSFERIDO'}
           </div>
@@ -928,7 +949,143 @@ function Passometro() {
     )
   }
 
-  const updatePacienteFromSeletor = (obj, variavel, valor) => {
+  // componente para seleção dos destinos dos pacientes.
+  let localarrayhospitais = [
+    {
+      nome: 'HOSPITAL DAS CLÍNICAS',
+      sigla: 'HC',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'SANTA CASA DE BELO HORIZONTE',
+      sigla: 'SCBH',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'COMPLEXO HOSPITALAR SÃO FRANCISCO',
+      sigla: 'CHSF',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL JULIA KUBITSCHEK',
+      sigla: 'HJK',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL ODILON BEHRENS',
+      sigla: 'HOB',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL RISOLETA TOLENTINA NEVES',
+      sigla: 'HRTN',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL MUNICIPAL DOUTOR CÉLIO DE CASTRO',
+      sigla: 'HMDCC',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL JOÃO XXIII',
+      sigla: 'HJXXIII',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'MATERNIDADE ODETE VALADARES',
+      sigla: 'MOV',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL EVANGÉLICO',
+      sigla: 'HE',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL INFANTIL JOÃO PAULO II',
+      sigla: 'HIJPII',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL UNIVERSITÁRIO DE CIÊNCIAS MÉDICAS',
+      sigla: 'HUCM',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL DA BALEIA',
+      sigla: 'HB',
+      endereço: '',
+      telefone: '',
+    },
+    {
+      nome: 'HOSPITAL ALBERTO CAVALCANTE',
+      sigla: 'HAC',
+      endereço: '',
+      telefone: '',
+    },
+  ];
+  const hospitais = localarrayhospitais;
+  const [arrayhospitais, setarrayhospitais] = useState(localarrayhospitais);
+  function SeletorHospital() {
+    return (
+      <div className='fundo'
+        id="lista - hospitais"
+        onClick={() => setviewseletorhospital(0)}
+        style={{
+          display: viewseletorhospital == 1 ? 'flex' : 'none',
+          zIndex: 5
+        }}>
+        <div className='janela scroll' style={{ height: '80vh', width: '60vw' }}
+          onClick={(e) => e.stopPropagation()}
+        >
+          {Filter(setarrayhospitais, hospitais, 'item.nome')}
+          {arrayhospitais.map((item) => (
+            <div
+              id={'HOSPITAL - ' + item.sigla}
+              className='button'
+              style={{ width: 'calc(100% - 20px)', minWidth: 'calc(100% - 20px)' }}
+              onClick={() => {
+                updatePacienteFromSeletor(JSON.parse(localStorage.getItem('objeto')), localStorage.getItem('variavel'), localStorage.getItem('changestatus'), null, null, item.nome);
+                setviewseletorhospital(0);
+              }}
+            >
+              {item.nome}
+            </div>
+          ))}
+          <div
+            style={{ display: 'flex' }}
+            className='button-red'
+            onClick={() => {
+              setviewseletorhospital(0);
+            }} title="VOLTAR">
+            <img
+              alt=""
+              src={back}
+              style={{
+                margin: 10,
+                height: 30,
+                width: 30,
+              }}
+            ></img>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
+  const updatePacienteFromSeletor = (obj, variavel, valor, data_cadastro, data_confirmacao, unidade_destino) => {
     let objeto = {
       aih: obj.aih,
       procedimento: obj.procedimento,
@@ -938,10 +1095,10 @@ function Passometro() {
       nome_mae: obj.nome_mae,
       dn_paciente: obj.dn_paciente,
       status: valor,
-      unidade_destino: obj.unidade_destino,
+      unidade_destino: unidade_destino == null ? obj.unidade_destino : unidade_destino,
       setor_destino: obj.setor_destino,
-      indicador_data_cadastro: obj.indicador_data_cadastro,
-      indicador_data_confirmacao: obj.indicador_data_confirmacao,
+      indicador_data_cadastro: data_cadastro == null ? obj.indicador_data_cadastro : data_cadastro,
+      indicador_data_confirmacao: data_confirmacao == null ? obj.indicador_data_confirmacao : data_confirmacao,
       indicador_relatorio: obj.indicador_relatorio,
       indicador_solicitacao_transporte: obj.indicador_solicitacao_transporte,
       indicador_saida_origem: obj.indicador_saida_origem,

@@ -393,18 +393,6 @@ function Login() {
         }}
       ></img>
       <div className="text3" style={{ margin: 20, fontSize: 20 }}>NIRVANA</div>
-      <div
-        className='button'
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          flexWrap: 'wrap',
-          width: 150,
-        }}
-        onClick={() => setpagina('DASHBOARD')}
-      >
-        DASHBOARD
-      </div>
       <div id="inputs_login_senha" style={{ display: 'flex', flexDirection: 'column' }}>
         <input
           autoComplete="off"

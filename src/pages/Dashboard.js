@@ -8,6 +8,7 @@ import DatePicker from '../components/DatePicker';
 // imagens.
 import atualizar from '../images/refresh.svg';
 import selector from '../functions/selector';
+import back from '../images/back.svg'
 
 function Dashboard() {
 
@@ -15,11 +16,14 @@ function Dashboard() {
   const {
     html,
     pagina,
+    unidade,
     pacientes, setpacientes,
     setviewdatepicker,
     datepicker1, setdatepicker1,
     datepicker2, setdatepicker2,
     setarraydatas, arraydatas,
+    mobilewidth,
+    setpagina,
     // setarraydados,
   } = useContext(Context);
 
@@ -38,15 +42,47 @@ function Dashboard() {
   useEffect(() => {
     if (pagina == 'DASHBOARD') {
       console.log('DASHBOARD');
-      loadPacientes();
+      loadAllPacientes();
     }
   }, [pagina]);
 
-  const loadPacientes = () => {
-    axios.get(html + 'list_pacientes').then((response) => {
+  const loadAllPacientes = () => {
+    axios.get(html + 'list_all_pacientes').then((response) => {
       var x = response.data.rows;
-      setpacientes(x);
+      setpacientes(x.filter(item => item.unidade_origem == unidade));
     });
+  }
+
+  function Resumo() {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'row',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        flexWrap: 'wrap',
+      }}>
+        {arraystatus.map(valor => (
+          <div
+            className={'button weak'}
+            key={'resumo ' + valor.valor}
+            style={{
+              width: window.innerWidth > mobilewidth ? 100 : '30vw',
+              minWidth: window.innerWidth > mobilewidth ? 100 : '30vw',
+              height: window.innerWidth > mobilewidth ? 100 : '30vw',
+              fontSize: window.innerWidth > mobilewidth ? '' : 12,
+              padding: 10,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              background: valor.cor,
+            }}
+          >
+            <div>{valor.valor}</div>
+            <div>
+              {pacientes.filter(item => item.status == valor.valor).length}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
   }
 
   function FiltroDias() {
@@ -176,7 +212,7 @@ function Dashboard() {
     }
     setarraydatas(localarraydatas);
     console.log(localarraydatas);
-    mountArrayDadosVersusDatas(localarraydatas, 'AIH', setarraydadosaih);
+    mountArrayDadosVersusDatas(localarraydatas, 'AIH TRANSFERIDO', setarraydadosaih);
     mountArrayDadosVersusDatas(localarraydatas, 'ALTA', setarraydadosalta);
   }
 
@@ -401,25 +437,53 @@ function Dashboard() {
           display: 'flex',
           flexDirection: 'column', justifyContent: 'center',
         }}>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignSelf: 'center' }}>
+          <div className='text1' style={{ fontSize: 24 }}>{unidade + ' EM NÚMEROS'}</div>
+          <div
+            style={{ display: 'flex' }}
+            className='button'
+            onClick={() => {
+              setpagina('PASSOMETRO');
+            }} title="VOLTAR">
+            <img
+              alt=""
+              src={back}
+              style={{
+                margin: 10,
+                height: 30,
+                width: 30,
+              }}
+            ></img>
+          </div>
+        </div>
+        <Resumo></Resumo>
         <FiltroDias></FiltroDias>
         <div id='charts dias' style={{ display: 'flex', flexDirection: 'column' }}>
-          {Chart('bar', 'AIH', '#52be80', arraydadosaih, arraydatas, 1, 0.8 * window.innerWidth)}
-          {Chart('bar', 'ALTA', '#85c1e9', arraydadosalta, arraydatas, 1, 0.8 * window.innerWidth)}
-          {Chart('line', ['AIH', 'ALTA'], ['#52be80', '#85c1e9'],
-            [
-              {
-                name: 'AIH',
-                type: 'line',
-                data: arraydadosaih,
-              },
-              {
-                name: 'ALTA',
-                type: 'line',
-                data: arraydadosalta,
-              },
-            ],
-            arraydatas, 0, 0.8 * window.innerWidth)}
-          {Chart('donut', 'DESFECHOS', arraystatus.map(item => item.cor), arraydadosstatus, arraystatus.map(item => item.legenda), 1, 0.8 * window.innerWidth)}
+          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
+            {Chart('bar', 'AIH', '#52be80', arraydadosaih, arraydatas, 1,
+              arraydatas.length < 11 ? 0.4 * window.innerWidth : 0.8 * window.innerWidth
+            )}
+            {Chart('bar', 'ALTA', '#85c1e9', arraydadosalta, arraydatas, 1,
+              arraydatas.length < 11 ? 0.4 * window.innerWidth : 0.8 * window.innerWidth
+            )}
+            {Chart('line', ['AIH', 'ALTA'], ['#52be80', '#85c1e9'],
+              [
+                {
+                  name: 'AIH',
+                  type: 'line',
+                  data: arraydadosaih,
+                },
+                {
+                  name: 'ALTA',
+                  type: 'line',
+                  data: arraydadosalta,
+                },
+              ],
+              arraydatas, 0,
+              arraydatas.length < 11 ? 0.4 * window.innerWidth : 0.8 * window.innerWidth
+            )}
+            {Chart('donut', 'DESFECHOS', arraystatus.map(item => item.cor), arraydadosstatus, arraystatus.map(item => item.legenda), 1, 0.5 * window.innerWidth)}
+          </div>
         </div>
         <FiltroMeses></FiltroMeses>
         {Chart('line', arraystatus.map(item => item.legenda), arraystatus.map(item => item.cor), [

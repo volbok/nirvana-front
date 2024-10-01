@@ -31,6 +31,8 @@ function Indicadores() {
     pagina, setpagina,
     settoast,
     pacientes, setpacientes,
+    mobilewidth,
+    arraystatus,
   } = useContext(Context);
 
   var html = 'http://localhost:3333/'
@@ -83,11 +85,13 @@ function Indicadores() {
   */
 
   // carregar lista de pacientes internados.
+  const [allpacientes, setallpacientes] = useState([]);
   const [setpacientesgrafico] = useState([0, 1]);
   const loadPacientes = (arraydays) => {
     axios.get(html + 'list_pacientes').then((response) => {
       var x = [0, 1];
       x = response.data.rows;
+      setallpacientes(x);
       var y = [0, 1];
       y = x.filter(item => item.indicador_chegada_destino != null && moment(item.indicador_data_cadastro) >= datainicio && moment(item.indicador_data_cadastro) <= datatermino);
       var z = [0, 1];
@@ -131,6 +135,41 @@ function Indicadores() {
   // função usada para redução de arrays (soma).
   function soma(total, num) {
     return total + num;
+  }
+
+  function Resumo() {
+    return (
+      <div style={{
+        display: 'flex', flexDirection: 'row',
+        justifyContent: 'center',
+        alignSelf: 'center',
+        flexWrap: 'wrap',
+      }}>
+        {arraystatus.map(valor => (
+          <div
+            className={'button weak'}
+            key={'resumo ' + valor.valor}
+            style={{
+              width: window.innerWidth > mobilewidth ? 100 : '30vw',
+              minWidth: window.innerWidth > mobilewidth ? 100 : '30vw',
+              height: window.innerWidth > mobilewidth ? 100 : '30vw',
+              fontSize: window.innerWidth > mobilewidth ? '' : 12,
+              padding: 10,
+              display: 'flex', flexDirection: 'column', justifyContent: 'center',
+              background: valor.cor,
+            }}
+          >
+            <div>{valor.valor}</div>
+            <div style={{ display: valor.valor.includes('TRANSFERIDO') == true ? 'flex' : 'none' }}>
+              {allpacientes.filter(item => item.status.includes('TRANSFERIDO')).length}
+            </div>
+            <div style={{ display: valor.valor.includes('TRANSFERIDO') == false ? 'flex' : 'none' }}>
+              {allpacientes.filter(item => item.status == valor.valor).length}
+            </div>
+          </div>
+        ))}
+      </div>
+    )
   }
 
   // indicadores globais (consolidado de todas as upas).
@@ -644,12 +683,12 @@ function Indicadores() {
           width: 'calc(100vw - 20px)', padding: 10
         }}>
         <Usuario></Usuario>
+        <Resumo></Resumo>
         <FilterData></FilterData>
       </div>
       <div className='scroll'
         style={{
           margin: 10, padding: 10,
-          // width: 'calc(100vw - 20px)',
           height: '75vh'
         }}>
         <IndicadoresGerais></IndicadoresGerais>
