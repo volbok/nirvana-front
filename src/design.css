@@ -258,6 +258,32 @@ body {
   }
 }
 
+.shake {
+  opacity: 1;
+  animation-name: shake;
+  animation-duration: 300ms;
+  animation-iteration-count: infinite;
+}
+
+@keyframes shake {
+  0% {
+    transform: rotate(0deg);
+    scale: 1;
+  }
+  25% {
+    transform: rotate(15deg);
+    scale: 1.5;
+  }
+  75% {
+    transform: rotate(-15deg);
+    scale: 1;
+  }
+  100% {
+    transform: rotate(0deg);
+    scale: 1;
+  }
+}
+
 /* SCROLL */
 .header {
   display: flex;

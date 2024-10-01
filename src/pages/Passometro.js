@@ -532,7 +532,10 @@ function Passometro() {
             alignContent: 'center', alignItems: 'center',
           }}>
           <Usuario></Usuario>
-          <div style={{ display: 'flex', flexDirection: 'row' }}>
+          <div style={{
+            display: 'flex',
+            flexDirection: window.innerWidth < mobilewidth ? 'column' : 'row'
+          }}>
             <FilterPaciente></FilterPaciente>
             <div
               className='button'
@@ -1247,12 +1250,17 @@ function Passometro() {
         title={placeholder}
         defaultValue={item}
         id={"campotexto - " + variavel + " - " + obj.id}
+        onClick={(e) => localStorage.setItem("texto", e.target.value)}
         onKeyUp={(e) => {
           document.getElementById("campotexto - " + variavel + " - " + obj.id).value = e.target.value.toUpperCase();
           clearTimeout(timeout);
-          timeout = setTimeout(() => {
-            updatePaciente(obj, obj.id);
-          }, 1000);
+          if (document.getElementById("campotexto - " + variavel + " - " + obj.id).value == '' && variavel == 'nome_paciente') {
+            setexplicacao(1);
+          } else {
+            timeout = setTimeout(() => {
+              updatePaciente(obj, obj.id);
+            }, 1000);
+          }
         }}
       ></textarea>
     )
@@ -1453,6 +1461,7 @@ function Passometro() {
                         className='button-red'
                         title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
                         style={{
+                          display: usuario.tipo == 'ENFERMEIRO NIR' || usuario.tipo == 'MÉDICO HORIZONTAL' ? 'flex' : 'none',
                           minWidth: 30, width: 30, maxWidth: 30,
                           minHeight: 30, height: 30, maxHeight: 30,
                           alignSelf: 'center',
@@ -1648,6 +1657,7 @@ function Passometro() {
                         className='button-red'
                         title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
                         style={{
+                          display: usuario.tipo == 'ENFERMEIRO NIR' || usuario.tipo == 'MÉDICO HORIZONTAL' ? 'flex' : 'none',
                           minWidth: 30, width: 30, maxWidth: 30,
                           minHeight: 30, height: 30, maxHeight: 30,
                           alignSelf: 'center',
@@ -1844,6 +1854,7 @@ function Passometro() {
                         className='button-red'
                         title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
                         style={{
+                          display: usuario.tipo == 'ENFERMEIRO NIR' || usuario.tipo == 'MÉDICO HORIZONTAL' ? 'flex' : 'none',
                           minWidth: 30, width: 30, maxWidth: 30,
                           minHeight: 30, height: 30, maxHeight: 30,
                           alignSelf: 'center',
@@ -2040,6 +2051,7 @@ function Passometro() {
                         className='button-red'
                         title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
                         style={{
+                          display: usuario.tipo == 'ENFERMEIRO NIR' || usuario.tipo == 'MÉDICO HORIZONTAL' ? 'flex' : 'none',
                           minWidth: 30, width: 30, maxWidth: 30,
                           minHeight: 30, height: 30, maxHeight: 30,
                           alignSelf: 'center',
@@ -2246,6 +2258,7 @@ function Passometro() {
                           className='button-red'
                           title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
                           style={{
+                            display: usuario.tipo == 'ENFERMEIRO NIR' || usuario.tipo == 'MÉDICO HORIZONTAL' ? 'flex' : 'none',
                             minWidth: 20, width: 20, maxWidth: 20,
                             minHeight: 20, height: 20, maxHeight: 20,
                             marginLeft: 2.5,
@@ -2406,6 +2419,7 @@ function Passometro() {
                           className='button-red'
                           title={'EXCLUIR PACIENTE DO PASSÔMETRO'}
                           style={{
+                            display: usuario.tipo == 'ENFERMEIRO NIR' || usuario.tipo == 'MÉDICO HORIZONTAL' ? 'flex' : 'none',
                             minWidth: 20, width: 20, maxWidth: 20,
                             minHeight: 20, height: 20, maxHeight: 20,
                             marginLeft: 2.5,
@@ -2523,6 +2537,53 @@ function Passometro() {
               width: 30,
             }}
           ></img>
+        </div>
+      </div>
+    )
+  }
+
+  const [explicacao, setexplicacao] = useState(0);
+  function Orientacoes() {
+    return (
+      <div className='fundo'
+        id={"explicação"}
+        style={{
+          display: explicacao == 1 ? 'flex' : 'none',
+          zIndex: 5
+        }}>
+        <div className='janela' style={{ width: '40vw' }}>
+          <img className='shake'
+            alt=""
+            src={alerta}
+            style={{
+              display: 'flex',
+              margin: 5,
+              height: 80,
+              width: 80,
+            }}
+          >
+          </img>
+          <div className='text1' style={{ color: '#e74c3c', fontSize: 20 }}>
+            {'NÃO SUBSTITUA O NOME DO PACIENTE, CADASTRE UM NOVO!'}
+          </div>
+          <div className='text1'>
+            {'NÃO ADICIONE UM NOVO PACIENTE APAGANDO ESTE CAMPO PARA REAPROVEITAR O LEITO. VOCÊ DEVE INDICAR UM DESFECHO PARA ESTE PACIENTE (SELECIONANDO ALGUMA OPÇÃO EM STATUS) E REGISTRAR UM NOVO PACIENTE APERTANDO O BOTÃO VERDE NOVO (+), NO FINAL DA LISTA! ESTE CONTROLE É FUNDAMENTAL PARA GERAR INDICADORES FIDEDIGNOS.'}
+          </div>
+          <div
+            className='button'
+            onClick={() => setexplicacao(0)}>
+            <img
+              alt=""
+              src={back}
+              style={{
+                display: 'flex',
+                margin: 5,
+                height: 30,
+                width: 30,
+              }}
+            >
+            </img>
+          </div>
         </div>
       </div>
     )
@@ -3060,6 +3121,7 @@ function Passometro() {
           flexDirection: 'column', justifyContent: 'center',
         }}>
         <ListaDePacientes></ListaDePacientes>
+        <Orientacoes></Orientacoes>
         <PrintDocumento></PrintDocumento>
       </div>
       <div id="telas de exibição"
