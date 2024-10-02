@@ -142,62 +142,6 @@ function Chart(type, status, cor, arraydados, arraydatas, title, width) {
     }
   }
 
-  var opt_donut = {
-    chart: {
-      type: 'donut',
-    },
-    colors: cor,
-    series: arraydados,
-    labels: arraydatas,
-    legend: {
-      height: 300,
-      // offsetY: 35,
-      formatter: function (seriesName, opt) {
-        return (
-          seriesName + ': ' + opt.w.config.series[opt.seriesIndex]
-        )
-      }
-    },
-    dataLabels: {
-      enabled: true,
-      formatter: function (val, opt) {
-        return (
-          opt.w.config.series[opt.seriesIndex] +
-          ' (' + Math.ceil(val) + "%)"
-        )
-      },
-      enabledOnSeries: undefined,
-      textAnchor: 'middle',
-      distributed: false,
-      offsetX: 0,
-      offsetY: 0,
-      style: {
-        fontSize: '14px',
-        fontFamily: 'Helvetica, Arial, sans-serif',
-        fontWeight: 'bold',
-        colors: ['#000000']
-      },
-      background: {
-        enabled: true,
-        foreColor: '#fff',
-        padding: 4,
-        borderRadius: 2,
-        borderWidth: 1,
-        borderColor: '#fff',
-        opacity: 0.9,
-      },
-    },
-    plotOptions: {
-      pie: {
-        customScale: 0.7,
-        expandOnClick: false,
-        donut: {
-          size: '60%'
-        }
-      },
-    },
-  }
-
   var opt_line = {
     dataLabels: {
       enabled: true,
@@ -301,12 +245,64 @@ function Chart(type, status, cor, arraydados, arraydatas, title, width) {
     }
   }
 
+  var opt_donut = {
+    chart: {
+      type: 'donut',
+    },
+    colors: cor,
+    series: arraydados,
+    labels: arraydatas,
+    legend: {
+      height: 300,
+      // offsetY: 35,
+      formatter: function (seriesName, opt) {
+        return (
+          seriesName + ': ' + opt.w.config.series[opt.seriesIndex]
+        )
+      }
+    },
+    dataLabels: {
+      enabled: true,
+      formatter: function (val, opt) {
+        return (
+          opt.w.config.series[opt.seriesIndex] +
+          ' (' + Math.ceil(val) + "%)"
+        )
+      },
+      enabledOnSeries: undefined,
+      textAnchor: 'middle',
+      distributed: false,
+      offsetX: 0,
+      offsetY: 0,
+      style: {
+        fontSize: '14px',
+        fontFamily: 'Helvetica, Arial, sans-serif',
+        fontWeight: 'bold',
+        colors: ['#000000']
+      },
+      background: {
+        enabled: true,
+        foreColor: '#fff',
+        padding: 4,
+        borderRadius: 2,
+        borderWidth: 1,
+        borderColor: '#fff',
+        opacity: 0.9,
+      },
+    },
+    plotOptions: {
+      pie: {
+        customScale: 0.7,
+        expandOnClick: false,
+        donut: {
+          size: '60%'
+        }
+      },
+    },
+  }
+
   useEffect(() => {
     if (pagina == 'DASHBOARD') {
-
-      console.log(arraydados);
-      console.log(arraydatas);
-
       let options = null;
       if (type == 'bar') {
         options = opt_bar;
@@ -315,15 +311,10 @@ function Chart(type, status, cor, arraydados, arraydatas, title, width) {
       } else if (type == 'line') {
         options = opt_line;
       }
-
       let chart = null;
-
       chart = new ApexCharts(document.getElementById('chart ' + status), opt_null);
       chart.render();
       chart.destroy();
-
-      console.log('CHART');
-      console.log(arraydados);
       setTimeout(() => {
         if (arraydados.length > 0) {
           chart.destroy();

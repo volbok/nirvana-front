@@ -528,15 +528,18 @@ function Passometro() {
             display: 'flex',
             flexDirection: window.innerWidth < mobilewidth ? 'column' : 'row',
             justifyContent: window.innerWidth < mobilewidth ? 'center' : 'space-between',
-            position: 'absolute', top: 0, right: 0, left: 0,
+            position: window.innerWidth < mobilewidth ? 'unset' : 'absolute',
+            top: 0, right: 0, left: 0,
             alignContent: 'center', alignItems: 'center',
+            alignSelf: 'center',
           }}>
           <Usuario></Usuario>
           <div style={{
             display: 'flex',
-            flexDirection: window.innerWidth < mobilewidth ? 'column' : 'row'
+            flexDirection: window.innerWidth < mobilewidth ? 'column' : 'row',
+            justifyContent: 'center',
+            alignContent: 'center',
           }}>
-            <FilterPaciente></FilterPaciente>
             <div
               className='button'
               style={{
@@ -544,17 +547,20 @@ function Passometro() {
                 justifyContent: 'center',
                 flexWrap: 'wrap',
                 width: 150,
+                alignSelf: 'center',
               }}
               onClick={() => setpagina('DASHBOARD')}
             >
               DASHBOARD
             </div>
+            <FilterPaciente></FilterPaciente>
           </div>
           <SeletorHospital></SeletorHospital>
         </div>
         <div style={{
           display: 'flex', flexDirection: 'column', justifyContent: 'center',
-          marginTop: 100, width: '100%',
+          marginTop: window.innerWidth > mobilewidth ? 100 : 20,
+          width: '100%',
         }}>
           <div className="text3" style={{ fontSize: 20 }}>{'PASSÔMETRO - ' + unidade}</div>
           <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', alignContent: 'center', marginTop: 20 }}>
@@ -1057,6 +1063,7 @@ function Passometro() {
           {arrayhospitais.map((item) => (
             <div
               id={'HOSPITAL - ' + item.sigla}
+              key={'HOSPITAL - ' + item.sigla}
               className='button'
               style={{ width: 'calc(100% - 20px)', minWidth: 'calc(100% - 20px)' }}
               onClick={() => {

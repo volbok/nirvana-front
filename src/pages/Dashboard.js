@@ -1,5 +1,5 @@
 /* eslint eqeqeq: "off" */
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useCallback, useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import Context from './Context';
 import moment from 'moment';
@@ -90,19 +90,21 @@ function Dashboard() {
       <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
         <div className='text1'>PESQUISA: INTERVALO DE DIAS</div>
         <div id="intervalo de dias e predefiições" style={{
-          display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap',
+          display: 'flex',
+          flexDirection: window.innerWidth > mobilewidth ? 'row' : 'column',
+          justifyContent: 'center', flexWrap: 'wrap',
           width: '90vw', alignSelf: 'center',
         }}
         >
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div className='text1'>DATA INICIAL</div>
-            <div className='button weak' style={{ width: 150 }} onClick={() => setviewdatepicker(1)}>
+            <div className='button weak' style={{ width: 150, alignSelf: 'center' }} onClick={() => setviewdatepicker(1)}>
               {datepicker1}
             </div>
           </div>
           <div style={{ display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
             <div className='text1'>DATA FINAL</div>
-            <div className='button weak' style={{ width: 150 }} onClick={() => setviewdatepicker(2)}>
+            <div className='button weak' style={{ width: 150, alignSelf: 'center' }} onClick={() => setviewdatepicker(2)}>
               {datepicker2}
             </div>
           </div>
@@ -110,13 +112,11 @@ function Dashboard() {
             style={{
               display: 'flex',
               maxHeight: 50,
-              alignSelf: 'flex-end',
+              alignSelf: window.innerWidth < mobilewidth ? 'center' : 'flex-end',
               backgroundColor: 'rgb(229, 126, 52, 1)'
             }}
             onClick={() => {
-              mountArrayDatas();
-              mountArrayDadosVersusStatus();
-              // document.getElementById('charts dias').style.display = 'flex';
+              mountArrayDatas(datepicker1, datepicker2);
             }}>
             <img
               alt=""
@@ -128,15 +128,18 @@ function Dashboard() {
               }}
             ></img>
           </div>
-          <div id="intervalos de dias predefinidos" style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center' }}>
+          <div id="intervalos de dias predefinidos" style={{
+            display: 'flex', flexDirection: 'row',
+            flexWrap: 'wrap',
+            justifyContent: 'center'
+          }}>
             <div id="7 dias"
               className='button weak'
               style={{ width: 100, maxWidth: 100, maxHeight: 50, alignSelf: 'flex-end', marginLeft: 10 }}
               onClick={() => {
                 setdatepicker1(moment().subtract(7, 'days').format('DD/MM/YYYY'))
                 setdatepicker2(moment().format('DD/MM/YYYY'));
-                mountArrayDatas();
-                mountArrayDadosVersusStatus();
+                mountArrayDatas(moment().subtract(7, 'days').format('DD/MM/YYYY'), moment().format('DD/MM/YYYY'));
                 selector("intervalos de dias predefinidos", "7 dias", 3000);
               }}
             >
@@ -148,8 +151,7 @@ function Dashboard() {
               onClick={() => {
                 setdatepicker1(moment().subtract(15, 'days').format('DD/MM/YYYY'))
                 setdatepicker2(moment().format('DD/MM/YYYY'));
-                mountArrayDatas();
-                mountArrayDadosVersusStatus();
+                mountArrayDatas(moment().subtract(15, 'days').format('DD/MM/YYYY'), moment().format('DD/MM/YYYY'));
                 selector("intervalos de dias predefinidos", "15 dias", 3000);
               }}
             >
@@ -161,8 +163,7 @@ function Dashboard() {
               onClick={() => {
                 setdatepicker1(moment().subtract(30, 'days').format('DD/MM/YYYY'))
                 setdatepicker2(moment().format('DD/MM/YYYY'));
-                mountArrayDatas();
-                mountArrayDadosVersusStatus();
+                mountArrayDatas(moment().subtract(15, 'days').format('DD/MM/YYYY'), moment().format('DD/MM/YYYY'));
                 selector("intervalos de dias predefinidos", "30 dias", 3000);
               }}
             >
@@ -174,8 +175,7 @@ function Dashboard() {
               onClick={() => {
                 setdatepicker1(moment().subtract(60, 'days').format('DD/MM/YYYY'))
                 setdatepicker2(moment().format('DD/MM/YYYY'));
-                mountArrayDatas();
-                mountArrayDadosVersusStatus();
+                mountArrayDatas(moment().subtract(60, 'days').format('DD/MM/YYYY'), moment().format('DD/MM/YYYY'));
                 selector("intervalos de dias predefinidos", "60 dias", 3000);
               }}
             >
@@ -202,18 +202,20 @@ function Dashboard() {
     )
   }
 
-  const mountArrayDatas = () => {
+  const mountArrayDatas = (datainicial, datafinal) => {
+    setarraydatas([]);
     let localarraydatas = []
-    let datainicio = moment(datepicker1, 'DD/MM/YYYY - HH:mm');
-    let datatermino = moment(datepicker2, 'DD/MM/YYYY - HH:mm');
+    let datainicio = moment(datainicial, 'DD/MM/YYYY');
+    let datatermino = moment(datafinal, 'DD/MM/YYYY');
     while (datainicio <= datatermino) {
       localarraydatas.push(datainicio.format('DD/MM/YY'));
       datainicio = datainicio.add(1, 'day');
     }
     setarraydatas(localarraydatas);
-    console.log(localarraydatas);
+    // console.log(localarraydatas);
     mountArrayDadosVersusDatas(localarraydatas, 'AIH TRANSFERIDO', setarraydadosaih);
     mountArrayDadosVersusDatas(localarraydatas, 'ALTA', setarraydadosalta);
+    mountArrayDadosVersusStatus(datainicial, datafinal);
   }
 
   const [ano, setano] = useState();
@@ -280,13 +282,20 @@ function Dashboard() {
   ]
   function AnosSelector() {
     return (
-      <div style={{ display: 'flex', flexDirection: 'row', flexWrap: 'wrap', alignSelf: 'center' }}>
+      <div style={{
+        display: 'flex', flexDirection: 'row', flexWrap: 'wrap',
+        justifyContent: 'center',
+        alignSelf: 'center'
+      }}>
         {arrayanos.map(item => (
           <div
             className={ano == item ? 'button strong blinkbordas' : 'button weak'}
             key={'ANOS - ' + item}
             style={{ width: 70 }}
-            onClick={() => { setano(item); console.log(item) }}
+            onClick={() => {
+              setano(item);
+              // console.log(item);
+            }}
           >
             {item}
           </div>
@@ -340,7 +349,7 @@ function Dashboard() {
       inicio = parseInt(inicio) + parseInt(1);
     }
 
-    console.log(localarraymeses);
+    // console.log(localarraymeses);
     setarray_meses(localarraymeses);
     mountpacientes_status_mes(localarraymeses, 'AIH TRANSFERIDO', setpacientes_aih);
     mountpacientes_status_mes(localarraymeses, 'CONTATO DIRETO TRANSFERIDO', setpacientes_contato);
@@ -354,7 +363,7 @@ function Dashboard() {
   const mountpacientes_status_mes = (arraymeses, status, setdados) => {
     let localarray = []
     arraymeses.map(mes => localarray.push(pacientes.filter(paciente => paciente.status == status && moment(paciente.passometro_data, 'DD/MM/YYYY - HH:mm').format('MM/YYYY') == mes).length));
-    console.log(localarray);
+    // console.log(localarray);
     setdados(localarray);
   }
 
@@ -363,9 +372,6 @@ function Dashboard() {
     let localarraydados = [];
     arraydatas.map(item => localarraydados.push(pacientes.filter(paciente => moment(paciente.passometro_data, 'DD/MM/YYYY - HH:mm').format('DD/MM/YY') == item && paciente.status.includes(status)).length));
     setarraydados(localarraydados);
-    console.log(moment(datepicker1, 'DD/MM/YYYY'));
-    console.log(moment(datepicker2, 'DD/MM/YYYY'));
-    console.log(pacientes.length);
   }
 
 
@@ -406,16 +412,52 @@ function Dashboard() {
       cor: '#000000',
     },
   ]
-  const mountArrayDadosVersusStatus = () => {
-    let localpacientesperiodo = pacientes.filter(item => moment(item.passometro_data, 'DD/MM/YYYY') > moment(datepicker1, 'DD/MM/YYYY') && moment(item.passometro_data, 'DD/MM/YYYY') < moment(datepicker2, 'DD/MM/YYYY'));
+  const mountArrayDadosVersusStatus = (datainicio, datatermino) => {
+    console.log(datainicio);
+    console.log(datatermino);
+    let localpacientesperiodo = pacientes.filter(item => moment(item.passometro_data, 'DD/MM/YYYY') > moment(datainicio, 'DD/MM/YYYY') && moment(item.passometro_data, 'DD/MM/YYYY') < moment(datatermino, 'DD/MM/YYYY'));
+    console.log(localpacientesperiodo);
     let localarraydadosstatus = [];
     arraystatus.map(status => {
       localarraydadosstatus.push(localpacientesperiodo.filter(paciente => paciente.status == status.valor).length);
       return null;
     })
     setarraydadosstatus(localarraydadosstatus);
-    console.log(localarraydadosstatus);
+    // console.log(localarraydadosstatus);
   }
+
+  const ChartsDias = useCallback(() => {
+    return (
+      <div id='charts dias' style={{ display: 'flex', flexDirection: 'column' }}>
+        <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
+          {Chart('bar', 'AIH', '#52be80', arraydadosaih, arraydatas, 1,
+            arraydatas.length < 11 && window.innerWidth > mobilewidth ? 0.5 * window.innerWidth : 0.8 * window.innerWidth
+          )}
+          {Chart('bar', 'ALTA', '#85c1e9', arraydadosalta, arraydatas, 1,
+            arraydatas.length < 11 && window.innerWidth > mobilewidth ? 0.5 * window.innerWidth : 0.8 * window.innerWidth
+          )}
+          {Chart('line', ['AIH', 'ALTA'], ['#52be80', '#85c1e9'],
+            [
+              {
+                name: 'AIH',
+                type: 'line',
+                data: arraydadosaih,
+              },
+              {
+                name: 'ALTA',
+                type: 'line',
+                data: arraydadosalta,
+              },
+            ],
+            arraydatas, 0,
+            arraydatas.length < 11 && window.innerWidth > mobilewidth ? 0.5 * window.innerWidth : 0.8 * window.innerWidth
+          )}
+          {Chart('donut', 'DESFECHOS', arraystatus.map(item => item.cor), arraydadosstatus, arraystatus.map(item => item.legenda), 1,
+            window.innerWidth > mobilewidth ? 0.5 * window.innerWidth : 0.8 * window.innerWidth)}
+        </div>
+      </div>
+    )
+  }, [arraydatas, arraydadosaih, arraydadosalta, arraydadosstatus, mobilewidth])
 
   return (
     <div
@@ -458,33 +500,7 @@ function Dashboard() {
         </div>
         <Resumo></Resumo>
         <FiltroDias></FiltroDias>
-        <div id='charts dias' style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', flexDirection: 'row', justifyContent: 'center', flexWrap: 'wrap' }}>
-            {Chart('bar', 'AIH', '#52be80', arraydadosaih, arraydatas, 1,
-              arraydatas.length < 11 ? 0.4 * window.innerWidth : 0.8 * window.innerWidth
-            )}
-            {Chart('bar', 'ALTA', '#85c1e9', arraydadosalta, arraydatas, 1,
-              arraydatas.length < 11 ? 0.4 * window.innerWidth : 0.8 * window.innerWidth
-            )}
-            {Chart('line', ['AIH', 'ALTA'], ['#52be80', '#85c1e9'],
-              [
-                {
-                  name: 'AIH',
-                  type: 'line',
-                  data: arraydadosaih,
-                },
-                {
-                  name: 'ALTA',
-                  type: 'line',
-                  data: arraydadosalta,
-                },
-              ],
-              arraydatas, 0,
-              arraydatas.length < 11 ? 0.4 * window.innerWidth : 0.8 * window.innerWidth
-            )}
-            {Chart('donut', 'DESFECHOS', arraystatus.map(item => item.cor), arraydadosstatus, arraystatus.map(item => item.legenda), 1, 0.5 * window.innerWidth)}
-          </div>
-        </div>
+        <ChartsDias></ChartsDias>
         <FiltroMeses></FiltroMeses>
         {Chart('line', arraystatus.map(item => item.legenda), arraystatus.map(item => item.cor), [
           {
